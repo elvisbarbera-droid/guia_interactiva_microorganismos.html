@@ -1,0 +1,451 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+.guia-wrap{
+  font-family:'DM Sans',sans-serif;
+  background:var(--color-background-primary);
+  max-width:860px;
+  margin:0 auto;
+  padding:0 0 3rem;
+  color:var(--color-text-primary);
+}
+
+.guia-header{
+  background:linear-gradient(135deg,#003366 0%,#1a5fa8 100%);
+  color:#fff;
+  padding:2rem 2.5rem 1.5rem;
+  border-radius:var(--border-radius-lg);
+  margin-bottom:2rem;
+  position:relative;
+  overflow:hidden;
+}
+.guia-header::before{
+  content:'';
+  position:absolute;
+  top:-40px;right:-40px;
+  width:160px;height:160px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.07);
+}
+.guia-header::after{
+  content:'';
+  position:absolute;
+  bottom:-30px;left:30%;
+  width:100px;height:100px;
+  border-radius:50%;
+  background:rgba(226,6,19,0.25);
+}
+.guia-header h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.6rem;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  margin-bottom:0.3rem;
+  position:relative;z-index:1;
+}
+.guia-header p{font-size:0.85rem;opacity:0.85;position:relative;z-index:1}
+.badge-oa{
+  display:inline-block;
+  background:rgba(226,6,19,0.85);
+  color:#fff;
+  font-size:0.72rem;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+  margin-bottom:0.5rem;
+  letter-spacing:0.04em;
+}
+
+.nombre-card{
+  background:var(--color-background-secondary);
+  border:0.5px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  padding:1.2rem 1.5rem;
+  margin-bottom:2rem;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.nombre-icon{
+  width:40px;height:40px;
+  border-radius:50%;
+  background:#003366;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:18px;flex-shrink:0;
+}
+.nombre-card label{
+  font-size:0.8rem;
+  color:var(--color-text-secondary);
+  margin-bottom:4px;
+  display:block;
+}
+.nombre-card input{
+  border:0.5px solid var(--color-border-secondary);
+  border-radius:var(--border-radius-md);
+  padding:8px 12px;
+  font-size:0.95rem;
+  width:100%;
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+}
+.nombre-card input:focus{outline:2px solid #003366;border-color:transparent}
+
+.seccion{
+  margin-bottom:2.5rem;
+}
+.sec-titulo{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.05rem;
+  font-weight:700;
+  color:#003366;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:1rem;
+  padding-bottom:0.6rem;
+  border-bottom:2px solid #e20613;
+}
+.sec-num{
+  background:#003366;
+  color:#fff;
+  width:28px;height:28px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;
+  font-weight:700;
+  flex-shrink:0;
+}
+
+/* Tabla comparativa */
+.tabla-wrap{overflow-x:auto}
+table.bio{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.875rem;
+}
+table.bio th{
+  background:#003366;
+  color:#fff;
+  padding:11px 14px;
+  text-align:center;
+  font-weight:500;
+  font-size:0.8rem;
+  letter-spacing:0.03em;
+}
+table.bio th:first-child{text-align:left}
+table.bio td{
+  padding:10px 14px;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+  text-align:center;
+  vertical-align:middle;
+}
+table.bio td:first-child{
+  text-align:left;
+  font-weight:500;
+  color:var(--color-text-secondary);
+  font-size:0.82rem;
+  background:var(--color-background-secondary);
+}
+table.bio tr:last-child td{border-bottom:none}
+table.bio input.celda{
+  width:100%;
+  border:0.5px solid var(--color-border-secondary);
+  border-radius:6px;
+  padding:7px 10px;
+  font-size:0.82rem;
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  text-align:center;
+}
+table.bio input.celda:focus{outline:2px solid #003366;border-color:transparent}
+
+/* Caso Chile */
+.caso-card{
+  background:var(--color-background-secondary);
+  border-left:4px solid #e20613;
+  border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;
+  padding:1rem 1.2rem;
+  margin-bottom:1rem;
+  font-size:0.9rem;
+}
+.caso-card strong{color:#003366}
+.caso-pregunta{
+  font-size:0.9rem;
+  font-weight:500;
+  margin-bottom:0.5rem;
+  color:var(--color-text-primary);
+}
+textarea.bio-text{
+  width:100%;
+  padding:10px 14px;
+  border:0.5px solid var(--color-border-secondary);
+  border-radius:var(--border-radius-md);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.875rem;
+  resize:vertical;
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  line-height:1.6;
+}
+textarea.bio-text:focus{outline:2px solid #003366;border-color:transparent}
+
+/* Quiz */
+.pregunta-blk{margin-bottom:1.5rem}
+.pregunta-blk p{
+  font-size:0.9rem;
+  font-weight:500;
+  margin-bottom:0.75rem;
+  line-height:1.5;
+}
+.opcion{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 14px;
+  border:0.5px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-md);
+  margin-bottom:6px;
+  cursor:pointer;
+  font-size:0.875rem;
+  transition:background 0.15s,border-color 0.15s;
+}
+.opcion:hover{
+  background:var(--color-background-secondary);
+  border-color:var(--color-border-secondary);
+}
+.opcion input[type=radio]{accent-color:#003366}
+.opcion.correcta{
+  background:#eaf3de;
+  border-color:#639922;
+  color:#27500a;
+}
+.opcion.incorrecta{
+  background:#fcebeb;
+  border-color:#a32d2d;
+  color:#501313;
+}
+
+.btn-verificar{
+  background:#003366;
+  color:#fff;
+  border:none;
+  border-radius:var(--border-radius-md);
+  padding:10px 22px;
+  font-size:0.875rem;
+  font-weight:500;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.15s;
+}
+.btn-verificar:hover{background:#002244}
+
+.resultado{
+  margin-top:0.75rem;
+  padding:10px 14px;
+  border-radius:var(--border-radius-md);
+  font-size:0.875rem;
+  font-weight:500;
+  display:none;
+}
+.resultado.exito{background:#eaf3de;color:#27500a;border:0.5px solid #97c459}
+.resultado.parcial{background:#faeeda;color:#633806;border:0.5px solid #ef9f27}
+
+/* Meta */
+.meta-icon{font-size:1.5rem;margin-bottom:0.5rem}
+
+/* Footer */
+.guia-footer{
+  text-align:center;
+  padding-top:1.5rem;
+  border-top:0.5px solid var(--color-border-tertiary);
+  margin-top:1rem;
+}
+.btn-print{
+  background:#e20613;
+  color:#fff;
+  border:none;
+  border-radius:var(--border-radius-md);
+  padding:11px 28px;
+  font-size:0.875rem;
+  font-weight:500;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.15s;
+}
+.btn-print:hover{background:#b8040f}
+.footer-hint{font-size:0.78rem;color:var(--color-text-secondary);margin-top:0.5rem}
+</style>
+
+<div class="guia-wrap">
+
+  <!-- Header -->
+  <div class="guia-header">
+    <div class="badge-oa">OA 4 · Ciencias Naturales</div>
+    <h1>Guía Interactiva: El Mundo Microscópico</h1>
+    <p>7° Básico &nbsp;·&nbsp; Comparación de agentes biológicos y su impacto en la salud</p>
+  </div>
+
+  <!-- Nombre -->
+  <div class="nombre-card">
+    <div class="nombre-icon">&#9998;</div>
+    <div style="flex:1">
+      <label for="nombre">Nombre del estudiante</label>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo aquí...">
+    </div>
+  </div>
+
+  <!-- Sección 1: Tabla -->
+  <div class="seccion">
+    <div class="sec-titulo">
+      <div class="sec-num">1</div>
+      Comparación de agentes biológicos
+    </div>
+    <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1rem">Completa la tabla con las características que corresponden a cada microorganismo:</p>
+    <div class="tabla-wrap">
+      <table class="bio">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th>🦠 Bacterias</th>
+            <th>⚠️ Virus</th>
+            <th>🍄 Hongos (Levaduras)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>¿Es una célula?</td>
+            <td><input class="celda" type="text" placeholder="Sí / No…"></td>
+            <td><input class="celda" type="text" placeholder="Sí / No…"></td>
+            <td><input class="celda" type="text" placeholder="Sí / No…"></td>
+          </tr>
+          <tr>
+            <td>¿Tiene núcleo?</td>
+            <td><input class="celda" type="text" placeholder="Tu respuesta…"></td>
+            <td><input class="celda" type="text" placeholder="Tu respuesta…"></td>
+            <td><input class="celda" type="text" placeholder="Tu respuesta…"></td>
+          </tr>
+          <tr>
+            <td>Tratamiento</td>
+            <td><input class="celda" type="text" placeholder="Ej: Antibióticos"></td>
+            <td><input class="celda" type="text" placeholder="Ej: Vacunas"></td>
+            <td><input class="celda" type="text" placeholder="Ej: Antifúngicos"></td>
+          </tr>
+          <tr>
+            <td>Ejemplo de enfermedad</td>
+            <td><input class="celda" type="text" placeholder="Escribe un ejemplo…"></td>
+            <td><input class="celda" type="text" placeholder="Escribe un ejemplo…"></td>
+            <td><input class="celda" type="text" placeholder="Escribe un ejemplo…"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sección 2: Caso Chile -->
+  <div class="seccion">
+    <div class="sec-titulo">
+      <div class="sec-num">2</div>
+      Casos en Chile
+    </div>
+    <div class="caso-card">
+      <strong>Caso Virus Hanta:</strong> Se transmite por el ratón colilargo (<em>Oligoryzomys longicaudatus</em>) en el sur de Chile. Es una enfermedad grave que afecta los pulmones y no tiene cura conocida.
+    </div>
+    <p class="caso-pregunta">¿Por qué <u>NO</u> se deben usar antibióticos para tratar el virus Hanta?</p>
+    <textarea class="bio-text" rows="3" id="respHanta" placeholder="Escribe tu respuesta científica aquí…"></textarea>
+
+    <div style="margin-top:1.25rem">
+      <div class="caso-card" style="border-left-color:#003366">
+        <strong>Reflexión extra:</strong> Nombra una enfermedad fúngica que pueda afectar a personas en Chile y cómo se trata.
+      </div>
+      <textarea class="bio-text" rows="2" placeholder="Tu respuesta…"></textarea>
+    </div>
+  </div>
+
+  <!-- Sección 3: Quiz -->
+  <div class="seccion">
+    <div class="sec-titulo">
+      <div class="sec-num">3</div>
+      Desafío de selección múltiple
+    </div>
+
+    <div class="pregunta-blk">
+      <p><strong>Pregunta 1.</strong> Un organismo unicelular no tiene núcleo definido y posee pared celular. ¿A qué corresponde?</p>
+      <label class="opcion"><input type="radio" name="q1" value="a"> A) Un virus</label>
+      <label class="opcion"><input type="radio" name="q1" value="b"> B) Un protozoo</label>
+      <label class="opcion"><input type="radio" name="q1" value="c"> C) Una bacteria</label>
+    </div>
+
+    <div class="pregunta-blk">
+      <p><strong>Pregunta 2.</strong> ¿Qué beneficio industrial tienen las levaduras en Chile?</p>
+      <label class="opcion"><input type="radio" name="q2" value="a"> A) Producción de vacunas</label>
+      <label class="opcion"><input type="radio" name="q2" value="b"> B) Fermentación para pan y vino</label>
+      <label class="opcion"><input type="radio" name="q2" value="c"> C) Limpieza de océanos</label>
+    </div>
+
+    <div class="pregunta-blk">
+      <p><strong>Pregunta 3.</strong> ¿Cuál de las siguientes afirmaciones sobre los virus es correcta?</p>
+      <label class="opcion"><input type="radio" name="q3" value="a"> A) Son organismos vivos que se reproducen solos</label>
+      <label class="opcion"><input type="radio" name="q3" value="b"> B) Se tratan eficazmente con antibióticos</label>
+      <label class="opcion"><input type="radio" name="q3" value="c"> C) Necesitan una célula huésped para replicarse</label>
+    </div>
+
+    <button class="btn-verificar" onclick="verificar()">Verificar respuestas</button>
+    <div id="resultado" class="resultado"></div>
+  </div>
+
+  <!-- Sección 4: Metacognición -->
+  <div class="seccion">
+    <div class="sec-titulo">
+      <div class="sec-num">4</div>
+      Metacognición
+    </div>
+    <div style="margin-bottom:0.8rem">
+      <p style="font-size:0.875rem;font-weight:500;margin-bottom:0.4rem">¿Qué fue lo que más te sorprendió aprender sobre los microorganismos?</p>
+      <textarea class="bio-text" rows="2" placeholder="Tu reflexión personal…"></textarea>
+    </div>
+    <div>
+      <p style="font-size:0.875rem;font-weight:500;margin-bottom:0.4rem">¿Qué concepto aún te genera dudas o quisieras profundizar más?</p>
+      <textarea class="bio-text" rows="2" placeholder="Escribe aquí tus dudas…"></textarea>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="guia-footer">
+    <button class="btn-print" onclick="window.print()">⬇ Guardar / Imprimir guía</button>
+    <p class="footer-hint">Una vez completada, imprime o guarda como PDF para entregar al profesor</p>
+  </div>
+
+</div>
+
+<script>
+const CORRECTAS = {q1:'c', q2:'b', q3:'c'};
+
+function verificar(){
+  let correctas = 0;
+  const total = Object.keys(CORRECTAS).length;
+  
+  Object.entries(CORRECTAS).forEach(([nombre, resp])=>{
+    const seleccionada = document.querySelector(`input[name="${nombre}"]:checked`);
+    document.querySelectorAll(`input[name="${nombre}"]`).forEach(r=>{
+      const opcion = r.closest('.opcion');
+      opcion.classList.remove('correcta','incorrecta');
+      if(r.value === resp) opcion.classList.add('correcta');
+      else if(seleccionada && r === seleccionada && r.value !== resp) opcion.classList.add('incorrecta');
+    });
+    if(seleccionada && seleccionada.value === resp) correctas++;
+  });
+
+  const res = document.getElementById('resultado');
+  res.style.display = 'block';
+  if(correctas === total){
+    res.className = 'resultado exito';
+    res.innerHTML = '✓ ¡Excelente! Obtuviste '+correctas+' de '+total+' puntos. Dominas el OA 4.';
+  } else {
+    res.className = 'resultado parcial';
+    res.innerHTML = 'Obtuviste '+correctas+' de '+total+' puntos. Revisa las respuestas marcadas en rojo e intenta nuevamente.';
+  }
+}
+</script>
