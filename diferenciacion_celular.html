@@ -1,0 +1,623 @@
+<title>De Célula Madre a Tejido</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#070b18;--bg2:#0c1328;--panel:#10182f;--panel2:#172246;--line:#253359;
+  --ink:#eef1fb;--muted:#9ba6cc;--tc:#ff5d73;
+  --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px}
+.app{max-width:1300px;margin:0 auto;padding-block:22px 40px;display:grid;gap:16px}
+.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between}
+.brand{display:grid;gap:6px;max-width:620px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,48px);line-height:1.02;letter-spacing:-.025em;text-wrap:balance}
+h1 em{font-style:normal;background:linear-gradient(90deg,#ff5d73,#ffd166 35%,#b78cff 65%,#3ddc97);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{color:var(--muted);max-width:60ch}
+.types{display:flex;flex-wrap:wrap;gap:8px}
+.type-btn{--c:#fff;display:flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font:inherit;text-align:left;line-height:1.15}
+.type-btn .dot{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c);flex:none}
+.type-btn b{font-weight:700;display:block}
+.type-btn small{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.type-btn[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,var(--panel))}
+.type-btn:hover{border-color:var(--c)}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.step{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:14px;cursor:pointer;text-align:left;line-height:1.2}
+.step .n{font-family:var(--mono);font-size:12px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.step.done .n{border-color:var(--tc);color:var(--tc)}
+.step.on{border-color:var(--tc);color:var(--ink);background:color-mix(in srgb,var(--tc) 12%,var(--panel))}
+.step.on .n{background:var(--tc);border-color:var(--tc);color:#0a0f1f;font-weight:600}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px;align-items:start}
+.stage{background:var(--bg2);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+canvas{display:block;width:100%;max-width:100%;aspect-ratio:16/10;height:auto;touch-action:manipulation}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.toolbar .grow{flex:1}
+.btn{font:inherit;font-size:14px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;line-height:1.2}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--tc);border-color:var(--tc);color:#0a0f1f;font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[aria-pressed="true"]{border-color:var(--tc);color:var(--tc)}
+.speed{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-family:var(--mono)}
+.speed input{accent-color:var(--tc);width:110px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--tc);outline-offset:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:16px;align-content:start}
+.panel .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tc)}
+.panel h2{font-family:var(--display);font-weight:800;font-size:26px;line-height:1.08;letter-spacing:-.015em;text-wrap:balance}
+.panel h3{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.panel p{color:#d5dbf2}
+.sect{display:grid;gap:8px}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.fact{font-family:var(--mono);font-size:12px;padding:4px 9px;border-radius:6px;background:var(--panel2);color:var(--ink)}
+.fact span{color:var(--muted)}
+ul.feat{list-style:none;display:grid;gap:7px}
+ul.feat li{display:grid;grid-template-columns:12px 1fr;gap:8px;align-items:baseline;color:#d5dbf2}
+ul.feat li::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--tc);transform:translateY(-1px) rotate(45deg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{--c:#fff;font:inherit;font-size:13px;color:var(--ink);border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 11px 5px 8px;display:inline-flex;gap:7px;align-items:center;cursor:pointer;line-height:1.2}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.chip:hover{border-color:var(--c)}
+.chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 22%,var(--panel2))}
+.detail{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:4px}
+.detail b{font-family:var(--display);font-size:17px;display:flex;gap:8px;align-items:center}
+.detail b i{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.detail p{font-size:14px}
+.q{border:1px dashed color-mix(in srgb,var(--tc) 70%,transparent);border-radius:12px;padding:12px 14px;display:grid;gap:4px}
+.q p{font-size:14px}
+ol.phases{list-style:none;display:grid;gap:6px;counter-reset:ph}
+ol.phases li{counter-increment:ph;display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;color:var(--muted);font-size:14px}
+ol.phases li::before{content:counter(ph);font-family:var(--mono);font-size:12px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center}
+ol.phases li.on{color:var(--ink)}
+ol.phases li.on::before{background:var(--tc);border-color:var(--tc);color:#0a0f1f}
+ol.phases li.past::before{border-color:var(--tc);color:var(--tc)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.note{font-size:13px;color:var(--muted)}
+footer{color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+@media (max-width:1020px){.main{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){
+  .step{flex-direction:column;align-items:flex-start;gap:6px;padding:8px;font-size:12px}
+  .type-btn{padding:6px 12px 6px 8px}
+  .panel{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Biología · Simulación interactiva</span>
+      <h1>De célula madre <em>a tejido</em></h1>
+      <p>Elige un tipo celular, mira cómo se diferencia a partir de una célula madre, explora sus organelos y observa cómo muchas células juntas forman un tejido que funciona.</p>
+    </div>
+    <div class="types" id="types" aria-label="Tipo celular"></div>
+  </header>
+
+  <nav class="steps" id="steps" aria-label="Etapas de la simulación"></nav>
+
+  <main class="main">
+    <section class="stage">
+      <canvas id="cv" width="960" height="600" aria-label="Simulación animada de diferenciación celular"></canvas>
+      <div class="toolbar">
+        <button class="btn" id="pause" type="button">⏸ Pausa</button>
+        <button class="btn" id="labels" type="button" aria-pressed="true">Etiquetas</button>
+        <label class="speed" for="speed">Velocidad <input id="speed" type="range" min="0.25" max="2" step="0.25" value="1"><output id="speedOut">1×</output></label>
+        <span class="grow"></span>
+        <button class="btn primary" id="next" type="button">Diferenciar ▶</button>
+      </div>
+    </section>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+
+  <footer>
+    <span>Esquemas no a escala. Colores inspirados en la microscopía de fluorescencia.</span>
+    <span>Toca las etiquetas o los organelos del panel para destacarlos.</span>
+  </footer>
+</div>
+
+<script>
+(()=>{
+const TAU=Math.PI*2;
+const lerp=(a,b,t)=>a+(b-a)*t, clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const easeOut=t=>1-Math.pow(1-t,3);
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hash=i=>{const s=Math.sin(i*12.9898+78.233)*43758.5453;return s-Math.floor(s)};
+function rgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
+const FONT='"Atkinson Hyperlegible", system-ui, sans-serif', MONO='"JetBrains Mono", ui-monospace, monospace', DISP='"Bricolage Grotesque", system-ui, sans-serif';
+
+/* ---------- Contenido ---------- */
+const ORGC={membrana:'#e9ecff',nucleo:'#6f95ff',mitocondria:'#ff9f43',rer:'#4fd1ff',rel:'#7ef0c8',golgi:'#ffcf5c',lisosoma:'#e06bff',ribosoma:'#a6d8ff',peroxisoma:'#a3ff6b',glucogeno:'#ff7eb6',lipido:'#ffe066',miofibrilla:'#ff4d6d',rs:'#61e3ff',tubulo:'#8ab4ff',dendrita:'#ffd166',axon:'#ffc14d',mielina:'#f1ecff',terminal:'#ffb347',canaliculo:'#7bd88f',microvellosidad:'#3ddc97',union:'#ff6bcb'};
+
+const TYPES={
+ miocito:{name:'Miocito',full:'Miocito (fibra muscular esquelética)',color:'#ff5d73',gene:'MyoD',precursor:'Mioblasto',
+  morph:'Muchos mioblastos se fusionan en una fibra larga con varios núcleos.',
+  desc:'Célula larga y cilíndrica que se forma cuando muchos mioblastos se fusionan. Por eso tiene varios núcleos, ubicados en la periferia. Su citoplasma está repleto de miofibrillas que se acortan para producir movimiento.',
+  feat:['Varios núcleos pegados a la membrana','Miofibrillas con bandas claras y oscuras (estriada)','Enorme cantidad de mitocondrias: gasta mucho ATP','Retículo sarcoplasmático que guarda calcio (Ca²⁺)'],
+  facts:[['Largo','hasta 30 cm'],['Diámetro','10–100 µm'],['Núcleos','cientos']],
+  orgs:{membrana:['Sarcolema','Membrana plasmática del miocito. Recibe la señal de la neurona motora y la propaga por toda la fibra.'],
+   nucleo:['Núcleos periféricos','Hay muchos porque la fibra nace de la fusión de mioblastos. Dirigen la fabricación de actina y miosina.'],
+   miofibrilla:['Miofibrillas (sarcómeros)','Haces de actina y miosina ordenados en sarcómeros. Al deslizarse unos filamentos sobre otros, la fibra se acorta.'],
+   mitocondria:['Mitocondrias','Se ubican entre las miofibrillas y producen el ATP que la miosina consume en cada contracción.'],
+   rs:['Retículo sarcoplasmático','Retículo endoplasmático liso especializado. Guarda Ca²⁺ y lo libera cuando llega el impulso nervioso: esa es la señal para contraerse.'],
+   tubulo:['Túbulos T','Invaginaciones de la membrana que llevan el impulso eléctrico hasta el interior de la fibra.']},
+  tissue:'Tejido muscular esquelético',
+  tissueDesc:'Cientos de fibras se agrupan en haces, rodeadas de tejido conectivo y capilares que traen O₂ y glucosa. Una sola neurona motora ordena a muchas fibras contraerse al mismo tiempo, y los tendones transmiten la fuerza al hueso.',
+  team:['La neurona motora libera acetilcolina en la placa motora.','El impulso recorre la membrana y el retículo libera Ca²⁺.','Actina y miosina se deslizan usando ATP: todas las fibras se acortan juntas.'],
+  action:'⚡ Enviar impulso nervioso',
+  q:'¿Por qué crees que un miocito necesita tantas mitocondrias? ¿Qué pasaría durante el ejercicio si tuviera pocas?'},
+ neurona:{name:'Neurona',full:'Neurona (célula nerviosa)',color:'#ffd166',gene:'NeuroD',precursor:'Neuroblasto',
+  morph:'El neuroblasto deja de dividirse y extiende dendritas y un axón largo.',
+  desc:'Célula especializada en recibir, procesar y transmitir información mediante impulsos eléctricos y mensajeros químicos (neurotransmisores). Una vez diferenciada casi no se divide, por eso debe durar toda la vida.',
+  feat:['Dendritas ramificadas que reciben señales','Soma con núcleo grande y nucléolo notorio','Axón largo, aislado por vaina de mielina','Terminales llenos de vesículas con neurotransmisores'],
+  facts:[['Axón','hasta 1 m'],['Impulso','hasta 120 m/s'],['Sinapsis','~7.000 c/u']],
+  orgs:{membrana:['Membrana plasmática','Tiene canales de Na⁺ y K⁺ que generan el impulso eléctrico (potencial de acción).'],
+   nucleo:['Núcleo y nucléolo','Núcleo grande con nucléolo muy visible: la neurona fabrica proteínas sin parar.'],
+   rer:['Cuerpos de Nissl (RER)','Acumulaciones de retículo endoplasmático rugoso. Producen proteínas para el mantenimiento del axón y enzimas de neurotransmisores.'],
+   golgi:['Aparato de Golgi','Empaqueta neurotransmisores y proteínas en vesículas que viajan por el axón.'],
+   mitocondria:['Mitocondrias','Aportan el ATP que mantiene las bombas de iones y la liberación de neurotransmisores.'],
+   dendrita:['Dendritas','Prolongaciones ramificadas que reciben señales de otras neuronas.'],
+   axon:['Axón','Prolongación única que conduce el impulso desde el soma hasta los terminales.'],
+   mielina:['Vaina de mielina','Capas de membrana que aíslan el axón. El impulso salta de nodo en nodo (nodos de Ranvier) y viaja mucho más rápido.'],
+   terminal:['Terminales axónicos','Botones con vesículas sinápticas. Al llegar el impulso, liberan neurotransmisores hacia la siguiente célula.']},
+  tissue:'Tejido nervioso',
+  tissueDesc:'Las neuronas se conectan en redes mediante sinapsis. El impulso viaja de las dendritas al soma, recorre el axón y pasa a la siguiente neurona gracias a los neurotransmisores. Las células gliales (como los astrocitos) las nutren y protegen.',
+  team:['Una neurona recibe un estímulo y dispara un impulso.','El impulso recorre el axón hasta la sinapsis.','Los neurotransmisores activan a las neuronas siguientes: la señal se reparte por la red.'],
+  action:'⚡ Estimular neurona',tip:'También puedes tocar cualquier neurona para activarla.',
+  q:'¿Qué pasaría con la velocidad del impulso si se daña la vaina de mielina? Investiga qué ocurre en la esclerosis múltiple.'},
+ hepatocito:{name:'Hepatocito',full:'Hepatocito (célula del hígado)',color:'#b78cff',gene:'HNF4α',precursor:'Hepatoblasto',
+  morph:'El hepatoblasto se vuelve poligonal y llena su citoplasma de retículo, mitocondrias y glucógeno.',
+  desc:'Principal célula del hígado. Funciona como una fábrica química: guarda glucosa como glucógeno, fabrica proteínas de la sangre y bilis, y elimina sustancias tóxicas como el alcohol y algunos medicamentos.',
+  feat:['Forma poligonal, a menudo con 2 núcleos','Mucho RER (proteínas) y REL (desintoxicación)','Gránulos de glucógeno: reserva de energía','Canalículos biliares entre células vecinas'],
+  facts:[['Tamaño','20–30 µm'],['Vida','~5 meses'],['Funciones','más de 500']],
+  orgs:{membrana:['Membrana plasmática','Tiene microvellosidades hacia los sinusoides para intercambiar sustancias con la sangre.'],
+   nucleo:['Núcleos','Muchos hepatocitos tienen dos núcleos. El hígado puede regenerarse porque estas células vuelven a dividirse.'],
+   rer:['Retículo endoplasmático rugoso','Fabrica proteínas que van a la sangre, como la albúmina y los factores de coagulación.'],
+   rel:['Retículo endoplasmático liso','Desintoxica fármacos y alcohol, y fabrica lípidos y colesterol.'],
+   glucogeno:['Glucógeno','Gránulos rosados de reserva: la glucosa se guarda aquí después de comer y se libera en ayuno.'],
+   mitocondria:['Mitocondrias','Hasta 1.000 por célula: aportan la energía para todo su trabajo químico.'],
+   peroxisoma:['Peroxisomas','Degradan ácidos grasos y el peróxido de hidrógeno (H₂O₂), una sustancia tóxica.'],
+   golgi:['Aparato de Golgi','Termina y empaca proteínas y lipoproteínas antes de enviarlas a la sangre.'],
+   lisosoma:['Lisosomas','Digieren organelos viejos y moléculas que ya no sirven.'],
+   canaliculo:['Canalículo biliar','Canal diminuto entre dos hepatocitos por donde sale la bilis hacia el intestino.']},
+  tissue:'Tejido hepático (lobulillo)',
+  tissueDesc:'Los hepatocitos forman cordones que irradian hacia una vena central. La sangre corre por los sinusoides entre los cordones y cada hepatocito intercambia sustancias con ella. La bilis viaja en sentido contrario, hacia los conductos biliares.',
+  team:['La sangre llega desde el intestino por la vena porta.','Los hepatocitos toman o entregan glucosa según lo que el cuerpo necesite.','La bilis se junta en canalículos y sale del lobulillo.'],
+  tip:'Cambia entre "después de comer" y "en ayuno" y observa el glucógeno.',
+  q:'¿Por qué la glucosa en la sangre no baja a cero entre una comida y otra?'},
+ enterocito:{name:'Enterocito',full:'Enterocito (célula del intestino)',color:'#3ddc97',gene:'CDX2',precursor:'Célula de la cripta',
+  morph:'La célula se alarga, ubica el núcleo abajo y forma microvellosidades arriba.',
+  desc:'Célula que reviste el intestino delgado. Es alta y polarizada: la cara superior mira hacia el alimento y tiene miles de microvellosidades que aumentan la superficie para absorber nutrientes.',
+  feat:['Forma de columna alta, núcleo en la base','Borde en cepillo: miles de microvellosidades','Uniones estrechas que sellan el espacio entre células','Muchas mitocondrias para el transporte activo'],
+  facts:[['Alto','20–30 µm'],['Vida','3–5 días'],['Microvellosidades','~3.000']],
+  orgs:{membrana:['Membrana plasmática','La cara superior absorbe y la inferior entrega los nutrientes a la sangre: cada lado tiene transportadores distintos.'],
+   microvellosidad:['Microvellosidades','Borde en cepillo. Multiplican la superficie de absorción y tienen enzimas que terminan la digestión.'],
+   union:['Uniones estrechas','Sellan el espacio entre enterocitos para que nada pase sin control.'],
+   mitocondria:['Mitocondrias','Dan ATP para bombear glucosa y aminoácidos hacia dentro de la célula.'],
+   nucleo:['Núcleo basal','Ubicado en la parte inferior; deja la parte superior libre para absorber y procesar.'],
+   golgi:['Aparato de Golgi','Empaca las grasas absorbidas en quilomicrones que salen hacia la linfa.'],
+   rel:['Retículo endoplasmático liso','Vuelve a armar las grasas (triglicéridos) que se absorbieron.'],
+   rer:['Retículo endoplasmático rugoso','Fabrica las enzimas y transportadores de la membrana.'],
+   lipido:['Gotas de lípidos','Grasas absorbidas que esperan ser empacadas y enviadas.'],
+   lisosoma:['Lisosomas','Reciclan componentes de la célula.']},
+  tissue:'Epitelio intestinal (vellosidades)',
+  tissueDesc:'Los enterocitos forman una sola capa que cubre las vellosidades. Junto a las células caliciformes, que producen moco, absorben los nutrientes: azúcares y aminoácidos pasan a los capilares sanguíneos y las grasas al vaso linfático (quilífero). En las criptas, células madre producen enterocitos nuevos cada pocos días.',
+  team:['Los alimentos digeridos llegan a las vellosidades.','Los enterocitos absorben glucosa, aminoácidos y grasas.','Los nutrientes pasan a la sangre y a la linfa para llegar a todo el cuerpo.'],
+  action:'🍽️ Agregar alimento',
+  q:'¿Qué ventaja tiene que el intestino tenga vellosidades y además microvellosidades? Piensa en la superficie.'}
+};
+const ORDER=['miocito','neurona','hepatocito','enterocito'];
+const STEM_COLOR='#9aa7ff';
+
+/* ---------- Estado ---------- */
+const state={type:'miocito',stage:'madre',p:0,t:0,a:0,paused:false,labels:true,speed:1,hl:null,
+ lastStim:-10,fed:true,G:0.35,food:[],spawnT:0,nfire:[-9,-9,-9,-9,-9,-9],pulses:[],pending:[],boxes:[]};
+try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)state.speed=0.5}catch(e){}
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=960,H=600;let SC=1;
+function resize(){const r=cv.getBoundingClientRect();const dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(300,r.width);cv.width=Math.round(w*dpr);cv.height=Math.round(w*H/W*dpr);SC=cv.width/W}
+window.addEventListener('resize',resize);
+
+/* ---------- Utilidades de dibujo ---------- */
+function rr(x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+let HL=null;
+function setA(k,al){const on=!HL||HL===k;ctx.globalAlpha=al*(on?1:0.15);if(HL&&HL===k){ctx.shadowColor=ORGC[k];ctx.shadowBlur=16}else ctx.shadowBlur=0}
+function circle(x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,TAU)}
+function tag(text,lx,ly,ax,ay,col,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.shadowBlur=0;ctx.font='700 12.5px '+FONT;const w=ctx.measureText(text).width+20,h=24;
+ if(ax!=null){ctx.strokeStyle='rgba(225,232,255,.55)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(lx,ly);ctx.stroke();ctx.fillStyle=col;circle(ax,ay,3);ctx.fill();ctx.strokeStyle='#fff';ctx.stroke()}
+ rr(lx-w/2,ly-h/2,w,h,12);ctx.fillStyle='rgba(7,11,24,.88)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.stroke();
+ ctx.fillStyle='#eef1fb';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,lx,ly+1);ctx.restore();return[lx-w/2,ly-h/2,w,h]}
+function text(s,x,y,o={}){ctx.save();ctx.globalAlpha=o.a??1;ctx.shadowBlur=0;ctx.font=o.font||('600 13px '+FONT);ctx.fillStyle=o.c||'#eef1fb';ctx.textAlign=o.align||'left';ctx.textBaseline=o.base||'middle';ctx.fillText(s,x,y);ctx.restore()}
+
+/* ---------- Organelos ---------- */
+function mito(x,y,l,w,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);rr(-l/2,-w/2,l,w,w/2);ctx.fillStyle=ORGC.mitocondria;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#8a3d00';ctx.lineWidth=1;ctx.stroke();
+ ctx.strokeStyle='#ffe0bf';ctx.lineWidth=1;ctx.beginPath();const n=5;for(let i=0;i<=n;i++){const xx=-l/2+w*.45+i*(l-w*.9)/n;ctx.lineTo(xx,(i%2?1:-1)*w*.28)}ctx.stroke();ctx.restore()}
+function rer(x,y,s,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(s,s);ctx.strokeStyle=ORGC.rer;ctx.lineWidth=3.6;ctx.lineCap='round';
+ for(let i=0;i<4;i++){const yy=i*7-10;ctx.beginPath();ctx.moveTo(-26,yy);ctx.quadraticCurveTo(0,yy-8,26,yy);ctx.stroke()}
+ ctx.shadowBlur=0;ctx.fillStyle='#e3f6ff';for(let i=0;i<4;i++){const yy=i*7-10;for(let j=0;j<9;j++){const xx=-24+j*6;circle(xx,yy-4*(1-(xx/26)**2)-3,1.2);ctx.fill()}}ctx.restore()}
+function rel(x,y,s,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(s,s);ctx.strokeStyle=ORGC.rel;ctx.lineWidth=3.2;ctx.lineCap='round';
+ for(let j=0;j<3;j++){ctx.beginPath();for(let xx=-24;xx<=24;xx+=3){const yy=j*8-8+3*Math.sin(xx*.25+j*1.7);xx===-24?ctx.moveTo(xx,yy):ctx.lineTo(xx,yy)}ctx.stroke()}
+ ctx.fillStyle=ORGC.rel;circle(26,-6,3);ctx.fill();circle(-25,9,3);ctx.fill();ctx.restore()}
+function golgi(x,y,s,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(s,s);ctx.lineCap='round';const cols=['#ffe08a','#ffcf5c','#ffb84d','#ff9f5a'];
+ for(let i=0;i<4;i++){ctx.strokeStyle=cols[i];ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,30,14+i*6.5,-Math.PI*.78,-Math.PI*.22);ctx.stroke()}
+ ctx.fillStyle='#ffcf5c';[[-24,-8,3.2],[25,-10,3.5],[-2,-14,2.8],[18,-20,2.5]].forEach(v=>{circle(v[0],v[1]-6,v[2]);ctx.fill()});ctx.restore()}
+function lyso(x,y,r){const g=ctx.createRadialGradient(x-r*.3,y-r*.3,1,x,y,r);g.addColorStop(0,'#f6c2ff');g.addColorStop(1,ORGC.lisosoma);ctx.fillStyle=g;circle(x,y,r);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#7b1f99';for(let i=0;i<3;i++){circle(x+Math.cos(i*2.1)*r*.45,y+Math.sin(i*2.1)*r*.45,1);ctx.fill()}}
+function perox(x,y,r){ctx.fillStyle=ORGC.peroxisoma;circle(x,y,r);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#2e6b12';ctx.fillRect(x-r*.35,y-r*.35,r*.7,r*.7)}
+function glyco(x,y,s){ctx.fillStyle=ORGC.glucogeno;for(let i=0;i<7;i++){const a=i/6*TAU,d=i===6?0:5*s;circle(x+Math.cos(a)*d,y+Math.sin(a)*d,2.3*s);ctx.fill()}}
+function lipid(x,y,r){const g=ctx.createRadialGradient(x-r*.35,y-r*.35,1,x,y,r);g.addColorStop(0,'#fffbe0');g.addColorStop(1,ORGC.lipido);ctx.fillStyle=g;circle(x,y,r);ctx.fill()}
+function drawItem(o,al,k,t){const x=o.x*k,y=o.y*k;setA(o.k,al);switch(o.k){
+ case'mitocondria':mito(x,y,o.len||18,o.w||8,o.rot);break;
+ case'rer':rer(x,y,o.s||.8,o.rot);break;
+ case'rel':rel(x,y,o.s||.8,o.rot);break;
+ case'golgi':golgi(x,y,o.s||.8,o.rot);break;
+ case'lisosoma':lyso(x,y,o.r||6);break;
+ case'peroxisoma':perox(x,y,o.r||5);break;
+ case'glucogeno':glyco(x,y,1+.12*Math.sin(t*2.2+o.x*.1));break;
+ case'lipido':lipid(x,y,o.r||7);break;
+ case'ribosoma':ctx.fillStyle=ORGC.ribosoma;circle(x,y,1.6);ctx.fill();break}}
+function nucleus(n,al,seed){setA('nucleo',al);ctx.save();ctx.translate(n.x,n.y);const R=Math.max(n.rx,n.ry);
+ const g=ctx.createRadialGradient(-n.rx*.3,-n.ry*.3,1,0,0,R);g.addColorStop(0,'#b3c8ff');g.addColorStop(1,'#3450c4');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,n.rx,n.ry,0,0,TAU);ctx.fill();
+ ctx.shadowBlur=0;ctx.lineWidth=2;ctx.strokeStyle='#cfdcff';ctx.stroke();
+ ctx.fillStyle='#1b2a78';const np=Math.max(6,Math.round((n.rx+n.ry)/5));for(let i=0;i<np;i++){const a=i/np*TAU;circle(Math.cos(a)*n.rx,Math.sin(a)*n.ry,1.4);ctx.fill()}
+ ctx.fillStyle='rgba(26,34,118,.55)';const cn=Math.round(8+(n.rx*n.ry)/90);for(let i=0;i<cn;i++){const a=hash(i+seed)*TAU,d=Math.sqrt(hash(i*3.7+seed))*.8;circle(Math.cos(a)*n.rx*d,Math.sin(a)*n.ry*d,1+hash(i+seed*2)*2);ctx.fill()}
+ if(n.nuc){const r=Math.min(n.rx,n.ry)*n.nuc;const g2=ctx.createRadialGradient(n.rx*.2,-n.ry*.15,0,n.rx*.2,-n.ry*.15,r);g2.addColorStop(0,'#c49bff');g2.addColorStop(1,'#5a2bb0');ctx.fillStyle=g2;circle(n.rx*.2,-n.ry*.15,r);ctx.fill()}
+ ctx.restore()}
+
+/* ---------- Formas ---------- */
+function superR(a,hw,hh,n){const c=Math.abs(Math.cos(a))/hw,s=Math.abs(Math.sin(a))/hh;return Math.pow(Math.pow(c,n)+Math.pow(s,n),-1/n)}
+function hexR(a,ap){const x=((a%(Math.PI/3))+Math.PI/3)%(Math.PI/3)-Math.PI/6;return ap/Math.cos(x)}
+const somaR=a=>85*(1+.18*Math.cos(3*a));
+function shapeR(type,a){switch(type){case'miocito':return superR(a,380,85,10);case'enterocito':return superR(a,90,200,6);case'hepatocito':return hexR(a,172);case'neurona':return somaR(a);default:return 110}}
+function outline(type,e,t,wob){ctx.beginPath();const N=150;for(let i=0;i<=N;i++){const a=i/N*TAU;let r=lerp(110,shapeR(type,a),e);r*=1+wob*(Math.sin(a*5+t*1.3)+Math.sin(a*3-t*.9))*.5;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath()}
+
+/* ---------- Organelos por tipo (posiciones fijas) ---------- */
+function scatter(R,L,n,k,rad,inside,mk,bw=400,bh=220){let tries=0,c=0;while(c<n&&tries<n*400){tries++;const x=(R()*2-1)*bw,y=(R()*2-1)*bh;if(!inside(x,y,rad))continue;if(L.some(o=>o.rad&&Math.hypot(o.x-x,o.y-y)<o.rad+rad))continue;L.push(Object.assign({k,x,y,rad,rot:R()*TAU},mk?mk(R):{}));c++}}
+const STEM=(()=>{const R=rng(7),L=[{k:'_n',x:0,y:0,rad:58}];const ins=(x,y,r)=>Math.hypot(x,y)+r<100;
+ scatter(R,L,2,'rer',17,ins,()=>({s:.6}),110,110);scatter(R,L,1,'golgi',16,ins,()=>({s:.6}),110,110);scatter(R,L,6,'mitocondria',10,ins,()=>({len:16,w:7}),110,110);scatter(R,L,2,'lisosoma',6,ins,()=>({r:6}),110,110);scatter(R,L,70,'ribosoma',2.4,ins,null,110,110);return L.filter(o=>o.k!=='_n')})();
+const NUC={madre:{x:0,y:0,rx:56,ry:54,nuc:.3},
+ miocito:[{x:-130,y:-74},{x:40,y:-74},{x:210,y:-74},{x:-290,y:-74},{x:-210,y:74},{x:-40,y:74},{x:130,y:74},{x:300,y:74}].map(n=>({...n,rx:34,ry:9,nuc:0})),
+ neurona:[{x:-4,y:0,rx:34,ry:32,nuc:.36}],
+ hepatocito:[{x:-50,y:-20,rx:38,ry:37,nuc:.24},{x:55,y:28,rx:36,ry:35,nuc:.22}],
+ enterocito:[{x:0,y:100,rx:36,ry:58,nuc:.22}]};
+const LISTS={
+ miocito:(()=>{const L=[];[-40.5,-13.5,13.5,40.5].forEach((g,gi)=>{for(let k=0;k<17;k++){if((k*7+gi*3)%5===0)continue;L.push({k:'mitocondria',x:-374+k*44+22,y:g,len:16,w:6,rot:0})}});return L})(),
+ neurona:(()=>{const R=rng(3),L=[{k:'rer',x:-44,y:-40,s:.42,rot:-.8,rad:13},{k:'mitocondria',x:36,y:44,len:15,w:7,rot:.6,rad:9},{k:'golgi',x:34,y:-40,s:.55,rot:.7,rad:14},{k:'_n',x:-4,y:0,rad:37}];const ins=(x,y,r)=>Math.hypot(x,y)+r<64;
+  scatter(R,L,7,'rer',13,ins,()=>({s:.42}),70,70);scatter(R,L,5,'mitocondria',9,ins,()=>({len:15,w:7}),70,70);scatter(R,L,2,'lisosoma',6,ins,()=>({r:5}),70,70);scatter(R,L,30,'ribosoma',2,ins,null,70,70);return L.filter(o=>o.k!=='_n')})(),
+ hepatocito:(()=>{const R=rng(21),L=[{k:'_n',x:-50,y:-20,rad:42},{k:'_n',x:55,y:28,rad:40}];const ins=(x,y,r)=>Math.hypot(x,y)+r<hexR(Math.atan2(y,x),172)*.93;
+  scatter(R,L,2,'golgi',18,ins,()=>({s:.8}),200,180);scatter(R,L,8,'rer',18,ins,()=>({s:.8}),200,180);scatter(R,L,6,'rel',16,ins,()=>({s:.75}),200,180);scatter(R,L,26,'mitocondria',10,ins,()=>({len:18,w:8}),200,180);scatter(R,L,16,'glucogeno',8,ins,null,200,180);scatter(R,L,8,'peroxisoma',6,ins,()=>({r:5}),200,180);scatter(R,L,4,'lisosoma',7,ins,()=>({r:6.5}),200,180);scatter(R,L,3,'lipido',8,ins,()=>({r:7}),200,180);scatter(R,L,50,'ribosoma',2.5,ins,null,200,180);return L.filter(o=>o.k!=='_n')})(),
+ enterocito:(()=>{const R=rng(33),L=[{k:'_n',x:0,y:100,rad:60},{k:'golgi',x:0,y:18,s:1,rot:0,rad:26}];const ins=(x,y,r)=>Math.abs(x)+r<80&&y-r>-180&&y+r<188;
+  scatter(R,L,4,'rel',14,(x,y,r)=>ins(x,y,r)&&y<-110,()=>({s:.6}),90,200);scatter(R,L,5,'lipido',8,(x,y,r)=>ins(x,y,r)&&y>-110&&y<-20,()=>({r:6.5}),90,200);
+  scatter(R,L,3,'rer',12,(x,y,r)=>ins(x,y,r)&&Math.abs(x)>40&&y>50&&y<165,()=>({s:.45,rot:Math.PI/2}),90,200);
+  scatter(R,L,16,'mitocondria',9,ins,R=>({len:17,w:7,rot:Math.PI/2+(R()-.5)*.8}),90,200);scatter(R,L,3,'lisosoma',6,ins,()=>({r:5.5}),90,200);scatter(R,L,30,'ribosoma',2.2,ins,null,90,200);return L.filter(o=>o.k!=='_n')})()};
+function near(L,k,x,y){let b=null,bd=1e9;for(const o of L)if(o.k===k){const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;b=o}}return b?[b.x,b.y]:[x,y]}
+
+/* Dendritas */
+const DEND=(()=>{const R=rng(5),segs=[],first=[];const starts=[1.5,2.1,2.7,3.2,3.7,4.2,4.8];
+ function grow(x,y,a,len,w,depth,d0,si){const x2=x+Math.cos(a)*len,y2=y+Math.sin(a)*len;const s={x1:x,y1:y,x2,y2,w,d0,d1:d0+len};segs.push(s);if(!first[si])first[si]=s;
+  if(depth>0)for(let i=0;i<2;i++)grow(x2,y2,a+(i?1:-1)*(.32+R()*.35),len*(.62+R()*.18),Math.max(1.6,w*.6),depth-1,d0+len,si)}
+ starts.forEach((a,si)=>{const r0=somaR(a)*.9;grow(Math.cos(a)*r0,Math.sin(a)*r0,a+(R()-.5)*.3,58+R()*20,9,2,0,si)});
+ return{segs,first,max:Math.max(...segs.map(s=>s.d1))}})();
+const MYEL=[[120,184],[196,260],[272,336],[348,412],[424,488]],NODES=[190,266,342,418,494];
+const KNOBS=[[600,-60],[620,0],[600,60]];
+
+const LBL={
+ miocito:[{k:'nucleo',a:[-130,-74],l:[250,150]},{k:'miofibrilla',a:[-60,-27],l:[480,118]},{k:'rs',a:[88,-37.5],l:[700,150]},{k:'membrana',a:[330,-82],l:[862,196]},{k:'mitocondria',a:[-176,13.5],l:[220,470]},{k:'tubulo',a:[33,40.5],l:[520,482]}],
+ neurona:[{k:'dendrita',a:[(DEND.first[3].x1+DEND.first[3].x2)/2,(DEND.first[3].y1+DEND.first[3].y2)/2],l:[110,95]},{k:'rer',a:[-44,-40],l:[290,70]},{k:'golgi',a:[34,-40],l:[450,108]},{k:'mielina',a:[228,-11],l:[610,120]},{k:'terminal',a:[620,0],l:[850,150]},
+  {k:'nucleo',a:[-4,0],l:[150,515]},{k:'membrana',a:[35,60],l:[320,540]},{k:'mitocondria',a:[36,44],l:[480,505]},{k:'axon',a:[104,0],l:[650,470]}],
+ hepatocito:[{k:'nucleo',a:[-50,-20],l:[140,120]},{k:'rer',a:near(LISTS.hepatocito,'rer',-100,-60),l:[140,210]},{k:'glucogeno',a:near(LISTS.hepatocito,'glucogeno',-120,10),l:[140,300]},{k:'lisosoma',a:near(LISTS.hepatocito,'lisosoma',-100,70),l:[140,390]},{k:'membrana',a:[-149,86],l:[140,480]},
+  {k:'mitocondria',a:near(LISTS.hepatocito,'mitocondria',100,-90),l:[820,120]},{k:'rel',a:near(LISTS.hepatocito,'rel',110,-30),l:[820,210]},{k:'peroxisoma',a:near(LISTS.hepatocito,'peroxisoma',120,20),l:[820,300]},{k:'golgi',a:near(LISTS.hepatocito,'golgi',80,80),l:[820,390]},{k:'canaliculo',a:[0,166],l:[820,480]}],
+ enterocito:[{k:'microvellosidad',a:[-40,-222],l:[250,70]},{k:'union',a:[-80,-182],l:[250,150]},{k:'rel',a:near(LISTS.enterocito,'rel',-40,-140),l:[250,230]},{k:'lipido',a:near(LISTS.enterocito,'lipido',-40,-60),l:[250,310]},{k:'nucleo',a:[0,100],l:[250,430]},
+  {k:'mitocondria',a:near(LISTS.enterocito,'mitocondria',50,-150),l:[715,140]},{k:'golgi',a:[0,14],l:[715,250]},{k:'rer',a:near(LISTS.enterocito,'rer',55,100),l:[715,340]},{k:'lisosoma',a:near(LISTS.enterocito,'lisosoma',40,0),l:[715,420]},{k:'membrana',a:[87,150],l:[715,510]}]};
+
+/* ---------- Estructuras especiales ---------- */
+function myofibrils(al){const rows=[-54,-27,0,27,54],P=44,X0=-374;setA('miofibrilla',al);
+ rows.forEach(y=>{ctx.fillStyle='rgba(255,196,210,.5)';ctx.fillRect(-382,y-9,764,18);
+  for(let k=0;k<18;k++){const x=X0+k*P;ctx.fillStyle='#c81e45';ctx.fillRect(x+11,y-9,22,18);ctx.fillStyle='#ee5b7c';ctx.fillRect(x+19,y-9,6,18);ctx.fillStyle='#8e0f2d';ctx.fillRect(x+21.5,y-9,1,18);ctx.fillStyle='#ffffff';ctx.fillRect(x-.8,y-10,1.6,20)}});
+ setA('rs',al);ctx.strokeStyle='rgba(97,227,255,.9)';ctx.lineWidth=1.4;rows.forEach(y=>ctx.strokeRect(-382,y-10.5,764,21));
+ setA('tubulo',al);ctx.fillStyle=ORGC.tubulo;[-40.5,-13.5,13.5,40.5,-67,67].forEach(g=>{for(let k=0;k<18;k++){const x=X0+k*P;circle(x+11,g,2.2);ctx.fill();circle(x+33,g,2.2);ctx.fill()}})}
+function neuronProcesses(e,t,o){const col=TYPES.neurona.color;ctx.lineCap='round';
+ setA('dendrita',1);ctx.strokeStyle=col;const L=e*DEND.max;
+ for(const s of DEND.segs){if(L<=s.d0)continue;const f=Math.min(1,(L-s.d0)/(s.d1-s.d0));ctx.lineWidth=s.w;ctx.beginPath();ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x1+(s.x2-s.x1)*f,s.y1+(s.y2-s.y1)*f);ctx.stroke()}
+ const ax1=lerp(80,540,e);setA('axon',1);ctx.strokeStyle=ORGC.axon;ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(70,0);ctx.lineTo(ax1,0);ctx.stroke();
+ const me=clamp((e-.3)/.5);if(me>0){setA('mielina',me);MYEL.forEach(([a,b])=>{if(a>=ax1)return;const bb=Math.min(b,ax1);rr(a,-11,bb-a,22,10);ctx.fillStyle='#f1ecff';ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#bba6ff';ctx.lineWidth=1.5;ctx.stroke();ctx.strokeStyle='rgba(150,120,230,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a+6,-5);ctx.lineTo(bb-6,-5);ctx.moveTo(a+6,5);ctx.lineTo(bb-6,5);ctx.stroke();if(HL==='mielina'){ctx.shadowBlur=16}})}
+ const te=clamp((e-.85)/.15);if(te>0){setA('terminal',te);ctx.strokeStyle=ORGC.axon;ctx.lineWidth=4;KNOBS.forEach(([x,y])=>{ctx.beginPath();ctx.moveTo(538,0);ctx.quadraticCurveTo(570,y*.2,x-8,y);ctx.stroke()});
+  KNOBS.forEach(([x,y])=>{ctx.fillStyle=ORGC.terminal;circle(x,y,12);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#fff3d6';for(let i=0;i<5;i++){circle(x+Math.cos(i*1.3)*5.5,y+Math.sin(i*1.3)*5.5,2);ctx.fill()}})}
+ if(o.anim&&e>=1){const ph=(t*.5)%1.3;ctx.globalAlpha=1;ctx.shadowBlur=0;
+  if(ph<=1){const s=lerp(70,560,ph);NODES.forEach(nx=>{const it=Math.exp(-(((s-nx)/28)**2));if(it>.02){ctx.fillStyle=`rgba(255,244,170,${it})`;circle(nx,0,7+9*it);ctx.fill()}});
+   const g=ctx.createRadialGradient(s,0,0,s,0,22);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(1,'rgba(255,220,90,0)');ctx.fillStyle=g;circle(s,0,22);ctx.fill()}
+  if(ph>.95&&ph<1.3){const q=(ph-.95)/.35;KNOBS.forEach(([x,y])=>{for(let i=0;i<6;i++){const a=(i-2.5)*.35;ctx.fillStyle=`rgba(255,235,160,${1-q})`;circle(x+14+q*30*Math.cos(a),y+q*30*Math.sin(a),2.4);ctx.fill()}})}}}
+function microvilli(e,t){const h=38*clamp((e-.5)/.5);if(h<1)return;setA('microvellosidad',1);const sc=lerp(110,200,e)/200;ctx.lineCap='round';
+ for(let i=0;i<17;i++){const x=-80+i*10;const yb=-200*Math.pow(1-Math.pow(Math.abs(x)/90,6),1/6)*sc+6;const sw=Math.sin(t*2+i*.7)*1.6*(h/38);
+  ctx.strokeStyle=ORGC.microvellosidad;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,yb);ctx.quadraticCurveTo(x,yb-h*.6,x+sw,yb-h);ctx.stroke();
+  ctx.strokeStyle='#d5ffec';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(x,yb-4);ctx.quadraticCurveTo(x,yb-h*.6,x+sw,yb-h+1);ctx.stroke();
+  ctx.fillStyle='rgba(180,255,220,.45)';circle(x+sw+(i%2?3:-3),yb-h-6,1.6);ctx.fill()}}
+function canaliculus(x,y,rot,al,t){setA('canaliculo',al);ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.fillStyle='rgba(40,110,60,.85)';ctx.beginPath();ctx.ellipse(0,0,36,11,0,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle=ORGC.canaliculo;ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#c9ffd4';for(let i=0;i<4;i++){const xx=((t*18+i*18)%72)-36;circle(xx,0,2.2);ctx.fill()}ctx.restore()}
+
+/* ---------- Célula completa ---------- */
+function drawCell(type,e,t,o){HL=o.hl||null;const tc=TYPES[type].color;
+ const ox=type==='neurona'?-220*e:0,kx=type==='miocito'?1-.07*(o.contr||0)*e:1;
+ ctx.save();ctx.translate(o.x,o.y);ctx.scale(o.s,o.s);ctx.translate(ox,0);ctx.scale(kx,1);
+ const wob=.022*(1-e)+.005;
+ if(type==='neurona'&&e>.01)neuronProcesses(e,t,o);
+ if(type==='enterocito'&&e>.01)microvilli(e,t);
+ outline(type,e,t,wob);
+ ctx.globalAlpha=1;ctx.shadowBlur=0;
+ const R0=lerp(110,type==='miocito'?380:type==='enterocito'?200:180,e);
+ const g=ctx.createRadialGradient(0,0,10,0,0,R0);g.addColorStop(0,rgba(STEM_COLOR,.28*(1-e))+'');g.addColorStop(1,rgba(STEM_COLOR,.1*(1-e)));ctx.fillStyle=g;ctx.fill();
+ if(e>0){const g2=ctx.createRadialGradient(0,0,10,0,0,R0);g2.addColorStop(0,rgba(tc,.3*e));g2.addColorStop(1,rgba(tc,.13*e));ctx.fillStyle=g2;ctx.fill()}
+ ctx.save();ctx.clip();
+ if(e<.99)for(const it of STEM)drawItem(it,1-e,1,t);
+ if(e>.01){if(type==='miocito')myofibrils(e);
+  if(type==='enterocito'){setA('microvellosidad',e*.6);ctx.fillStyle='rgba(160,255,210,.25)';ctx.fillRect(-90,-190,180,12)}
+  const k=.3+.7*e;for(const it of LISTS[type])drawItem(it,e,k,t)}
+ const tn=NUC[type],sn=NUC.madre;
+ tn.forEach((n,i)=>{if(i===0){nucleus({x:lerp(sn.x,n.x,e),y:lerp(sn.y,n.y,e),rx:lerp(sn.rx,n.rx,e),ry:lerp(sn.ry,n.ry,e),nuc:lerp(sn.nuc,n.nuc,e)},1,3)}else if(e>.05)nucleus(n,clamp((e-.05)/.6),7+i*5)});
+ if(o.glow){ctx.globalAlpha=o.glow;ctx.shadowBlur=0;const n=tn[0];const gx=lerp(sn.x,n.x,e),gy=lerp(sn.y,n.y,e);const gg=ctx.createRadialGradient(gx,gy,10,gx,gy,90);gg.addColorStop(0,rgba(tc,.55));gg.addColorStop(1,rgba(tc,0));ctx.fillStyle=gg;circle(gx,gy,90);ctx.fill()}
+ if(type==='hepatocito'&&e>.3){canaliculus(0,172,0,clamp((e-.3)/.7),t);canaliculus(149,-86,-Math.PI/3,clamp((e-.3)/.7),t)}
+ if(type==='enterocito'&&o.anim&&e>=1){ctx.globalAlpha=1;ctx.shadowBlur=0;const cols=['#ffe066','#7dff9a','#ff9f43'];for(let i=0;i<9;i++){const ph=(t*.1+i/9)%1;const x=-60+((i*37)%120);const y=lerp(-250,230,ph);const a=Math.min(1,Math.min(ph,1-ph)*8);ctx.fillStyle=rgba(cols[i%3],a);circle(x+Math.sin(ph*9+i)*6,y,4);ctx.fill()}}
+ ctx.restore();
+ outline(type,e,t,wob);setA('membrana',1);ctx.strokeStyle=e>.5?tc:STEM_COLOR;ctx.lineWidth=3.2;if(!HL||HL==='membrana'){ctx.shadowColor=e>.5?tc:STEM_COLOR;ctx.shadowBlur=HL==='membrana'?22:12}ctx.stroke();
+ ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;ctx.stroke();
+ if(type==='enterocito'&&e>.8){setA('union',clamp((e-.8)/.2));ctx.strokeStyle=ORGC.union;ctx.lineWidth=2.4;[-1,1].forEach(sd=>{for(let i=0;i<3;i++){const y=-186+i*6;ctx.beginPath();ctx.moveTo(sd*72,y);ctx.lineTo(sd*88,y);ctx.stroke()}})}
+ ctx.restore();ctx.globalAlpha=1;ctx.shadowBlur=0;
+ if(o.labels&&e>=1&&LBL[type]){state.boxes=[];for(const L of LBL[type]){const sx=o.x+(L.a[0]*kx+ox)*o.s,sy=o.y+L.a[1]*o.s;const nm=TYPES[type].orgs[L.k][0];const b=tag(nm,L.l[0],L.l[1],sx,sy,ORGC[L.k],state.hl&&state.hl!==L.k?.35:1);state.boxes.push({k:L.k,b})}}
+ HL=null}
+
+/* ---------- Fondo ---------- */
+const MOTES=Array.from({length:40},(_,i)=>({x:hash(i)*W,y:hash(i+99)*H,r:.6+hash(i+7)*1.6,v:4+hash(i+3)*10}));
+function background(t){ctx.fillStyle='#070b18';ctx.fillRect(0,0,W,H);const g=ctx.createRadialGradient(W/2,H/2,40,W/2,H/2,560);g.addColorStop(0,'#131d3d');g.addColorStop(1,'#070b18');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='rgba(170,190,255,.18)';MOTES.forEach(m=>{circle(m.x,(m.y+t*m.v)%H,m.r);ctx.fill()})}
+
+/* ---------- Etapa 1: célula madre ---------- */
+const ICONS={miocito:{x:150,y:112,s:.2},neurona:{x:810,y:112,s:.155,dx:10},hepatocito:{x:150,y:470,s:.4},enterocito:{x:810,y:470,s:.34,dy:6}};
+function drawMadre(t){const pulse=1+.02*Math.sin(t*2);
+ Object.entries(ICONS).forEach(([k,ic])=>{const sel=k===state.type,col=TYPES[k].color;
+  ctx.save();ctx.setLineDash([6,8]);ctx.lineDashOffset=-t*20;ctx.strokeStyle=rgba(col,sel?.9:.35);ctx.lineWidth=sel?2.5:1.5;const dx=ic.x-480,dy=ic.y-300,d=Math.hypot(dx,dy);ctx.beginPath();ctx.moveTo(480+dx/d*125,300+dy/d*125);ctx.lineTo(ic.x-dx/d*92,ic.y-dy/d*92);ctx.stroke();ctx.restore();
+  ctx.save();circle(ic.x,ic.y,86);ctx.fillStyle=sel?rgba(col,.12):'rgba(255,255,255,.03)';ctx.fill();ctx.strokeStyle=rgba(col,sel?1:.5);ctx.lineWidth=sel?3:1.5;if(sel){ctx.shadowColor=col;ctx.shadowBlur=18}ctx.stroke();ctx.shadowBlur=0;ctx.clip();
+  drawCell(k,1,t,{x:ic.x+(ic.dx||0),y:ic.y+(ic.dy||0),s:ic.s,contr:k==='miocito'?.5-.5*Math.cos(t*1.8):0});ctx.restore();
+  text(TYPES[k].name,ic.x,ic.y+(ic.y<300?-100:100),{align:'center',font:'700 15px '+DISP,c:sel?col:'#dfe5ff'})});
+ drawCell('miocito',0,t,{x:480,y:300,s:pulse});
+ tag('Núcleo grande',480,160,480+20,300-30,ORGC.nucleo);tag('Pocos organelos',640,420,480+70,300+60,ORGC.mitocondria);
+ text('CÉLULA MADRE',480,440,{align:'center',font:'600 13px '+MONO,c:'#c9d2ff'});
+ text('Toca un destino para diferenciarla',480,462,{align:'center',font:'400 13px '+FONT,c:'#9ba6cc'})}
+
+/* ---------- Etapa 2: diferenciación ---------- */
+const PH_NAMES=['Llega una señal','Se activan genes','Se fabrican proteínas','Cambia forma y organelos'];
+function phaseOf(p){return p<.18?0:p<.3?1:p<.4?2:3}
+function drawDif(t){const T=TYPES[state.type],tc=T.color,p=state.p;const e=ease(clamp((p-.38)/.62));
+ const glow=clamp(Math.min((p-.16)/.08,(.5-p)/.1))*.9;
+ drawCell(state.type,e,t,{x:480,y:300,s:1,glow:glow>0?glow:0});
+ // señales
+ if(p<.42){const q=ease(clamp(p/.18));const fade=clamp((.42-p)/.1);for(let i=0;i<12;i++){const a=i/12*TAU+.2;const r=lerp(430,114,q);const x=480+Math.cos(a)*r,y=300+Math.sin(a)*r;ctx.save();ctx.globalAlpha=fade;ctx.translate(x,y);ctx.rotate(a+t*2);ctx.fillStyle=tc;ctx.shadowColor=tc;ctx.shadowBlur=10;ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(6,5);ctx.lineTo(-6,5);ctx.closePath();ctx.fill();ctx.restore()}
+  if(p>.14&&p<.3){const q2=clamp((p-.14)/.14);for(let i=0;i<12;i++){const a=i/12*TAU+.2;const r=lerp(108,58,q2);ctx.fillStyle=rgba(tc,1-q2*.6);circle(480+Math.cos(a)*r,300+Math.sin(a)*r,3);ctx.fill()}}}
+ // genes
+ if(p>.18&&p<.55){const a=clamp(Math.min((p-.18)/.05,(.55-p)/.05));tag('Gen '+T.gene+' activado',480,120,480,262,tc,a)}
+ // ARNm y proteínas
+ if(p>.28&&p<.6){const q=clamp((p-.28)/.2),a=clamp((.6-p)/.08);ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=tc;ctx.lineWidth=2;for(let i=0;i<8;i++){const ang=i/8*TAU+.4,r=lerp(40,105,q);const x=480+Math.cos(ang)*r,y=300+Math.sin(ang)*r;ctx.beginPath();for(let j=0;j<6;j++){const px=x+Math.cos(ang)*j*3+Math.cos(ang+Math.PI/2)*Math.sin(j*2+t*8)*3,py=y+Math.sin(ang)*j*3+Math.sin(ang+Math.PI/2)*Math.sin(j*2+t*8)*3;j?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke()}ctx.restore()}
+ // barra de progreso
+ const ph=phaseOf(p);const x0=110,x1=850;const BD=[0,.18,.3,.4,1];const pf=(ph+(p-BD[ph])/(BD[ph+1]-BD[ph]))/4;ctx.save();ctx.fillStyle='rgba(7,11,24,.7)';rr(70,538,820,50,14);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.stroke();
+ ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x0,553);ctx.lineTo(x1,553);ctx.stroke();ctx.strokeStyle=tc;ctx.beginPath();ctx.moveTo(x0,553);ctx.lineTo(x0+(x1-x0)*pf,553);ctx.stroke();
+ PH_NAMES.forEach((n,i)=>{const x=x0+(x1-x0)*i/4;ctx.fillStyle=i<=ph?tc:'#3a4670';circle(x,553,6);ctx.fill();text(n,x,574,{align:i===0?'left':'center',font:(i===ph?'700 ':'400 ')+'12.5px '+FONT,c:i===ph?'#fff':'#9ba6cc'})});ctx.restore();
+ text('Célula madre  →  '+T.precursor+'  →  '+T.name,24,28,{font:'600 13px '+MONO,c:'#c9d2ff'});
+ if(p>.4)text(T.morph,24,50,{font:'400 13.5px '+FONT,c:'#9ba6cc',a:clamp((p-.4)/.1)})}
+
+/* ---------- Etapa 3: célula especializada ---------- */
+function drawCelula(t){const ty=state.type;drawCell(ty,1,t,{x:480,y:300,s:1,labels:state.labels,hl:state.hl,anim:true,contr:ty==='miocito'?.5-.5*Math.cos(t*1.8):0});
+ const cap={miocito:'Contracción suave: la fibra se acorta y se relaja',neurona:'El impulso eléctrico salta de nodo en nodo por el axón',hepatocito:'Los gránulos de glucógeno cambian según la glucosa disponible',enterocito:'Nutrientes entrando por las microvellosidades'}[ty];
+ text(cap,24,H-22,{font:'400 13px '+FONT,c:'#9ba6cc'})}
+
+/* ---------- Etapa 4: tejidos ---------- */
+function stim(){state.lastStim=state.t}
+function drawMuscle(t,a){const S=state;if(a>=1&&t-S.lastStim>4.2)stim();const dt=t-S.lastStim;let c=0;if(dt>=.55){const x=dt-.55;c=x<.3?easeOut(x/.3):Math.max(0,1-(x-.3)/.9)}
+ const L=340*(1-.1*c),cx=480,n=6,y0=92,fh=40,gap=12,yEnd=y0+n*(fh+gap)-gap;
+ // tendones
+ ctx.save();ctx.globalAlpha=clamp(a*2);[[24,cx-L],[cx+L,936]].forEach(([xa,xb])=>{rr(xa,y0-8,xb-xa,yEnd-y0+16,14);ctx.fillStyle='#d9d3c4';ctx.fill();ctx.strokeStyle='rgba(120,110,90,.6)';ctx.lineWidth=1;for(let y=y0;y<yEnd;y+=7){ctx.beginPath();ctx.moveTo(xa+4,y);ctx.lineTo(xb-4,y+2);ctx.stroke()}});ctx.restore();
+ for(let i=0;i<n;i++){const ai=clamp((a-i*.08)/.35),y=y0+i*(fh+gap);
+  if(ai<1){for(let j=0;j<9;j++){const x=cx-L+(j+.5)*(2*L/9)+(1-ai)*(j-4)*22;ctx.fillStyle=rgba('#ff8fa0',(1-ai)*.9);circle(x,y+fh/2,18*(1-ai*.4));ctx.fill();ctx.fillStyle=rgba('#6f95ff',1-ai);circle(x,y+fh/2,6);ctx.fill()}}
+  if(ai<=0)continue;ctx.save();ctx.globalAlpha=ai;rr(cx-L,y,2*L,fh,18);const g=ctx.createLinearGradient(0,y,0,y+fh);g.addColorStop(0,'#a3183a');g.addColorStop(.5,'#e84a6c');g.addColorStop(1,'#a3183a');ctx.fillStyle=g;ctx.fill();ctx.clip();
+  const P=2*L/68;ctx.fillStyle='rgba(80,0,20,.5)';for(let k=0;k<68;k++)ctx.fillRect(cx-L+k*P+P*.25,y,P*.5,fh);
+  ctx.fillStyle='#6f95ff';[.12,.3,.5,.7,.88].forEach((f,j)=>{ctx.beginPath();ctx.ellipse(cx-L+2*L*f,j%2?y+5:y+fh-5,10,3.5,0,0,TAU);ctx.fill()});
+  if(dt>.45&&dt<1.2){const ca=Math.sin(Math.PI*(dt-.45)/.75);ctx.fillStyle=`rgba(97,227,255,${ca*.35})`;ctx.fillRect(cx-L,y,2*L,fh);ctx.fillStyle=`rgba(200,250,255,${ca})`;for(let k=0;k<14;k++){circle(cx-L+hash(k+i*20)*2*L,y+hash(k*3+i)*fh,1.8);ctx.fill()}}
+  ctx.restore();
+  if(i<n-1&&ai>=1){const yc=y+fh+gap/2;ctx.strokeStyle='rgba(230,50,80,.55)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-L+10,yc);ctx.lineTo(cx+L-10,yc);ctx.stroke();ctx.fillStyle='#ff4060';for(let j=0;j<8;j++){circle(cx-L+10+((t*55+j*80+i*37)%(2*L-20)),yc,2.3);ctx.fill()}}}
+ if(a>=1){// nervio
+  const nx=i=>350+i*48,ny=i=>y0+i*(fh+gap)+fh/2;ctx.strokeStyle='rgba(255,209,102,.85)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(20,50);ctx.lineTo(nx(n-1)+10,50);ctx.stroke();
+  for(let i=0;i<n;i++){ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(nx(i)-30,50);ctx.quadraticCurveTo(nx(i)-30,ny(i)-10,nx(i),ny(i));ctx.stroke();ctx.fillStyle='#ffd166';ctx.beginPath();ctx.ellipse(nx(i),ny(i),9,5,0,0,TAU);ctx.fill()}
+  if(dt<.55){const q=dt/.5;const px=20+q*(nx(n-1)-10);const g=ctx.createRadialGradient(px,50,0,px,50,16);g.addColorStop(0,'#fff');g.addColorStop(1,'rgba(255,209,102,0)');ctx.fillStyle=g;circle(px,50,16);ctx.fill();
+   for(let i=0;i<n;i++){if(px>nx(i)-30){const qq=clamp((px-(nx(i)-30))/60);ctx.fillStyle=`rgba(255,255,220,${1-qq*.5})`;circle(lerp(nx(i)-30,nx(i),qq),lerp(50,ny(i),qq),4);ctx.fill()}}}
+  tag('Neurona motora',110,24,60,50,'#ffd166');tag('Placa motora',nx(2)+95,ny(2)-2,nx(2)+9,ny(2),'#ffd166');tag('Tendón',70,yEnd+34,60,yEnd-10,'#d9d3c4');tag('Capilar',870,y0+fh+gap/2+52,cx+L-40,y0+fh+gap/2+52,'#ff4060');tag('Fibra muscular (miocito)',700,y0-24,700,y0+8,'#ff5d73')}
+ // zoom sarcómero
+ if(a>=1){ctx.save();rr(200,420,560,166,16);ctx.fillStyle='rgba(12,19,40,.94)';ctx.fill();ctx.strokeStyle='#253359';ctx.stroke();text('ZOOM · UN SARCÓMERO',218,440,{font:'600 11px '+MONO,c:'#9ba6cc'});text(c>.3?'Contraído':'Relajado',742,440,{align:'right',font:'700 12px '+FONT,c:c>.3?'#ff5d73':'#9ba6cc'});
+  const cy=512,h=210*(1-.22*c);ctx.lineCap='round';ctx.strokeStyle='#7ef0c8';ctx.lineWidth=2.5;[-33,-11,11,33].forEach(dy=>{ctx.beginPath();ctx.moveTo(480-h,cy+dy);ctx.lineTo(480-h+140,cy+dy);ctx.moveTo(480+h,cy+dy);ctx.lineTo(480+h-140,cy+dy);ctx.stroke()});
+  [-22,0,22].forEach(dy=>{ctx.strokeStyle='#f2557a';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(370,cy+dy);ctx.lineTo(590,cy+dy);ctx.stroke();ctx.lineWidth=2;for(let x=388;x<=572;x+=12){if(Math.abs(x-480)<16)continue;const sd=x<480?-1:1;const tilt=(c>0.02?Math.sin(t*14+x)*.5+.5:0)*5;[-1,1].forEach(v=>{ctx.beginPath();ctx.moveTo(x,cy+dy+v*3);ctx.lineTo(x+sd*(5+tilt),cy+dy+v*9);ctx.stroke()})}});
+  ctx.strokeStyle='#fff';ctx.lineWidth=3;[480-h,480+h].forEach(x=>{ctx.beginPath();ctx.moveTo(x,cy-50);ctx.lineTo(x,cy+50);ctx.stroke()});
+  text('Línea Z',480-h+6,cy+62,{font:'600 11.5px '+FONT,c:'#fff'});text('Actina',480-h+20,cy-48,{font:'600 11.5px '+FONT,c:'#7ef0c8'});text('Miosina',480,cy-48,{align:'center',font:'600 11.5px '+FONT,c:'#f2557a'});text('Ca²⁺ + ATP → los filamentos se deslizan',480,cy+62,{align:'center',font:'400 11.5px '+FONT,c:'#9ba6cc'});ctx.restore()}}
+
+const NEU=[{x:120,y:300},{x:330,y:160},{x:345,y:445},{x:585,y:300},{x:800,y:165},{x:805,y:440}];
+const NET=[[0,1],[0,2],[1,3],[2,3],[3,4],[3,5],[4,-1],[5,-1]].map(([a,b],i)=>{const A=NEU[a],B=b>=0?NEU[b]:(a===4?{x:975,y:95}:{x:975,y:520});const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d;
+ const s=[A.x+ux*24,A.y+uy*24],e=b>=0?[B.x-ux*40,B.y-uy*40]:[B.x,B.y];const off=(i%2?1:-1)*26;const c=[(s[0]+e[0])/2-uy*off,(s[1]+e[1])/2+ux*off];const pts=[];for(let j=0;j<=30;j++){const u=j/30,v=1-u;pts.push([v*v*s[0]+2*v*u*c[0]+u*u*e[0],v*v*s[1]+2*v*u*c[1]+u*u*e[1]])}
+ return{a,b,pts,end:e,tgt:b>=0?[B.x-ux*25,B.y-uy*25]:null}});
+const NDEND=NEU.map((n,i)=>{const R=rng(40+i),L=[];for(let k=0;k<6;k++){const a=Math.PI*.55+k/5*Math.PI*.9+(R()-.5)*.3+(i%2?.3:0);const l=30+R()*26;const x1=n.x+Math.cos(a)*20,y1=n.y+Math.sin(a)*20,x2=n.x+Math.cos(a)*(20+l),y2=n.y+Math.sin(a)*(20+l);L.push([x1,y1,x2,y2]);const b=a+(R()>.5?.5:-.5);L.push([x2,y2,x2+Math.cos(b)*l*.5,y2+Math.sin(b)*l*.5])}return L});
+const GLIA=[[230,90],[470,80],[690,420],[210,540],[480,560],[680,110],[905,300],[50,120],[50,500],[470,300]];
+function fireN(i){const t=state.t;if(t-state.nfire[i]<1)return;state.nfire[i]=t;NET.forEach((ed,k)=>{if(ed.a===i)state.pulses.push({k,t0:t+.15,done:false})})}
+function drawNerve(t,a){if(a>=1&&t-state.nfire[0]>3.4)fireN(0);
+ state.pending=state.pending.filter(p=>{if(t>=p.at){fireN(p.i);return false}return true});
+ GLIA.forEach(([x,y],i)=>{ctx.save();ctx.globalAlpha=.55*clamp(a*2);ctx.strokeStyle='#8f6bd8';ctx.lineWidth=2;ctx.lineCap='round';for(let k=0;k<7;k++){const an=k/7*TAU+i;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+Math.cos(an+.3)*18,y+Math.sin(an+.3)*18,x+Math.cos(an)*30,y+Math.sin(an)*30);ctx.stroke()}ctx.fillStyle='#8f6bd8';circle(x,y,7);ctx.fill();ctx.restore()});
+ const ge=clamp((a-.45)/.45);
+ NET.forEach(ed=>{if(ge<=0)return;const m=Math.max(1,Math.round(ge*30));ctx.strokeStyle='rgba(255,193,77,.8)';ctx.lineWidth=3;ctx.beginPath();ed.pts.slice(0,m+1).forEach((p,j)=>j?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();
+  if(ge>=1&&ed.b>=0){ctx.fillStyle=ORGC.terminal;circle(ed.end[0],ed.end[1],7);ctx.fill()}});
+ NEU.forEach((n,i)=>{const ai=clamp((a-i*.07)/.3);if(ai<=0)return;const gl=Math.max(0,1-(t-state.nfire[i])/.7);ctx.save();ctx.globalAlpha=ai;
+  ctx.strokeStyle='#ffd166';ctx.lineCap='round';NDEND[i].forEach(([x1,y1,x2,y2],k)=>{ctx.lineWidth=k%2?1.6:3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(lerp(x1,x2,ai),lerp(y1,y2,ai));ctx.stroke()});
+  if(gl>0){const g=ctx.createRadialGradient(n.x,n.y,10,n.x,n.y,70);g.addColorStop(0,`rgba(255,240,160,${gl*.8})`);g.addColorStop(1,'rgba(255,209,102,0)');ctx.fillStyle=g;circle(n.x,n.y,70);ctx.fill()}
+  const g2=ctx.createRadialGradient(n.x-6,n.y-6,2,n.x,n.y,26);g2.addColorStop(0,'#fff0b8');g2.addColorStop(1,'#e0a92e');ctx.fillStyle=g2;circle(n.x,n.y,24*ai);ctx.fill();ctx.fillStyle='#3450c4';circle(n.x,n.y,10*ai);ctx.fill();ctx.fillStyle='#8a5ad8';circle(n.x+3,n.y-3,3.5*ai);ctx.fill();ctx.restore()});
+ state.pulses=state.pulses.filter(p=>{const ed=NET[p.k],u=(t-p.t0)/1.0;if(u<0)return true;
+  if(u<=1){const idx=Math.min(30,Math.floor(u*30)),q=ed.pts[idx];const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],14);g.addColorStop(0,'#fff');g.addColorStop(1,'rgba(255,220,90,0)');ctx.fillStyle=g;circle(q[0],q[1],14);ctx.fill()}
+  else{if(!p.done){p.done=true;if(ed.b>=0)state.pending.push({i:ed.b,at:t+.3})}
+   if(ed.tgt&&u<1.4){const q=(u-1)/.4;for(let j=0;j<6;j++){const x=lerp(ed.end[0],ed.tgt[0],q)+(hash(j+p.k)-.5)*10,y=lerp(ed.end[1],ed.tgt[1],q)+(hash(j*2+p.k)-.5)*10;ctx.fillStyle=`rgba(125,255,200,${1-q*.6})`;circle(x,y,2.2);ctx.fill()}}}
+  return u<1.5});
+ if(a>=1){const e3=NET[2];tag('Sinapsis',e3.end[0]-10,e3.end[1]-80,e3.end[0],e3.end[1],'#7dffc8');tag('Soma',NEU[0].x+80,NEU[0].y,NEU[0].x+22,NEU[0].y,'#ffd166');tag('Dendritas',70,390,NEU[0].x-40,NEU[0].y+30,'#ffd166');const q=NET[0].pts[12];tag('Axón',q[0]-60,q[1]-24,q[0],q[1],'#ffc14d');tag('Célula glial',GLIA[4][0]+95,GLIA[4][1]-4,GLIA[4][0]+8,GLIA[4][1],'#b394ff');text('→ a los músculos',950,72,{align:'right',font:'600 12px '+FONT,c:'#9ba6cc'});text('→ a los músculos',950,548,{align:'right',font:'600 12px '+FONT,c:'#9ba6cc'})}}
+
+const LIV=(()=>{const cells=[];for(let k=0;k<24;k++){const th=k*Math.PI/12,r0=k%2?112:50;for(let r=r0;r<hexR(th,216.5)-16;r+=25){cells.push({x:Math.cos(th)*r,y:Math.sin(th)*r,rot:th,r,sz:clamp(r*.16,17,28)})}}return{cells}})();
+function drawLiver(t,a){const cx=480,cy=300;ctx.save();ctx.translate(cx,cy);
+ ctx.beginPath();for(let k=0;k<6;k++){const an=k*Math.PI/3;ctx[k?'lineTo':'moveTo'](Math.cos(an)*250,Math.sin(an)*250)}ctx.closePath();const bg=ctx.createRadialGradient(0,0,20,0,0,250);bg.addColorStop(0,'rgba(90,20,60,.55)');bg.addColorStop(1,'rgba(160,30,60,.4)');ctx.fillStyle=bg;ctx.globalAlpha=clamp(a*2);ctx.fill();ctx.setLineDash([5,6]);ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+ // sangre
+ if(a>=.8){for(let s=0;s<24;s++){const th=s*Math.PI/12+Math.PI/24,Ro=hexR(th,216.5)-6,ux=Math.cos(th),uy=Math.sin(th),px=-uy,py=ux;
+  for(let j=0;j<5;j++){const ph=(t*.1+j/5+s*.137)%1,r=lerp(Ro,34,ph);ctx.save();ctx.translate(ux*r,uy*r);ctx.rotate(th);ctx.fillStyle='#e8334f';ctx.beginPath();ctx.ellipse(0,0,5,3.4,0,0,TAU);ctx.fill();ctx.restore()}
+  for(let j=0;j<2;j++){const ph=(t*.1+j/2+s*.29+.1)%1,r=lerp(Ro,34,ph);let off=0,al=1;
+   if(state.fed){if(ph>.35){const q=clamp((ph-.35)/.25);off=q*13*(j%2?1:-1);al=1-q}}else{if(ph<.25){al=0}else if(ph<.45){const q=1-(ph-.25)/.2;off=q*13*(j%2?1:-1);al=1-q}}
+   if(al>0){ctx.fillStyle=`rgba(255,224,102,${al})`;circle(ux*r+px*off,uy*r+py*off,3.4);ctx.fill()}}}}
+ // hepatocitos
+ LIV.cells.forEach(c=>{const al=clamp((a*1.35-c.r/250)/.25);if(al<=0)return;ctx.save();ctx.globalAlpha=al;ctx.translate(c.x,c.y);ctx.rotate(c.rot);rr(-c.sz/2,-c.sz/2+1,c.sz,c.sz-2,4);ctx.fillStyle='#8a63d2';ctx.fill();ctx.strokeStyle='#cdb4ff';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#3d5de0';circle(-c.sz*.12,0,c.sz*.17);ctx.fill();
+  ctx.fillStyle=`rgba(255,126,182,${.25+state.G*.75})`;const ng=Math.round(1+state.G*5);for(let g=0;g<ng;g++){circle(c.sz*(.18+.12*(g%2))-2,(g-2.5)*c.sz*.13,1.8);ctx.fill()}ctx.restore()});
+ // bilis
+ if(a>=1){ctx.fillStyle='#7bd88f';for(let k=0;k<24;k++){const th=k*Math.PI/12;for(let j=0;j<2;j++){const ph=(t*.08+j/2+k*.21)%1;const r=lerp(k%2?112:50,hexR(th,216.5)-10,ph);circle(Math.cos(th)*r,Math.sin(th)*r,2);ctx.fill()}}}
+ // vena central y espacios porta
+ ctx.globalAlpha=clamp(a*2);const vg=ctx.createRadialGradient(-6,-6,2,0,0,32);vg.addColorStop(0,'#6d7bff');vg.addColorStop(1,'#242a8a');ctx.fillStyle=vg;circle(0,0,30);ctx.fill();ctx.strokeStyle='#c9d2ff';ctx.lineWidth=2;ctx.stroke();
+ for(let k=0;k<6;k++){const an=k*Math.PI/3,x=Math.cos(an)*250,y=Math.sin(an)*250;ctx.fillStyle='rgba(20,26,50,.85)';circle(x,y,26);ctx.fill();ctx.fillStyle='#4a5dff';circle(x-6,y+2,11);ctx.fill();ctx.fillStyle='#ff3b5c';circle(x+9,y-7,5.5);ctx.fill();ctx.fillStyle='#7bd88f';circle(x+9,y+9,5);ctx.fill()}
+ ctx.restore();
+ if(a>=1){tag('Vena central',480,236,480,285,'#8f9cff');tag('Espacio porta',850,236,480+250*Math.cos(0)-10,300,'#7bd88f');tag('Sinusoide (sangre)',175,170,480+Math.cos(Math.PI*1.21)*150,300+Math.sin(Math.PI*1.21)*150,'#ff5d73');tag('Cordón de hepatocitos',160,440,480+Math.cos(Math.PI*.83)*160,300+Math.sin(Math.PI*.83)*160,'#b78cff');
+  // medidores
+  ctx.save();rr(730,420,210,160,14);ctx.fillStyle='rgba(7,11,24,.88)';ctx.fill();ctx.strokeStyle='#253359';ctx.stroke();text(state.fed?'DESPUÉS DE COMER':'EN AYUNO',746,442,{font:'600 11px '+MONO,c:state.fed?'#ffe066':'#9ba6cc'});
+  text('Glucógeno en hepatocitos',746,468,{font:'400 12px '+FONT,c:'#dfe5ff'});rr(746,478,178,10,5);ctx.fillStyle='#1c2748';ctx.fill();rr(746,478,178*state.G,10,5);ctx.fillStyle='#ff7eb6';ctx.fill();
+  const bg2=state.fed?.72:.55;text('Glucosa en sangre',746,508,{font:'400 12px '+FONT,c:'#dfe5ff'});rr(746,518,178,10,5);ctx.fillStyle='#1c2748';ctx.fill();rr(746,518,178*bg2,10,5);ctx.fillStyle='#ffe066';ctx.fill();
+  text(state.fed?'El hígado guarda glucosa':'El hígado libera glucosa',746,548,{font:'700 12px '+FONT,c:'#fff'});text(state.fed?'como glucógeno':'y la mantiene estable',746,565,{font:'400 12px '+FONT,c:'#9ba6cc'});ctx.restore();
+  ctx.save();rr(20,20,176,98,12);ctx.fillStyle='rgba(7,11,24,.8)';ctx.fill();[['#e8334f','Glóbulo rojo'],['#ffe066','Glucosa'],['#7bd88f','Bilis'],['#ff7eb6','Glucógeno']].forEach(([c,n],i)=>{ctx.fillStyle=c;circle(38,40+i*20,5);ctx.fill();text(n,52,40+i*20,{font:'400 12.5px '+FONT})});ctx.restore()}}
+
+const VX=[230,480,730],VW=150,TOPC=178,BASE=545,VR=VW/2;
+const vcx=(i,y,t,top)=>VX[i]+7*Math.sin(t*.9+i*1.7)*Math.pow(clamp((BASE-y)/(BASE-top)),1.5);
+function vInside(i,x,y,t){if(y>BASE)return false;if(y>=TOPC)return Math.abs(x-vcx(i,y,t,TOPC))<=VR;return Math.hypot(x-vcx(i,TOPC,t,TOPC),y-TOPC)<=VR}
+function vPath(i,inset,t,top,closed){const R=VR-inset;ctx.beginPath();for(let y=BASE;y>=top;y-=12)ctx.lineTo(vcx(i,y,t,top)-R,y);const c=vcx(i,top,t,top);for(let k=0;k<=16;k++){const an=Math.PI+k/16*Math.PI;ctx.lineTo(c+Math.cos(an)*R,top+Math.sin(an)*R)}for(let y=top;y<=BASE;y+=12)ctx.lineTo(vcx(i,y,t,top)+R,y);if(closed)ctx.closePath()}
+function drawGut(t,a){
+ ctx.fillStyle='rgba(255,150,170,.12)';ctx.fillRect(0,BASE,W,H-BASE);ctx.strokeStyle='#2fbf83';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,BASE);ctx.lineTo(W,BASE);ctx.stroke();
+ [355,605].forEach(x=>{ctx.fillStyle='rgba(7,11,24,1)';rr(x-16,BASE-4,32,52,14);ctx.fill();ctx.strokeStyle='#2fbf83';ctx.lineWidth=5;ctx.stroke();[-8,0,8].forEach((d,j)=>{const g=.6+.4*Math.sin(t*3+j);ctx.fillStyle=`rgba(183,140,255,${g})`;circle(x+d,BASE+38-(j===1?4:0),5);ctx.fill()})});
+ for(let i=0;i<3;i++){const ai=clamp((a-i*.12)/.5);if(ai<=0)continue;const top=BASE-(BASE-TOPC)*ai;
+  vPath(i,30,t,top,true);ctx.fillStyle='rgba(255,150,170,.22)';ctx.fill();
+  if(ai>.3){ctx.strokeStyle='rgba(255,245,200,.6)';ctx.lineWidth=12;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(vcx(i,BASE,t,top),BASE);for(let y=BASE;y>=top+8;y-=12)ctx.lineTo(vcx(i,y,t,top),y);ctx.stroke();
+   vPath(i,46,t,top,false);ctx.strokeStyle='rgba(232,51,79,.85)';ctx.lineWidth=4;ctx.stroke()}
+  // epitelio
+  const pts=[];for(let y=BASE;y>top;y-=16)pts.push([vcx(i,y,t,top)-VR,y,-1,0]);const c=vcx(i,top,t,top);for(let k=0;k<=14;k++){const an=Math.PI+k/14*Math.PI;pts.push([c+Math.cos(an)*VR,top+Math.sin(an)*VR,Math.cos(an),Math.sin(an)])}for(let y=top+16;y<=BASE;y+=16)pts.push([vcx(i,y,t,top)+VR,y,1,0]);
+  for(let k=0;k<pts.length-1;k++){const p=pts[k],q=pts[k+1],d=30;const gob=(k+i*3)%7===3;ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.lineTo(q[0]-q[2]*d,q[1]-q[3]*d);ctx.lineTo(p[0]-p[2]*d,p[1]-p[3]*d);ctx.closePath();ctx.fillStyle=gob?'#dfe8ff':'#2fbf83';ctx.fill();ctx.strokeStyle=gob?'#9fb4ff':'#136b47';ctx.lineWidth=1;ctx.stroke();
+   const mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,nx=(p[2]+q[2])/2,ny=(p[3]+q[3])/2;
+   if(gob){ctx.fillStyle='rgba(160,180,255,.7)';circle(mx-nx*10,my-ny*10,4);ctx.fill();if((t*.6+k)%3<1.2){ctx.fillStyle='rgba(223,232,255,.6)';circle(mx+nx*(6+((t*10)%10)),my+ny*(6+((t*10)%10)),2.4);ctx.fill()}}
+   else{ctx.fillStyle='#3450c4';circle(mx-nx*22,my-ny*22,3.6);ctx.fill();ctx.strokeStyle='#b6ffd9';ctx.lineWidth=1.2;for(let s=-1;s<=1;s++){const bx=mx+(q[0]-p[0])*.28*s,by=my+(q[1]-p[1])*.28*s;ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+nx*5,by+ny*5);ctx.stroke()}}}
+  if(ai>.5){ctx.fillStyle='#ff4060';for(let j=0;j<7;j++){const ph=(t*.12+j/7)%1;const L=(BASE-top)*2+Math.PI*(VR-46);let s=ph*L;let x,y;const R=VR-46;if(s<BASE-top){y=BASE-s;x=vcx(i,y,t,top)-R}else if(s<BASE-top+Math.PI*R){const an=Math.PI+(s-(BASE-top))/R;x=vcx(i,top,t,top)+Math.cos(an)*R;y=top+Math.sin(an)*R}else{y=top+(s-(BASE-top)-Math.PI*R);x=vcx(i,y,t,top)+R}circle(x,y,2.4);ctx.fill()}}}
+ // partículas de alimento
+ const cols=['#ffe066','#7dff9a','#ff9f43'];state.food.forEach(f=>{ctx.fillStyle=cols[f.kind];ctx.shadowColor=cols[f.kind];ctx.shadowBlur=f.st?8:0;if(f.kind===0){ctx.beginPath();for(let k=0;k<6;k++){const an=k/6*TAU;ctx[k?'lineTo':'moveTo'](f.x+Math.cos(an)*4.5,f.y+Math.sin(an)*4.5)}ctx.closePath();ctx.fill()}else if(f.kind===1){circle(f.x-3,f.y,2.8);ctx.fill();circle(f.x+3,f.y,2.8);ctx.fill()}else{circle(f.x,f.y,4.5);ctx.fill()}});ctx.shadowBlur=0;
+ if(a>=1){tag('Lumen intestinal',110,40,null,null,'#9ba6cc');tag('Enterocitos',370,110,vcx(0,300,t,TOPC)+VR-6,300,'#3ddc97');tag('Microvellosidades',610,70,vcx(1,TOPC,t,TOPC)+VR*.7,TOPC-VR*.7,'#b6ffd9');tag('Célula caliciforme (moco)',860,110,vcx(2,TOPC,t,TOPC)+VR*.9,TOPC-VR*.4,'#dfe8ff');
+  tag('Capilar',120,300,vcx(0,320,t,TOPC)-VR+46,320,'#ff4060');tag('Quilífero (linfa)',130,470,vcx(0,470,t,TOPC),470,'#fff5c8');tag('Cripta: células madre',480,590,605,BASE+36,'#b78cff');
+  [['#ffe066','Glucosa'],['#7dff9a','Aminoácidos'],['#ff9f43','Grasas']].forEach(([c,n],k)=>{ctx.fillStyle=c;circle(30+k*96,574,5);ctx.fill();text(n,42+k*96,574,{font:'400 12.5px '+FONT})})}}
+function updateGut(dt){const t=state.t;if(state.a>=1){state.spawnT+=dt;while(state.spawnT>.3){state.spawnT-=.3;spawnFood(1)}}
+ state.food.forEach(f=>{f.age+=dt;if(!f.st){let bi=0,bd=1e9;VX.forEach((x,i)=>{const d=Math.abs(x-f.x);if(d<bd){bd=d;bi=i}});f.x+=(VX[bi]-f.x)*.35*dt+Math.sin(f.age*3+f.seed)*14*dt;f.y+=28*dt;if(vInside(bi,f.x,f.y,t)){f.st=1;f.vi=bi;f.side=Math.sign(f.x-VX[bi])||1;f.t1=f.age}}
+  else{const cx=vcx(f.vi,Math.max(TOPC,f.y),t,TOPC);const tx=f.kind===2?cx:cx+f.side*(VR-46);f.x+=(tx-f.x)*Math.min(1,3*dt);if(f.age-f.t1>.6)f.y+=50*dt;else f.y+=6*dt}});
+ state.food=state.food.filter(f=>f.y<BASE+4).slice(-260)}
+function spawnFood(n){for(let i=0;i<n;i++)state.food.push({x:40+Math.random()*880,y:-10-Math.random()*60,kind:Math.floor(Math.random()*3),st:0,age:0,seed:Math.random()*10})}
+
+/* ---------- Etapa 5: trabajo en equipo ---------- */
+function bez(p0,p1,p2,p3,n=40){const pts=[];for(let i=0;i<=n;i++){const u=i/n,v=1-u;pts.push([v*v*v*p0[0]+3*v*v*u*p1[0]+3*v*u*u*p2[0]+u*u*u*p3[0],v*v*v*p0[1]+3*v*v*u*p1[1]+3*v*u*u*p2[1]+u*u*u*p3[1]])}return pts}
+function mkPath(pts){const c=[0];for(let i=1;i<pts.length;i++)c.push(c[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));return{pts,c,L:c[c.length-1]}}
+function at(P,f){const s=((f%1)+1)%1*P.L;let i=1;while(i<P.c.length-1&&P.c[i]<s)i++;const u=(s-P.c[i-1])/((P.c[i]-P.c[i-1])||1);return[lerp(P.pts[i-1][0],P.pts[i][0],u),lerp(P.pts[i-1][1],P.pts[i][1],u)]}
+const ST={enterocito:{x:170,y:330,r:108,s:.36,dy:8,lab:'Intestino',lx:170,ly:186},hepatocito:{x:480,y:140,r:95,s:.46,lab:'Hígado',lx:640,ly:70},miocito:{x:790,y:330,r:108,s:.25,lab:'Músculo',lx:790,ly:186},neurona:{x:640,y:505,r:80,s:.16,dx:8,lab:'Nervio',lx:770,ly:540}};
+const P_IL=mkPath(bez([170,330],[170,170],[300,140],[480,140])),P_LM=mkPath(bez([480,140],[660,140],[790,170],[790,330])),P_MH=mkPath(bez([790,330],[790,430],[620,398],[480,398])),P_HI=mkPath(bez([480,398],[330,398],[170,440],[170,330]));
+const P_LOOP=mkPath([...P_IL.pts,...P_LM.pts.slice(1),...P_MH.pts.slice(1),...P_HI.pts.slice(1)]);
+const P_NERVE=mkPath(bez([640,505],[720,500],[770,440],[790,330]));
+const TEAM_STEPS=[['enterocito','Los enterocitos absorben la glucosa de los alimentos y la pasan a la sangre.'],['hepatocito','Los hepatocitos guardan el exceso de glucosa como glucógeno y la liberan cuando falta.'],['neurona','Una neurona motora envía un impulso eléctrico hasta el músculo.'],['miocito','Los miocitos usan glucosa y O₂ en sus mitocondrias para obtener ATP y contraerse.']];
+const TSTEP=4.5;function teamStep(t){return Math.floor(t/TSTEP)%4}
+function drawTeam(t){const k=teamStep(t),tl=(t%TSTEP)/TSTEP;
+ ctx.lineCap='round';[P_LOOP].forEach(P=>{ctx.strokeStyle='rgba(200,30,60,.35)';ctx.lineWidth=18;ctx.beginPath();P.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.strokeStyle='rgba(255,90,110,.5)';ctx.lineWidth=2;ctx.stroke()});
+ ctx.fillStyle='#e8334f';for(let j=0;j<28;j++){const q=at(P_LOOP,t*.035+j/28);ctx.beginPath();ctx.ellipse(q[0],q[1],5,3.5,0,0,TAU);ctx.fill()}
+ const gl=(P,n,sp,al)=>{ctx.fillStyle=`rgba(255,224,102,${al})`;ctx.shadowColor='#ffe066';ctx.shadowBlur=8;for(let j=0;j<n;j++){const q=at(P,t*sp+j/n);circle(q[0],q[1],4.2);ctx.fill()}ctx.shadowBlur=0};
+ gl(P_IL,6,.12,k===0?1:.5);gl(P_LM,4,.12,k===1||k===3?1:.5);
+ ctx.strokeStyle='rgba(255,209,102,.8)';ctx.lineWidth=4;ctx.beginPath();P_NERVE.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();
+ if(k===2&&tl>.3){const q=at(P_NERVE,Math.min(.999,(tl-.3)/.6));const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],18);g.addColorStop(0,'#fff');g.addColorStop(1,'rgba(255,209,102,0)');ctx.fillStyle=g;circle(q[0],q[1],18);ctx.fill()}
+ // corazón
+ const hs=1+.1*Math.max(0,Math.sin(t*6));ctx.save();ctx.translate(480,398);ctx.scale(hs,hs);ctx.fillStyle='#ff3b5c';ctx.shadowColor='#ff3b5c';ctx.shadowBlur=14;ctx.beginPath();ctx.moveTo(0,14);ctx.bezierCurveTo(-26,-4,-14,-24,0,-10);ctx.bezierCurveTo(14,-24,26,-4,0,14);ctx.fill();ctx.restore();text('Corazón',480,430,{align:'center',font:'600 12px '+FONT,c:'#ff9aab'});
+ let contr=0;if(k===3){contr=Math.max(0,Math.sin(Math.min(1,tl*2)*Math.PI))}
+ Object.entries(ST).forEach(([ty,s])=>{const on=TEAM_STEPS[k][0]===ty,col=TYPES[ty].color;ctx.save();circle(s.x,s.y,s.r);ctx.fillStyle='#0b1226';ctx.fill();ctx.lineWidth=on?4:2;ctx.strokeStyle=on?col:rgba(col,.5);if(on){ctx.shadowColor=col;ctx.shadowBlur=26}ctx.stroke();ctx.shadowBlur=0;ctx.clip();
+  if(ty==='miocito'){[-44,0,44].forEach(dy=>drawCell(ty,1,t,{x:s.x,y:s.y+dy,s:s.s,contr}))}else drawCell(ty,1,t,{x:s.x+(s.dx||0),y:s.y+(s.dy||0),s:s.s,anim:on&&ty!=='neurona'||ty==='enterocito'});
+  if(ty==='hepatocito'&&on){ctx.fillStyle='rgba(255,126,182,.9)';for(let j=0;j<8;j++){circle(s.x+Math.cos(j+t)*50,s.y+Math.sin(j*1.7+t)*40,3);ctx.fill()}}
+  ctx.restore();text(s.lab,s.lx,s.ly,{align:'center',font:'800 16px '+DISP,c:on?col:'#dfe5ff'});text(TYPES[ty].name+'s',s.lx,s.ly+18,{align:'center',font:'400 12px '+FONT,c:'#9ba6cc'})});
+ ctx.save();rr(20,462,440,118,14);ctx.fillStyle='rgba(7,11,24,.9)';ctx.fill();ctx.strokeStyle=TYPES[TEAM_STEPS[k][0]].color;ctx.lineWidth=1.5;ctx.stroke();text('PASO '+(k+1)+' DE 4',38,486,{font:'600 11px '+MONO,c:TYPES[TEAM_STEPS[k][0]].color});
+ const words=TEAM_STEPS[k][1].split(' ');let line='',y=512;ctx.font='700 15px '+FONT;words.forEach(w=>{const tt=line?line+' '+w:w;if(ctx.measureText(tt).width>400){text(line,38,y,{font:'700 15px '+FONT});line=w;y+=21}else line=tt});text(line,38,y,{font:'700 15px '+FONT});
+ ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(38,566,404,3);ctx.fillStyle=TYPES[TEAM_STEPS[k][0]].color;ctx.fillRect(38,566,404*tl,3);ctx.restore();
+ ctx.save();rr(20,20,196,76,12);ctx.fillStyle='rgba(7,11,24,.8)';ctx.fill();[['#ffe066','Glucosa'],['#e8334f','Glóbulo rojo (O₂)'],['#ffd166','Impulso nervioso']].forEach(([c,n],i)=>{ctx.fillStyle=c;circle(38,38+i*20,5);ctx.fill();text(n,52,38+i*20,{font:'400 12.5px '+FONT})});ctx.restore()}
+
+/* ---------- Bucle principal ---------- */
+function update(dt){if(state.stage==='dif'){state.p=Math.min(1,state.p+dt/7);const ph=phaseOf(state.p);if(ph!==state._ph){state._ph=ph;markPhases()}if(state.p>=1)go('celula')}
+ if(state.stage==='tejido'){state.a=Math.min(1,state.a+dt/3.2);if(state.type==='hepatocito')state.G=clamp(state.G+(state.fed?.09:-.09)*dt,.04,1);if(state.type==='enterocito')updateGut(dt)}
+ if(state.stage==='equipo'){const k=teamStep(state.t);if(k!==state._ts){state._ts=k;markTeam()}}}
+function draw(){ctx.setTransform(SC,0,0,SC,0,0);ctx.globalAlpha=1;ctx.shadowBlur=0;background(state.t);const t=state.t;
+ if(state.stage!=='celula')state.boxes=[];
+ switch(state.stage){case'madre':drawMadre(t);break;case'dif':drawDif(t);break;case'celula':drawCelula(t);break;
+  case'tejido':({miocito:drawMuscle,neurona:drawNerve,hepatocito:drawLiver,enterocito:drawGut})[state.type](t,state.a);text(TYPES[state.type].tissue.toUpperCase()+' · ESQUEMA',940,H-14,{align:'right',font:'600 10.5px '+MONO,c:'rgba(155,166,204,.8)'});break;
+  case'equipo':drawTeam(t);break}}
+let last=performance.now();
+function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;if(!state.paused){dt*=state.speed;state.t+=dt;update(dt)}try{draw()}catch(err){console.error(err)}requestAnimationFrame(frame)}
+
+/* ---------- Interfaz ---------- */
+const $=id=>document.getElementById(id);
+const STAGES=[['madre','Célula madre'],['dif','Diferenciación'],['celula','Célula especializada'],['tejido','Tejido'],['equipo','Trabajo en equipo']];
+$('types').innerHTML=ORDER.map(k=>`<button class="type-btn" type="button" data-type="${k}" style="--c:${TYPES[k].color}"><span class="dot"></span><span><b>${TYPES[k].name}</b><small>gen ${TYPES[k].gene}</small></span></button>`).join('');
+$('steps').innerHTML=STAGES.map(([k,n],i)=>`<button class="step" type="button" data-stage="${k}"><span class="n">${i+1}</span><span class="lbl">${n}</span></button>`).join('');
+function setType(k){state.type=k;state.hl=null;document.documentElement.style.setProperty('--tc',TYPES[k].color);document.querySelectorAll('.type-btn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.type===k))}
+function go(stage){state.stage=stage;state.hl=null;state._ph=-1;state._ts=-1;
+ if(stage==='dif')state.p=0;if(stage==='celula')state.p=1;
+ if(stage==='tejido'){state.a=0;state.lastStim=state.t-3.2;state.food=[];state.nfire=[-9,-9,-9,-9,-9,-9].map(()=>state.t-2.5);state.pulses=[];state.pending=[];state.G=.35;state.fed=true}
+ const idx=STAGES.findIndex(s=>s[0]===stage);document.querySelectorAll('.step').forEach((b,i)=>{b.classList.toggle('on',i===idx);b.classList.toggle('done',i<idx);b.setAttribute('aria-current',i===idx?'step':'false')});
+ $('next').textContent={madre:'Diferenciar ▶',dif:'Saltar al final ▶',celula:'Formar tejido ▶',tejido:'Trabajo en equipo ▶',equipo:'↺ Volver a la célula madre'}[stage];
+ renderPanel()}
+function orgChips(T){return Object.entries(T.orgs).map(([k,v])=>`<button class="chip" type="button" data-org="${k}" style="--c:${ORGC[k]}" aria-pressed="${state.hl===k}"><i></i>${v[0]}</button>`).join('')}
+function detailHTML(T){if(!state.hl)return`<div class="detail" style="--c:${T.color}"><p class="note">Toca un organelo (aquí o en la imagen) para ver qué hace y destacarlo.</p></div>`;const o=T.orgs[state.hl];return`<div class="detail" style="--c:${ORGC[state.hl]}"><b><i></i>${o[0]}</b><p>${o[1]}</p></div>`}
+function renderPanel(){const T=TYPES[state.type],P=$('panel');let h='';
+ if(state.stage==='madre'){h=`<div class="sect"><span class="kicker">Etapa 1 · Punto de partida</span><h2>Célula madre</h2><p>Célula no especializada. Puede dividirse muchas veces (autorrenovación) y convertirse en distintos tipos celulares.</p></div>
+  <div class="sect"><h3>Cómo reconocerla</h3><ul class="feat"><li>Núcleo grande en relación a su tamaño</li><li>Pocos organelos y citoplasma escaso</li><li>Forma redondeada, sin especializaciones</li></ul></div>
+  <div class="sect"><h3>Idea clave</h3><p>Todas tus células tienen el <b>mismo ADN</b>. Lo que las hace distintas es <b>qué genes se encienden</b>: eso es la diferenciación celular.</p></div>
+  <div class="sect"><h3>Destino elegido</h3><div class="row"><button class="btn primary" type="button" data-go="dif">Diferenciar en ${T.name.toLowerCase()} ▶</button></div><p class="note">Cambia el destino con los botones de arriba o tocando un círculo en la imagen.</p></div>`}
+ else if(state.stage==='dif'){h=`<div class="sect"><span class="kicker">Etapa 2 · Diferenciación</span><h2>De célula madre a ${T.name.toLowerCase()}</h2><div class="facts"><span class="fact"><span>Gen clave</span> ${T.gene}</span><span class="fact"><span>Precursor</span> ${T.precursor}</span></div></div>
+  <ol class="phases" id="phases"><li>Una <b>señal química</b> llega desde el entorno y se une a receptores de la membrana.</li><li>El mensaje llega al núcleo y <b>activa genes específicos</b> (por ejemplo, ${T.gene}).</li><li>Se copian esos genes en ARN mensajero y los ribosomas <b>fabrican proteínas nuevas</b>.</li><li>Las proteínas cambian la <b>forma</b> y la <b>cantidad de organelos</b>. ${T.morph}</li></ol>
+  <p class="note">La diferenciación normalmente es un camino de ida: una neurona no vuelve a ser célula madre.</p>`}
+ else if(state.stage==='celula'){h=`<div class="sect"><span class="kicker">Etapa 3 · Célula especializada</span><h2>${T.full}</h2><p>${T.desc}</p><div class="facts">${T.facts.map(f=>`<span class="fact"><span>${f[0]}</span> ${f[1]}</span>`).join('')}</div></div>
+  <div class="sect"><h3>Forma según función</h3><ul class="feat">${T.feat.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+  <div class="sect"><h3>Organelos destacados</h3><div class="chips">${orgChips(T)}</div><div id="detail">${detailHTML(T)}</div></div>
+  <div class="q"><h3>Pregunta para la clase</h3><p>${T.q}</p></div>`}
+ else if(state.stage==='tejido'){const act=state.type==='hepatocito'?`<button class="btn ${state.fed?'primary':''}" type="button" data-act="fed" aria-pressed="${state.fed}">🍎 Después de comer</button><button class="btn ${!state.fed?'primary':''}" type="button" data-act="fast" aria-pressed="${!state.fed}">⏳ En ayuno</button>`:`<button class="btn primary" type="button" data-act="${state.type==='enterocito'?'food':'stim'}">${T.action}</button>`;
+  h=`<div class="sect"><span class="kicker">Etapa 4 · Tejido</span><h2>${T.tissue}</h2><p>${T.tissueDesc}</p></div>
+  <div class="sect"><h3>Pruébalo</h3><div class="row">${act}</div>${T.tip?`<p class="note">${T.tip}</p>`:''}</div>
+  <div class="sect"><h3>Cómo trabajan en conjunto</h3><ol class="phases">${T.team.map(s=>`<li class="past">${s}</li>`).join('')}</ol></div>
+  <div class="q"><h3>Para pensar</h3><p>Un tejido es un grupo de células del mismo tipo que cooperan en una función. Varios tejidos forman un órgano.</p></div>`}
+ else{h=`<div class="sect"><span class="kicker">Etapa 5 · Trabajo en equipo</span><h2>Cuatro células, un organismo</h2><p>Cada tipo celular hace un trabajo distinto, pero dependen unos de otros. Sigue el recorrido de la glucosa desde el alimento hasta el movimiento.</p></div>
+  <ol class="phases" id="team">${TEAM_STEPS.map(([k,s])=>`<li><span><b style="color:${TYPES[k].color}">${TYPES[k].name}.</b> ${s}</span></li>`).join('')}</ol>
+  <div class="q"><h3>Pregunta para la clase</h3><p>Si los enterocitos dejaran de absorber glucosa, ¿qué células notarían el problema primero? ¿Por qué el hígado ayudaría por un tiempo?</p></div>
+  <p class="note">Toca un órgano en la imagen para ver su tejido.</p>`}
+ P.innerHTML=h;markPhases();markTeam()}
+function markPhases(){const ol=$('phases');if(!ol||state.stage!=='dif')return;const ph=phaseOf(state.p);[...ol.children].forEach((li,i)=>{li.classList.toggle('on',i===ph);li.classList.toggle('past',i<ph)})}
+function markTeam(){const ol=$('team');if(!ol)return;const k=teamStep(state.t);[...ol.children].forEach((li,i)=>{li.classList.toggle('on',i===k);li.classList.toggle('past',false)})}
+function setHL(k){state.hl=state.hl===k?null:k;if(state.stage!=='celula')return;const T=TYPES[state.type];document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.org===state.hl));const d=$('detail');if(d)d.innerHTML=detailHTML(T)}
+
+$('types').addEventListener('click',e=>{const b=e.target.closest('.type-btn');if(!b)return;setType(b.dataset.type);if(state.stage==='madre')renderPanel();else if(state.stage==='equipo')go('tejido');else go(state.stage==='dif'?'dif':state.stage)});
+$('steps').addEventListener('click',e=>{const b=e.target.closest('.step');if(b)go(b.dataset.stage)});
+$('panel').addEventListener('click',e=>{const c=e.target.closest('[data-org]');if(c){setHL(c.dataset.org);return}const g=e.target.closest('[data-go]');if(g){go(g.dataset.go);return}const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
+ if(act==='stim'){if(state.type==='neurona')fireN(0);else if(state.t-state.lastStim>1.6)stim()}else if(act==='food')spawnFood(30);else{state.fed=act==='fed';renderPanel()}});
+$('next').addEventListener('click',()=>{const nx={madre:'dif',dif:'celula',celula:'tejido',tejido:'equipo',equipo:'madre'}[state.stage];go(nx)});
+$('pause').addEventListener('click',()=>{state.paused=!state.paused;$('pause').textContent=state.paused?'▶ Reanudar':'⏸ Pausa'});
+$('labels').addEventListener('click',()=>{state.labels=!state.labels;$('labels').setAttribute('aria-pressed',state.labels)});
+$('speed').addEventListener('input',e=>{state.speed=+e.target.value;$('speedOut').textContent=state.speed+'×'});
+function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]}
+function hit(x,y){if(state.stage==='madre'){for(const[k,ic]of Object.entries(ICONS))if(Math.hypot(x-ic.x,y-ic.y)<88)return{t:'type',k}}
+ if(state.stage==='celula'){for(const b of state.boxes){const[bx,by,bw,bh]=b.b;if(x>=bx&&x<=bx+bw&&y>=by&&y<=by+bh)return{t:'org',k:b.k}}}
+ if(state.stage==='tejido'&&state.type==='neurona'){for(let i=0;i<NEU.length;i++)if(Math.hypot(x-NEU[i].x,y-NEU[i].y)<34)return{t:'neu',k:i}}
+ if(state.stage==='equipo'){for(const[k,s]of Object.entries(ST))if(Math.hypot(x-s.x,y-s.y)<s.r)return{t:'station',k}}return null}
+cv.addEventListener('click',e=>{const[x,y]=pos(e);const h=hit(x,y);if(!h)return;if(h.t==='type'){setType(h.k);go('dif')}else if(h.t==='org')setHL(h.k);else if(h.t==='neu')fireN(h.k);else if(h.t==='station'){setType(h.k);go('tejido')}});
+cv.addEventListener('mousemove',e=>{const[x,y]=pos(e);cv.style.cursor=hit(x,y)?'pointer':'default'});
+
+setType('miocito');resize();go('madre');requestAnimationFrame(frame);
+window.__sim={state,go,setType};
+})();
+</script>
