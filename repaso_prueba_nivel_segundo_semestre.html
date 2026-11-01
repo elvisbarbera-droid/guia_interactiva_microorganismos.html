@@ -21,6 +21,7 @@
   --z-bio:#B9760F; --z-bio-t:#FCF1DD; --z-ani:#C64A6E; --z-ani-t:#FCE8EE;
   --z-veg:#3A853A; --z-veg-t:#E6F3E2; --z-pro:#6D59BE; --z-pro-t:#EFECFB;
   --z-lab:#24739F; --z-lab-t:#E2EFF7;
+  --z-dif:#0F8B8D; --z-dif-t:#DDF3F3;
   --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
   --f-body:'Atkinson Hyperlegible','Segoe UI',system-ui,sans-serif;
   --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
@@ -77,6 +78,8 @@ h1 span{color:var(--eosina)}
 .slide{position:relative;border-radius:18px;padding:16px;background:linear-gradient(180deg,#F9FCFC,#EEF5F5);border:1px solid var(--line-2);box-shadow:var(--shadow)}
 .slide::before{content:"MUESTRA · REPASO 2° SEMESTRE · ×400";position:absolute;top:-10px;left:18px;background:var(--card);border:1px solid var(--line-2);border-radius:6px;padding:1px 8px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2)}
 .stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+@media (min-width:1000px){.stations{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:560px) and (max-width:999px){.stations{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .station{text-align:left;display:grid;grid-template-rows:auto auto 1fr auto;gap:6px;padding:12px;border-radius:14px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
 @media (hover:hover){.station:hover{transform:translateY(-2px);border-color:var(--zc);box-shadow:var(--shadow)}}
 .station .ill{height:124px;border-radius:10px;background:var(--zt);display:grid;place-items:center;overflow:hidden}
@@ -523,6 +526,94 @@ details.more .myths{padding:10px}
           </svg>
         </div>
 
+        <div class="scene" data-zone="diferenciacion" hidden>
+          <svg class="cell" id="svg-diferenciacion" viewBox="0 0 900 600" role="group" aria-label="Células especializadas">
+            <defs>
+              <radialGradient id="rbcg" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#F7B8B0"/><stop offset=".42" stop-color="#E5584F"/><stop offset="1" stop-color="#B42B26"/></radialGradient>
+            </defs>
+
+            <!-- Neurona -->
+            <g class="hot" data-part="neurona" data-pin="165,40" data-nopin transform="translate(30 25)">
+              <rect width="270" height="270" rx="18" fill="#F3EEFB" stroke="#CFC2EC" stroke-width="2"/>
+              <g fill="none" stroke="#6B4FB3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M72,98 C60,86 52,76 38,68 M38,68 L26,60 M38,68 L28,78 M68,112 C54,112 44,118 28,116 M28,116 L20,108 M28,116 L20,126 M74,128 C62,140 54,152 40,160 M40,160 L30,156 M40,160 L36,172"/>
+                <path d="M118,112 C160,114 196,108 232,112" stroke-width="3.5"/>
+                <path d="M232,112 L248,98 M232,112 L256,112 M232,112 L248,128"/>
+              </g>
+              <g fill="#F3D88A" stroke="#B8912A" stroke-width="2.5"><rect x="128" y="104" width="26" height="16" rx="8"/><rect x="158" y="105" width="26" height="16" rx="8"/><rect x="188" y="104" width="26" height="16" rx="8"/></g>
+              <g fill="#6B4FB3"><circle cx="248" cy="98" r="5.5"/><circle cx="256" cy="112" r="5.5"/><circle cx="248" cy="128" r="5.5"/></g>
+              <circle cx="92" cy="112" r="27" fill="#CDB8F0" stroke="#6B4FB3" stroke-width="4"/>
+              <circle cx="90" cy="110" r="11" fill="#8A6FD0"/><circle cx="87" cy="107" r="4" fill="#5A3FA3"/>
+              <text x="135" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Neurona</text>
+              <text x="135" y="262" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="21" fill="#4F6765">Sistema nervioso</text>
+            </g>
+
+            <!-- Enterocito -->
+            <g class="hot" data-part="enterocito" data-pin="450,40" data-nopin transform="translate(315 25)">
+              <rect width="270" height="270" rx="18" fill="#FFF4E8" stroke="#F0CDA6" stroke-width="2"/>
+              <g opacity=".55" fill="#FBE3CB" stroke="#C8793A" stroke-width="3">
+                <rect x="26" y="74" width="62" height="126" rx="12"/><rect x="182" y="74" width="62" height="126" rx="12"/>
+                <g fill="#F4C9A0" stroke-width="2.5"><rect x="33" y="48" width="7" height="28" rx="3.5"/><rect x="44" y="48" width="7" height="28" rx="3.5"/><rect x="55" y="48" width="7" height="28" rx="3.5"/><rect x="66" y="48" width="7" height="28" rx="3.5"/><rect x="190" y="48" width="7" height="28" rx="3.5"/><rect x="201" y="48" width="7" height="28" rx="3.5"/><rect x="212" y="48" width="7" height="28" rx="3.5"/><rect x="223" y="48" width="7" height="28" rx="3.5"/></g>
+              </g>
+              <g fill="#F4C9A0" stroke="#C8793A" stroke-width="2.5"><rect x="101" y="44" width="7" height="30" rx="3.5"/><rect x="112" y="44" width="7" height="30" rx="3.5"/><rect x="123" y="44" width="7" height="30" rx="3.5"/><rect x="134" y="44" width="7" height="30" rx="3.5"/><rect x="145" y="44" width="7" height="30" rx="3.5"/><rect x="156" y="44" width="7" height="30" rx="3.5"/><rect x="167" y="44" width="7" height="30" rx="3.5"/></g>
+              <rect x="96" y="70" width="78" height="130" rx="14" fill="#FBE3CB" stroke="#C8793A" stroke-width="4"/>
+              <g fill="#E58F5B"><circle cx="118" cy="26" r="4.5"/><circle cx="150" cy="22" r="4.5"/><circle cx="60" cy="30" r="4.5"/><circle cx="212" cy="30" r="4.5"/></g>
+              <g fill="#F6B26B" stroke="#B5652A" stroke-width="2"><ellipse cx="116" cy="102" rx="11" ry="6" transform="rotate(-20 116 102)"/><ellipse cx="154" cy="108" rx="11" ry="6" transform="rotate(20 154 108)"/><ellipse cx="120" cy="132" rx="11" ry="6"/></g>
+              <ellipse cx="135" cy="168" rx="28" ry="20" fill="#D9B8F0" stroke="#7A55B8" stroke-width="3"/><circle cx="130" cy="166" r="6.5" fill="#5F3FA6"/>
+              <text x="135" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Enterocito</text>
+              <text x="135" y="262" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="21" fill="#4F6765">Intestino delgado</text>
+            </g>
+
+            <!-- Glóbulo rojo -->
+            <g class="hot" data-part="globulo-rojo" data-pin="735,40" data-nopin transform="translate(600 25)">
+              <rect width="270" height="270" rx="18" fill="#FDEDEC" stroke="#F2BDB9" stroke-width="2"/>
+              <g stroke="#A32520" stroke-width="2.5">
+                <circle cx="52" cy="150" r="36" fill="url(#rbcg)"/><circle cx="222" cy="160" r="34" fill="url(#rbcg)"/><circle cx="212" cy="62" r="26" fill="url(#rbcg)"/>
+                <circle cx="135" cy="112" r="62" fill="url(#rbcg)"/>
+              </g>
+              <g fill="#F9C9C3" opacity=".5"><ellipse cx="135" cy="112" rx="26" ry="19"/><ellipse cx="52" cy="150" rx="15" ry="11"/><ellipse cx="222" cy="160" rx="14" ry="10"/></g>
+              <text x="135" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Glóbulo rojo</text>
+              <text x="135" y="262" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="21" fill="#4F6765">Sangre</text>
+            </g>
+
+            <!-- Glóbulo blanco -->
+            <g class="hot" data-part="globulo-blanco" data-pin="165,325" data-nopin transform="translate(30 310)">
+              <rect width="270" height="270" rx="18" fill="#EEF3FB" stroke="#BFD0EE" stroke-width="2"/>
+              <g transform="translate(-12 0)">
+                <path d="M70,115 C70,80 100,58 130,60 C160,62 178,80 190,92 C205,100 222,104 228,112 C222,122 205,128 190,134 C178,150 160,170 130,172 C100,172 70,150 70,115 Z" fill="#DDE8F8" stroke="#8A7BC8" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M100,100 L126,118 L106,138" fill="none" stroke="#6E4FB5" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                <g fill="#6E4FB5" stroke="#4B3290" stroke-width="2.5"><circle cx="100" cy="100" r="16"/><circle cx="126" cy="118" r="17"/><circle cx="106" cy="138" r="15"/></g>
+                <g fill="#B6A3E3"><circle cx="152" cy="90" r="2.8"/><circle cx="162" cy="122" r="2.8"/><circle cx="148" cy="150" r="2.8"/><circle cx="122" cy="76" r="2.8"/><circle cx="170" cy="104" r="2.8"/><circle cx="84" cy="124" r="2.8"/></g>
+              </g>
+              <g fill="#58A84A" stroke="#35792C" stroke-width="2"><rect x="224" y="94" width="26" height="11" rx="5.5" transform="rotate(-20 237 99)"/><rect x="230" y="122" width="26" height="11" rx="5.5" transform="rotate(15 243 127)"/></g>
+              <text x="135" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Glóbulo blanco</text>
+              <text x="135" y="262" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="21" fill="#4F6765">Sangre y tejidos</text>
+            </g>
+
+            <!-- Hepatocito -->
+            <g class="hot" data-part="hepatocito" data-pin="450,325" data-nopin transform="translate(315 310)">
+              <rect width="270" height="270" rx="18" fill="#F8EFE4" stroke="#E4C9A8" stroke-width="2"/>
+              <polygon points="135,38 203,76 203,152 135,190 67,152 67,76" fill="#F2D9BF" stroke="#A8683A" stroke-width="6" stroke-linejoin="round"/>
+              <g fill="none" stroke-linecap="round"><path d="M104,162 C114,152 124,170 136,160 S156,152 164,164" stroke="#E39A5C" stroke-width="8"/><path d="M104,162 C114,152 124,170 136,160 S156,152 164,164" stroke="#FBDDBB" stroke-width="4"/></g>
+              <g fill="#F6B26B" stroke="#B5652A" stroke-width="2"><ellipse cx="98" cy="92" rx="11" ry="6" transform="rotate(-25 98 92)"/><ellipse cx="174" cy="90" rx="11" ry="6" transform="rotate(25 174 90)"/><ellipse cx="176" cy="132" rx="11" ry="6" transform="rotate(-15 176 132)"/></g>
+              <g fill="#8A5A32"><circle cx="86" cy="112" r="3"/><circle cx="95" cy="121" r="3"/><circle cx="85" cy="128" r="3"/><circle cx="97" cy="108" r="3"/><circle cx="92" cy="134" r="3"/></g>
+              <circle cx="135" cy="114" r="28" fill="#E3D0F4" stroke="#7A55B8" stroke-width="3"/><circle cx="131" cy="111" r="9" fill="#5F3FA6"/>
+              <text x="135" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Hepatocito</text>
+              <text x="135" y="262" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="21" fill="#4F6765">Hígado</text>
+            </g>
+
+            <!-- Idea central -->
+            <g transform="translate(600 310)">
+              <rect width="270" height="270" rx="18" fill="#DDF3F3" stroke="#0F8B8D" stroke-width="2.5" stroke-dasharray="8 6"/>
+              <circle cx="135" cy="56" r="30" fill="#FFFFFF" stroke="#0F8B8D" stroke-width="3.5"/>
+              <text x="135" y="66" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-weight="600" font-size="26" fill="#0B6B6D">ADN</text>
+              <text x="135" y="126" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">Diferenciación</text>
+              <text x="135" y="156" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="800" font-size="28" fill="#1C3533">celular</text>
+              <g text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="22" fill="#1C3533"><text x="135" y="192">Cada célula se</text><text x="135" y="216">especializa para</text><text x="135" y="240">cumplir una función.</text></g>
+            </g>
+          </svg>
+        </div>
+
         <div class="scene" data-zone="laboratorio" hidden>
           <ol class="skills" id="skills"></ol>
         </div>
@@ -558,6 +649,12 @@ const ZONES = [
    hint:'Toca una estructura. Usa + y − para acercarte.',
    scale:{um:1,u:290}, foot:'Bacteria · 1 a 5 µm',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M150,60 C162,48 170,48 176,60 S188,72 196,58" fill="none" stroke="#6D59BE" stroke-width="3" stroke-linecap="round"/><rect x="26" y="34" width="128" height="52" rx="26" fill="#DCD3F6" stroke="#7A66C9" stroke-width="3"/><rect x="33" y="41" width="114" height="38" rx="19" fill="#FCFBFF" stroke="#5A47B0" stroke-width="2"/><path d="M70,60 C68,48 86,46 92,54 S104,70 112,60 S108,46 96,52 S80,74 70,60 Z" fill="none" stroke="#3B2D8C" stroke-width="2"/><circle cx="52" cy="54" r="5" fill="none" stroke="#C2417A" stroke-width="2"/><g fill="#5A3F8F"><circle cx="128" cy="52" r="2.5"/><circle cx="134" cy="66" r="2.5"/><circle cx="56" cy="70" r="2.5"/><circle cx="122" cy="70" r="2.5"/></g></svg>'},
+  {id:'diferenciacion', name:'Diferenciación celular', c:'var(--z-dif)', t:'var(--z-dif-t)',
+   blurb:'Cinco células especializadas: dónde están y qué función cumplen.',
+   intro:'Todas las células parten con el mismo ADN, pero cada tipo se especializa para cumplir una función.',
+   pick:'Toca una célula del dibujo o de la lista.', items:'Células', partLabel:'Célula especializada', count:5, unit:'células',
+   hint:'Toca una célula para ver su función.', foot:'Células especializadas',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M66,38 C88,40 100,34 118,36" fill="none" stroke="#6B4FB3" stroke-width="3" stroke-linecap="round"/><path d="M42,30 L24,18 M40,40 L20,44 M46,50 L32,64" fill="none" stroke="#6B4FB3" stroke-width="3" stroke-linecap="round"/><circle cx="52" cy="40" r="14" fill="#CDB8F0" stroke="#6B4FB3" stroke-width="3"/><circle cx="51" cy="39" r="5" fill="#8A6FD0"/><path d="M154,30 v-8 M160,30 v-8 M166,30 v-8 M172,30 v-8" stroke="#C8793A" stroke-width="3" stroke-linecap="round"/><rect x="150" y="30" width="26" height="48" rx="6" fill="#FBE3CB" stroke="#C8793A" stroke-width="2.5"/><ellipse cx="163" cy="62" rx="8" ry="6" fill="#D9B8F0" stroke="#7A55B8" stroke-width="2"/><circle cx="58" cy="90" r="20" fill="#E0453E" stroke="#B92A25" stroke-width="2.5"/><ellipse cx="58" cy="90" rx="9" ry="6" fill="#F5B0A8"/><circle cx="116" cy="88" r="22" fill="#DCE7F7" stroke="#8A7BC8" stroke-width="2.5"/><circle cx="110" cy="82" r="8" fill="#6E4FB5"/><circle cx="123" cy="93" r="9" fill="#6E4FB5"/></svg>'},
   {id:'laboratorio', name:'Habilidades científicas', c:'var(--z-lab)', t:'var(--z-lab-t)',
    blurb:'Las habilidades de investigación, una a una.',
    hint:'Toca una habilidad.',
@@ -641,6 +738,13 @@ const PARTS = {
     como:['Informe, póster o presentación.'],
     ej:'Presentar al curso un póster con el gráfico.',
     no:'Compartir los datos es comunicar, y se hace al final.', en:['laboratorio']},
+
+  /* Diferenciación celular */
+  neurona:{n:'Neurona', funcion:'Recibe y envía mensajes (impulsos nerviosos) a otras neuronas, a los músculos y a las glándulas. Así sentimos, pensamos y movemos el cuerpo.', donde:'En el sistema nervioso: cerebro, médula espinal y nervios.', en:['diferenciacion']},
+  enterocito:{n:'Enterocito', funcion:'Absorbe los nutrientes de los alimentos digeridos y los pasa a la sangre. Sus pliegues (microvellosidades) le permiten absorber más.', donde:'En la pared del intestino delgado.', en:['diferenciacion']},
+  'globulo-rojo':{n:'Glóbulo rojo', funcion:'Transporta el oxígeno desde los pulmones hasta todas las células del cuerpo, gracias a la hemoglobina, una proteína.', donde:'En la sangre.', en:['diferenciacion']},
+  'globulo-blanco':{n:'Glóbulo blanco', funcion:'Defiende al cuerpo: ataca a las bacterias y a los virus que causan infecciones.', donde:'En la sangre y en los tejidos.', en:['diferenciacion']},
+  hepatocito:{n:'Hepatocito', funcion:'Procesa y guarda nutrientes, fabrica bilis y elimina sustancias tóxicas.', donde:'En el hígado.', en:['diferenciacion']},
 
   /* Biomoléculas */
   carbohidratos:{n:'Carbohidratos', d:'Azúcares y almidones. Son la principal fuente de energía inmediata.',
@@ -1060,13 +1164,13 @@ function renderSegs(){
 function renderNav(){
   const chip=(id,name,c,ct)=>`<button class="chip-nav" style="--zc:${c}" data-go-zone="${id}" ${(cur.zone||'mapa')===id?'aria-current="page"':''}><span class="dot"></span>${esc(name)}${ct?`<span class="ct">${ct}</span>`:''}</button>`;
   const nv=$('#nav');
-  nv.innerHTML=chip('mapa','Mapa','var(--ink)','')+ZONES.map(z=>{const qs=qsForZone(z.id); return chip(z.id,z.name,z.c,`${qs.filter(q=>ST.rev[q.id]).length}/${qs.length}`);}).join('');
+  nv.innerHTML=chip('mapa','Mapa','var(--ink)','')+ZONES.map(z=>{const qs=qsForZone(z.id); return chip(z.id,z.name,z.c,qs.length?`${qs.filter(q=>ST.rev[q.id]).length}/${qs.length}`:'');}).join('');
   const cc=$('.chip-nav[aria-current="page"]',nv);
   if(cc&&nv.scrollWidth>nv.clientWidth) nv.scrollLeft+=cc.getBoundingClientRect().left-nv.getBoundingClientRect().left-(nv.clientWidth-cc.offsetWidth)/2;
 }
 function renderStations(){
   $('#stations').innerHTML=ZONES.map(z=>{const qs=qsForZone(z.id), r=qs.filter(q=>ST.rev[q.id]).length;
-    return `<button class="station" style="--zc:${z.c};--zt:${z.t}" data-go-zone="${z.id}"><span class="ill">${z.ill}</span><span class="st-name">${esc(z.name)}</span><span class="st-blurb">${esc(z.blurb)}</span><span class="meta"><span><b>${qs.length}</b> ${qs.length===1?'punto':'puntos'}</span><span>${r} repasados</span></span></button>`;}).join('');
+    return `<button class="station" style="--zc:${z.c};--zt:${z.t}" data-go-zone="${z.id}"><span class="ill">${z.ill}</span><span class="st-name">${esc(z.name)}</span><span class="st-blurb">${esc(z.blurb)}</span><span class="meta">${qs.length?`<span><b>${qs.length}</b> ${qs.length===1?'punto':'puntos'}</span><span>${r} repasados</span>`:`<span><b>${z.count}</b> ${z.unit}</span><span>función y ubicación</span>`}</span></button>`;}).join('');
 }
 function renderIndex(){
   $('#index').innerHTML=QS.map(q=>{const s=status(q), zs=[];
@@ -1145,6 +1249,7 @@ function initScene(id){
     const p=h.dataset.part, [x,y]=h.dataset.pin.split(',').map(Number), n=qsAt(id,p).length, side=h.dataset.lab||(x>690?'left':'right');
     const lx={left:-18,right:18,below:0,above:0}[side], ly={left:1,right:1,below:26,above:-24}[side], la={left:'end',right:'start',below:'middle',above:'middle'}[side];
     h.setAttribute('tabindex','0'); h.setAttribute('role','button'); h.setAttribute('aria-label',PARTS[p].n+(n?`, ${nPts(n)} de la prueba`:''));
+    if(h.hasAttribute('data-nopin')) return;
     pins.push(`<g class="pin ${n?'':'info'}" data-part="${p}" data-x="${x}" data-y="${y}" transform="translate(${x} ${y})"><circle class="halo" r="12"/><circle class="b" r="12"/><text>${n||'i'}</text><text class="plabel" x="${lx}" y="${ly}" style="text-anchor:${la}">${esc(PARTS[p].s||PARTS[p].n)}</text></g>`);
   });
   svg.insertAdjacentHTML('beforeend',`<g class="pins" aria-hidden="true">${pins.join('')}</g>`);
@@ -1245,8 +1350,8 @@ function select(part,qid,opt){
   }
   cur.part=part; renderPanel(qid,opt);
 }
-function partBtn(p){const n=qsAt(cur.zone,p).length;
-  return `<button class="part-btn" data-sel="${p}"><i></i><span>${esc(PARTS[p].n)}</span><span class="qc ${n?'':'zero'}">${n?nPts(n):'info'}</span></button>`;}
+function partBtn(p){const n=qsAt(cur.zone,p).length, none=!qsForZone(cur.zone).length;
+  return `<button class="part-btn" data-sel="${p}"><i></i><span>${esc(PARTS[p].n)}</span>${none?'':`<span class="qc ${n?'':'zero'}">${n?nPts(n):'info'}</span>`}</button>`;}
 function pCard(q,part){
   const s=status(q), done=!!ST.rev[q.id];
   const also=q.partes.map(loc).filter(L=>L.p!==part).map(L=>{const p=L.p, zs=PART_ZONES[p], zz=L.z||(zs.includes(cur.zone)?cur.zone:zs[0]), Z=ZMAP[zz];
@@ -1265,6 +1370,8 @@ function pCard(q,part){
 }
 function sections(key,info){
   let h='';
+  if(info.funcion) h+=`<div class="sec"><h5>Función</h5><p class="box">${esc(info.funcion)}</p></div>`;
+  if(info.donde) h+=`<div class="sec"><h5>Dónde se encuentra</h5><p style="margin:0">${esc(info.donde)}</p></div>`;
   if(info.bloque) h+=`<div class="sec"><h5>Bloque esencial</h5><p class="box"><b>${esc(info.bloque)}</b></p></div>`;
   if(info.fun) h+=`<div class="sec"><h5>Funciones</h5><ul class="blist">${info.fun.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`;
   if(info.ej&&info.bloque) h+=`<div class="sec"><h5>${key==='acidos-nucleicos'?'Dónde se encuentra':'En los alimentos'}</h5><p style="margin:0">${esc(info.ej)}</p></div>`;
@@ -1279,8 +1386,8 @@ function renderPanel(qid,opt){
   let h='';
   if(!part){
     const parts=zoneParts(cur.zone), wq=parts.filter(p=>qsAt(cur.zone,p).length), nq=parts.filter(p=>!qsAt(cur.zone,p).length);
-    h=`<div class="p-head"><p class="p-kicker"><i></i>Estación</p><h3>${esc(z.name)}</h3><p class="p-desc">${esc(z.blurb)} Toca una estructura del dibujo o de la lista.</p></div>
-    <div class="p-body"><h4 class="p-sec">Con puntos de la prueba</h4><div class="parts">${wq.map(partBtn).join('')}</div>${nq.length?`<h4 class="p-sec">Otras estructuras</h4><div class="parts">${nq.map(partBtn).join('')}</div>`:''}</div>`;
+    h=`<div class="p-head"><p class="p-kicker"><i></i>Estación</p><h3>${esc(z.name)}</h3><p class="p-desc">${esc(z.intro||z.blurb)} ${esc(z.pick||'Toca una estructura del dibujo o de la lista.')}</p></div>
+    <div class="p-body">${wq.length?`<h4 class="p-sec">Con puntos de la prueba</h4><div class="parts">${wq.map(partBtn).join('')}</div>`:''}${nq.length?`<h4 class="p-sec">${wq.length?'Otras estructuras':esc(z.items||'Estructuras')}</h4><div class="parts">${nq.map(partBtn).join('')}</div>`:''}</div>`;
   } else {
     const info=PARTS[part], qs=qsAt(cur.zone,part);
     const en=(info.en||[]).filter(zz=>zz!==cur.zone);
@@ -1288,10 +1395,10 @@ function renderPanel(qid,opt){
     let kicker, back='';
     if(kind==='list') kicker='Habilidad científica · paso '+esc(info.step);
     else if(kind==='mol') kicker=molOv?'Biomolécula':'Bloque · '+esc(MOLS[cur.mol].name);
-    else kicker=esc(z.name)+' · Estructura';
-    if(kind==='svg') back=`<button class="p-back" type="button" data-back>← Ver todas las estructuras</button> `;
+    else kicker=esc(z.name)+' · '+esc(z.partLabel||'Estructura');
+    if(kind==='svg') back=`<button class="p-back" type="button" data-back>← Ver todas las ${esc((z.items||'estructuras').toLowerCase())}</button> `;
     if(kind==='mol'&&!molOv) back=`<button class="p-back" type="button" data-back>← Volver a ${esc(MOLS[cur.mol].name.toLowerCase())}</button> `;
-    h=`<div class="p-head">${back}<p class="p-kicker"><i></i>${kicker}</p><h3>${esc(info.n)}</h3><p class="p-desc">${esc(info.d)}</p>
+    h=`<div class="p-head">${back}<p class="p-kicker"><i></i>${kicker}</p><h3>${esc(info.n)}</h3>${info.d?`<p class="p-desc">${esc(info.d)}</p>`:''}
       ${info.a?`<p class="p-analog"><b>Analogía:</b> ${esc(info.a)}</p>`:''}${enHtml}</div><div class="p-body">`;
     h+=sections(part,info);
     if(kind==='list'){
