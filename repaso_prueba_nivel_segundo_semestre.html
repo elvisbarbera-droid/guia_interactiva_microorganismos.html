@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Repaso Prueba de Nivel 2° Semestre</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: estaciones de un portaobjetos (mapa) → escena anatómica a la izquierda + ficha de estudio a la derecha.
+   Paleta clara inspirada en la tinción hematoxilina–eosina sobre papel cuadriculado de laboratorio. */
+:root{
+  --paper:#F4F8F7; --grid:#E2ECEA; --card:#FFFFFF; --ink:#1C3533; --ink-2:#4F6765;
+  --line:#D6E2E0; --line-2:#BACDCA;
+  --eosina:#BC2F67; --eosina-t:#FBE8F0; --hema:#3C4797; --hema-t:#E8EAF8;
+  --ok:#24734A; --ok-t:#E3F3E9; --hint:#FFF6DC; --hint-line:#DDB955;
+  --z-bio:#B9760F; --z-bio-t:#FCF1DD; --z-ani:#C64A6E; --z-ani-t:#FCE8EE;
+  --z-veg:#3A853A; --z-veg-t:#E6F3E2; --z-pro:#6D59BE; --z-pro-t:#EFECFB;
+  --z-lab:#24739F; --z-lab-t:#E2EFF7;
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Atkinson Hyperlegible','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(28,53,51,.06),0 8px 22px rgba(28,53,51,.07);
+  color-scheme:light;
+}
+html{background:var(--paper)}
+body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+button:focus-visible,textarea:focus-visible,input:focus-visible,.hot:focus-visible{outline:3px solid var(--hema);outline-offset:2px}
+
+/* Encabezado */
+.top{padding-block:22px 16px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between}
+.top>div{min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin:0}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,4.4vw,50px);line-height:1;letter-spacing:-.025em;margin:6px 0 8px;text-wrap:balance}
+h1 span{color:var(--eosina)}
+.sub{color:var(--ink-2);margin:0;max-width:62ch}
+.progress{flex:0 1 360px;min-width:240px}
+.progress .lbl{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:12px;color:var(--ink-2)}
+.progress .lbl b{color:var(--ink);font-weight:600}
+.segs{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:7px}
+.seg{height:12px;border-radius:3px;background:var(--line);border:0;padding:0;cursor:pointer;position:relative}
+.seg.resp{background:repeating-linear-gradient(135deg,var(--zc) 0 2px,transparent 2px 5px),var(--line)}
+.seg.rev{background:var(--zc)}
+.progress .key{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--ink-2)}
+.progress .key i{display:inline-block;width:12px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--ink-2)}
+.progress .key i.r{background:repeating-linear-gradient(135deg,var(--ink-2) 0 2px,transparent 2px 5px),var(--line)}
+.progress .key i.p{background:var(--line)}
+
+/* Navegación entre estaciones */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:rgba(244,248,247,.94);backdrop-filter:blur(6px);border-block:1px solid var(--line)}
+.nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:thin}
+.chip-nav{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:7px 13px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;min-height:38px}
+.chip-nav .dot{width:10px;height:10px;border-radius:50%;background:var(--zc)}
+.chip-nav .ct{font-family:var(--f-mono);font-size:11px;font-weight:400;opacity:.75}
+.chip-nav:hover{border-color:var(--zc)}
+.chip-nav[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Mapa (hub) */
+.hub{padding-block:26px 56px;display:grid;gap:30px}
+.hub-intro{display:grid;gap:8px;max-width:72ch}
+.hub-intro h2,.index h2{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;line-height:1.1;letter-spacing:-.01em}
+.hub-intro p{margin:0;color:var(--ink-2)}
+.how{display:flex;flex-wrap:wrap;gap:8px 18px;margin:4px 0 0;padding:0;list-style:none;font-size:14px}
+.how li{display:flex;gap:8px;align-items:center}
+.how b{font-family:var(--f-mono);font-size:12px;color:#fff;background:var(--ink);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;flex:0 0 auto}
+.slide{position:relative;border-radius:18px;padding:16px;background:linear-gradient(180deg,#F9FCFC,#EEF5F5);border:1px solid var(--line-2);box-shadow:var(--shadow)}
+.slide::before{content:"MUESTRA · REPASO 2° SEMESTRE · ×400";position:absolute;top:-10px;left:18px;background:var(--card);border:1px solid var(--line-2);border-radius:6px;padding:1px 8px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2)}
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.station{text-align:left;display:grid;grid-template-rows:auto auto 1fr auto;gap:6px;padding:12px;border-radius:14px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.station:hover{transform:translateY(-2px);border-color:var(--zc);box-shadow:var(--shadow)}
+.station .ill{height:124px;border-radius:10px;background:var(--zt);display:grid;place-items:center;overflow:hidden}
+.station .ill svg{width:100%;height:100%;display:block}
+.station .st-name{display:block;font-family:var(--f-display);font-weight:800;font-size:21px;margin:6px 0 0;line-height:1.1}
+.station .st-blurb{display:block;color:var(--ink-2);font-size:14px}
+.station .meta{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between;gap:8px;border-top:1px dashed var(--line-2);padding-top:8px;margin-top:4px}
+.station .meta b{color:var(--zc)}
+.index{background:var(--card);border:1px solid var(--line-2);border-radius:16px;overflow:hidden}
+.index header{padding:16px 18px;display:grid;gap:4px}
+.index header p{margin:0;color:var(--ink-2);font-size:14px}
+.irow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:11px 18px;border-top:1px solid var(--line)}
+.inum{font-family:var(--f-mono);font-weight:600;color:var(--eosina);font-size:15px}
+.ititle{font-weight:700;margin:0}
+.imeta{font-size:13px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.ilinks{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.go{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;min-height:32px}
+.go .dot{width:8px;height:8px;border-radius:50%;background:var(--zc)}
+.go:hover{background:var(--zt);border-color:var(--zc)}
+.st{font-family:var(--f-mono);font-size:11px;padding:1px 8px;border-radius:999px;background:#EDF2F1;color:var(--ink-2);white-space:nowrap}
+.st.resp{background:var(--hema-t);color:var(--hema)}
+.st.rev{background:var(--ok-t);color:var(--ok)}
+@media (max-width:680px){.irow{grid-template-columns:40px minmax(0,1fr)}.ilinks{grid-column:2;justify-content:flex-start}}
+
+/* Vista de estación */
+.zone{padding-block:18px 56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,430px);gap:18px;align-items:start}
+@media (max-width:980px){.zone{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--card);border:1px solid var(--line-2);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.stage-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--zt)}
+.stage-head>div{min-width:0}
+.stage-head h2{font-family:var(--f-display);font-weight:800;font-size:26px;margin:0;line-height:1.05;letter-spacing:-.01em}
+.stage-head .hint{font-size:13px;color:var(--ink-2);margin:2px 0 0}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tbtn{font-weight:700;font-size:13px;border:1px solid var(--line-2);background:var(--card);border-radius:8px;padding:6px 10px;cursor:pointer;min-height:36px;min-width:36px}
+.tbtn:hover{border-color:var(--ink-2)}
+.tbtn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scene svg.cell{display:block;width:100%;height:auto;aspect-ratio:3/2;max-width:100%;user-select:none;-webkit-user-select:none;background:radial-gradient(ellipse at 50% 45%,#FFFFFF 0,#F6FAF9 70%)}
+.scene.zoomed svg.cell{touch-action:none;cursor:grab}
+.scene.panning svg.cell{cursor:grabbing}
+.stage-foot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.scalebar{font-family:var(--f-mono);display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-width:0}
+.scalebar i{flex:0 0 auto}
+.scalebar i{display:inline-block;height:6px;border:2px solid var(--ink);border-top:0;width:var(--w,60px)}
+.zone-steps{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Elementos interactivos dentro del SVG */
+.hot{cursor:pointer;transition:opacity .25s}
+.hot:hover{filter:url(#glow)}
+.hot.sel{filter:url(#glow-sel)}
+svg.has-sel .hot:not(.sel):not(.base){opacity:.38}
+.pin{cursor:pointer}
+.pin .halo{fill:var(--eosina);opacity:.3;transform-box:fill-box;transform-origin:center;animation:pulse 2.6s ease-out infinite}
+.pin .b{fill:var(--eosina);stroke:#fff;stroke-width:2.5}
+.pin text{font-family:var(--f-mono);font-weight:600;font-size:12px;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pin.info .halo{display:none}
+.pin.info .b{fill:#fff;stroke:var(--ink-2);stroke-width:1.6}
+.pin.info text{fill:var(--ink-2)}
+.pin.done .b{fill:var(--ok)}
+.pin.done .halo{fill:var(--ok)}
+.pin text.plabel{font-family:var(--f-body);font-weight:700;font-size:13px;fill:var(--ink);text-anchor:start;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+svg.nolabels .plabel{display:none}
+@keyframes pulse{0%{transform:scale(.85);opacity:.5}100%{transform:scale(2.2);opacity:0}}
+
+/* Biomoléculas */
+.mol-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 0}
+.mol-tab{display:inline-flex;gap:8px;align-items:center;font-weight:700;font-size:14px;padding:7px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;min-height:38px}
+.mol-tab[aria-selected="true"]{background:var(--z-bio-t);border-color:var(--z-bio)}
+.mol-tab small{font-family:var(--f-mono);font-weight:400;font-size:11px;color:var(--ink-2)}
+.molbox{position:relative;margin:10px 14px 0;border-radius:12px;background:radial-gradient(ellipse at 50% 40%,#FFFFFF 0,#F3F7F6 75%);border:1px solid var(--line);aspect-ratio:3/2;max-width:100%;overflow:hidden}
+.molbox canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+.molbox canvas.drag{cursor:grabbing}
+.molbox .overlay{position:absolute;left:10px;top:10px;font-family:var(--f-mono);font-size:12px;color:var(--ink-2);background:rgba(255,255,255,.85);padding:3px 8px;border-radius:6px;pointer-events:none}
+.mol-parts{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
+.mol-part{display:inline-flex;gap:7px;align-items:center;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;min-height:34px}
+.mol-part b{font-family:var(--f-mono);font-size:11px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--eosina);color:#fff}
+.mol-part.info b{background:#fff;color:var(--ink-2);border:1px solid var(--ink-2)}
+.mol-part[aria-pressed="true"]{background:var(--z-bio-t);border-color:var(--z-bio)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.25)}
+
+/* Ficha de estudio (panel) */
+.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);max-height:calc(100vh - 86px);overflow:auto;background:var(--card);border:1px solid var(--line-2);border-radius:16px;box-shadow:var(--shadow);overscroll-behavior:contain}
+@media (max-width:980px){.panel{position:static;max-height:none}}
+.p-head{padding:16px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(var(--zt),var(--card))}
+.p-back{border:0;background:none;padding:0;font-size:13px;font-weight:700;color:var(--hema);cursor:pointer;margin-bottom:6px}
+.p-kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);margin:0;display:flex;gap:8px;align-items:center}
+.p-kicker i{width:10px;height:10px;border-radius:50%;background:var(--zc)}
+.p-head h3{font-family:var(--f-display);font-weight:800;font-size:27px;line-height:1.08;margin:4px 0 8px;text-wrap:balance;letter-spacing:-.01em}
+.p-desc{margin:0}
+.p-analog{margin:10px 0 0;padding:8px 11px;border-radius:9px;background:var(--paper);font-size:14px;color:var(--ink-2)}
+.p-analog b{color:var(--ink)}
+.p-en{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center;font-size:12px;color:var(--ink-2)}
+.tag{font-weight:700;font-size:12px;padding:3px 9px;border-radius:999px;background:var(--zt);color:var(--ink);border:1px solid var(--zc);cursor:pointer}
+.p-body{padding:14px 18px 22px;display:grid;gap:14px}
+.p-sec{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:4px 0 0}
+.parts{display:grid;gap:6px}
+.part-btn{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;min-height:42px}
+.part-btn i{width:12px;height:12px;border-radius:50%;background:var(--zc)}
+.part-btn:hover{border-color:var(--zc);background:var(--zt)}
+.qc{font-family:var(--f-mono);font-size:12px;padding:2px 8px;border-radius:999px;background:var(--eosina-t);color:var(--eosina);font-weight:600;white-space:nowrap}
+.qc.zero{background:var(--paper);color:var(--ink-2);font-weight:400}
+.empty{font-size:14px;color:var(--ink-2);margin:0;padding:10px 12px;border:1px dashed var(--line-2);border-radius:10px}
+
+/* Tarjeta de pregunta de desarrollo */
+.q{border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--card);scroll-margin-top:90px}
+.q.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 4px var(--eosina)}100%{box-shadow:0 0 0 0 transparent}}
+.q-top{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:9px 14px;background:var(--eosina-t);border-bottom:1px solid var(--line)}
+.q-num{font-family:var(--f-mono);font-weight:600;color:var(--eosina);font-size:13px}
+.q-tema{font-size:12px;font-weight:700}
+.q-skill{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--hema-t);color:var(--hema)}
+.q-top .st{margin-left:auto}
+.q-in{padding:12px 14px 14px;display:grid;gap:10px}
+.q-title{font-family:var(--f-display);font-weight:800;font-size:20px;margin:0;line-height:1.15}
+.q-ctx{margin:0;font-size:15px;color:var(--ink-2);border-left:3px solid var(--line-2);padding-left:10px}
+.q-ask{margin:0;font-weight:700}
+.q-lbl{font-size:13px;font-weight:700;color:var(--ink-2);display:flex;justify-content:space-between;gap:8px}
+.q-lbl span{font-family:var(--f-mono);font-weight:400}
+.q textarea{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;font:15px/1.5 var(--f-body);padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:#FBFDFC;color:var(--ink)}
+.q-actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font-weight:700;font-size:14px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;min-height:42px}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--eosina);border-color:var(--eosina);color:#fff}
+.btn.primary:hover{background:#9E2655}
+.btn[disabled]{opacity:.5;cursor:default}
+.hints{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.hints li{font-size:14px;padding:8px 11px;border-radius:9px;background:var(--hint);border:1px dashed var(--hint-line)}
+.hints li b{font-family:var(--f-mono);font-size:12px;margin-right:6px}
+.model{display:grid;gap:12px;padding:13px;border-radius:12px;background:#F4FAF6;border:1px solid #C3E2CF}
+.model h5{margin:0;font-family:var(--f-mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok)}
+.model p{margin:0}
+.checks{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.checks label{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:start;font-size:14px;cursor:pointer}
+.checks input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--ok)}
+.score{font-size:13px;font-weight:700;color:var(--ok)}
+.myths{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.myths li{font-size:14px;padding:8px 10px;border-radius:9px;background:var(--card);border:1px solid var(--line)}
+.myths .no{display:block;color:var(--eosina);font-weight:700}
+.myths .no::before{content:"Idea errónea: ";font-family:var(--f-mono);font-weight:400;font-size:12px;color:var(--ink-2)}
+.also{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--ink-2)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;z-index:20;box-shadow:var(--shadow)}
+@media (prefers-reduced-motion:reduce){.pin .halo{animation:none}.station,.hot{transition:none}.q.flash{animation:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="d"/>
+      <feFlood flood-color="#3C4797" flood-opacity=".55"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-sel" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3.5" result="d"/>
+      <feFlood flood-color="#BC2F67" flood-opacity=".85"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <symbol id="s-mito" viewBox="0 0 120 60">
+      <rect x="3" y="3" width="114" height="54" rx="27" fill="#F6B26B" stroke="#B5652A" stroke-width="3"/>
+      <rect x="10" y="10" width="100" height="40" rx="20" fill="#FCD9B0" stroke="#C9783A" stroke-width="2"/>
+      <path d="M16,30 Q22,-2 28,30 T40,30 T52,30 T64,30 T76,30 T88,30 T100,30" fill="none" stroke="#B5652A" stroke-width="2.6" stroke-linejoin="round"/>
+      <circle cx="46" cy="22" r="1.6" fill="#8A4A1C"/><circle cx="70" cy="38" r="1.6" fill="#8A4A1C"/><circle cx="92" cy="24" r="1.6" fill="#8A4A1C"/>
+    </symbol>
+    <symbol id="s-granum" viewBox="0 0 16 22">
+      <rect x="0" y="0" width="16" height="4.6" rx="2" fill="#3E8A39" stroke="#24561F" stroke-width=".8"/>
+      <rect x="0" y="5.6" width="16" height="4.6" rx="2" fill="#3E8A39" stroke="#24561F" stroke-width=".8"/>
+      <rect x="0" y="11.2" width="16" height="4.6" rx="2" fill="#3E8A39" stroke="#24561F" stroke-width=".8"/>
+      <rect x="0" y="16.8" width="16" height="4.6" rx="2" fill="#3E8A39" stroke="#24561F" stroke-width=".8"/>
+    </symbol>
+    <symbol id="s-chloro" viewBox="0 0 140 70">
+      <ellipse cx="70" cy="35" rx="67" ry="32" fill="#7CC36E" stroke="#2F6F2C" stroke-width="3"/>
+      <ellipse cx="70" cy="35" rx="60" ry="26" fill="#B5E1A4" stroke="#3E8A39" stroke-width="1.5"/>
+      <path d="M16,35 H124 M26,28 H114 M26,42 H114" stroke="#4E9A45" stroke-width="1.4" fill="none"/>
+      <use href="#s-granum" x="24" y="24" width="16" height="22"/>
+      <use href="#s-granum" x="46" y="24" width="16" height="22"/>
+      <use href="#s-granum" x="68" y="24" width="16" height="22"/>
+      <use href="#s-granum" x="90" y="24" width="16" height="22"/>
+      <circle cx="58" cy="17" r="2" fill="#24561F"/><circle cx="96" cy="52" r="2" fill="#24561F"/>
+    </symbol>
+    <symbol id="s-golgi" viewBox="0 0 160 110">
+      <g fill="none" stroke-linecap="round">
+        <g stroke="#C28A12" stroke-width="12">
+          <path d="M22,30 Q80,2 138,30"/><path d="M17,47 Q80,18 143,47"/><path d="M15,64 Q80,34 145,64"/><path d="M19,81 Q80,51 141,81"/><path d="M28,97 Q80,68 132,97"/>
+        </g>
+        <g stroke="#F8DC86" stroke-width="6.5">
+          <path d="M22,30 Q80,2 138,30"/><path d="M17,47 Q80,18 143,47"/><path d="M15,64 Q80,34 145,64"/><path d="M19,81 Q80,51 141,81"/><path d="M28,97 Q80,68 132,97"/>
+        </g>
+      </g>
+      <g fill="#F8DC86" stroke="#C28A12" stroke-width="2.4">
+        <circle cx="9" cy="24" r="5"/><circle cx="152" cy="32" r="5.5"/><circle cx="154" cy="66" r="6"/><circle cx="7" cy="80" r="5"/><circle cx="142" cy="103" r="5"/>
+      </g>
+    </symbol>
+    <symbol id="s-ros" viewBox="-10 -10 20 20">
+      <g fill="#7B4E31"><circle r="2.8"/><circle cx="5" r="2.6"/><circle cx="-5" r="2.6"/><circle cx="2.5" cy="4.4" r="2.6"/><circle cx="-2.5" cy="4.4" r="2.6"/><circle cx="2.5" cy="-4.4" r="2.6"/><circle cx="-2.5" cy="-4.4" r="2.6"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="wrap top">
+  <div>
+    <p class="eyebrow">Ciencias Naturales · Biología · Enseñanza Media</p>
+    <h1>Repaso para la prueba de nivel <span>segundo semestre</span></h1>
+    <p class="sub">Explora biomoléculas y células haciendo clic en sus partes. En cada estructura encontrarás preguntas de desarrollo: escribe tu explicación, pide una pista si la necesitas y después compárala con la explicación modelo.</p>
+  </div>
+  <div class="progress">
+    <div class="lbl"><span>Tu avance</span><span><b id="prog-n">0</b> de 13 explicaciones revisadas</span></div>
+    <div class="segs" id="segs"></div>
+    <div class="key"><span><i></i>Revisada</span><span><i class="r"></i>Respondida</span><span><i class="p"></i>Pendiente</span></div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Estaciones del repaso"><div class="wrap" id="nav"></div></nav>
+
+<main>
+  <section id="view-mapa" class="wrap hub" aria-labelledby="hub-t">
+    <div class="hub-intro">
+      <h2 id="hub-t">Elige una estación para explorar</h2>
+      <p>Cada estación es una lámina anatómica. Los puntos con número son estructuras que tienen preguntas; los puntos con «i» solo tienen información. Puedes moverte libremente entre estaciones: varias preguntas aparecen en más de un lugar, porque los temas están conectados.</p>
+      <ul class="how">
+        <li><b>1</b>Entra a una estación</li>
+        <li><b>2</b>Haz clic en una estructura</li>
+        <li><b>3</b>Escribe tu explicación</li>
+        <li><b>4</b>Compárala con la explicación modelo</li>
+      </ul>
+    </div>
+    <div class="slide"><div class="stations" id="stations"></div></div>
+    <section class="index" aria-labelledby="idx-t">
+      <header>
+        <h2 id="idx-t">Las 13 preguntas y dónde encontrarlas</h2>
+        <p>Usa esta lista para repasar en orden. Cada botón te lleva directo a la estructura donde está la pregunta.</p>
+      </header>
+      <div id="index"></div>
+    </section>
+  </section>
+
+  <section id="view-zona" class="wrap zone" hidden>
+    <div class="stage" id="stage">
+      <div class="stage-head">
+        <div><h2 id="z-title">Estación</h2><p class="hint" id="z-hint"></p></div>
+        <div class="tools">
+          <button class="tbtn" id="t-labels" aria-pressed="true" type="button">Nombres</button>
+          <button class="tbtn" id="t-spin" aria-pressed="true" type="button">Girar solo</button>
+          <button class="tbtn" id="t-zin" aria-label="Acercar" type="button">+</button>
+          <button class="tbtn" id="t-zout" aria-label="Alejar" type="button">−</button>
+          <button class="tbtn" id="t-fit" type="button">Ver todo</button>
+        </div>
+      </div>
+      <div id="scenes">
+
+        <div class="scene" data-zone="biomoleculas" hidden>
+          <div class="mol-tabs" role="tablist" id="mol-tabs" aria-label="Biomoléculas"></div>
+          <div class="molbox"><canvas id="mol-canvas" aria-label="Modelo 3D de la biomolécula. Arrastra para girar."></canvas><span class="overlay" id="mol-ov"></span></div>
+          <div class="mol-parts" id="mol-parts"></div>
+          <div class="legend" style="padding:0 14px 12px">
+            <span><i style="background:#8F9A9A"></i>Carbono</span><span><i style="background:#E04A3F"></i>Oxígeno</span><span><i style="background:#3D6FD6"></i>Nitrógeno</span><span><i style="background:#FFFFFF"></i>Hidrógeno</span><span><i style="background:#F39A2B"></i>Fósforo</span><span><i style="background:#E8C83A"></i>Azufre</span>
+          </div>
+        </div>
+
+        <div class="scene" data-zone="animal" hidden>
+          <svg class="cell" id="svg-animal" viewBox="0 0 900 600" role="group" aria-label="Célula animal">
+            <g class="hot base" data-part="citoplasma" data-pin="255,345" data-lab="below">
+              <path id="animal-outline" d="M450,40 C620,35 800,110 845,250 C885,380 790,520 620,555 C480,585 300,580 170,520 C55,465 30,330 70,220 C115,100 290,45 450,40 Z" fill="#FDEEF2"/>
+            </g>
+            <g class="hot" data-part="ribosomas" id="animal-ribos"></g>
+            <g class="hot" data-part="citoesqueleto" data-pin="640,402" fill="none">
+              <path d="M95,262 C160,232 230,238 292,214 M470,418 C520,398 600,412 640,402 M185,505 C230,478 262,520 305,522 M640,78 C600,60 520,62 470,72 M700,232 C740,252 770,262 805,285" stroke="#E8B4C3" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M95,262 C160,232 230,238 292,214 M470,418 C520,398 600,412 640,402 M185,505 C230,478 262,520 305,522 M640,78 C600,60 520,62 470,72 M700,232 C740,252 770,262 805,285" stroke="transparent" stroke-width="14"/>
+            </g>
+            <g class="hot base" data-part="membrana" data-pin="846,262" fill="none">
+              <path d="M450,40 C620,35 800,110 845,250 C885,380 790,520 620,555 C480,585 300,580 170,520 C55,465 30,330 70,220 C115,100 290,45 450,40 Z" stroke="#CF5A7C" stroke-width="12"/>
+              <path d="M450,40 C620,35 800,110 845,250 C885,380 790,520 620,555 C480,585 300,580 170,520 C55,465 30,330 70,220 C115,100 290,45 450,40 Z" stroke="#F8CFDA" stroke-width="4"/>
+            </g>
+            <g class="hot" data-part="rer" data-pin="534,250" fill="none" stroke-linecap="round">
+              <g stroke="#C97A9B" stroke-width="12"><path class="rib-along" d="M441.7,175.4 A122,122 0 0 1 493.5,368.4"/><path class="rib-along" d="M447.9,158.4 A140,140 0 0 1 507.2,380"/><path class="rib-along" d="M454,141.5 A158,158 0 0 1 521,391.6"/></g>
+              <g stroke="#F7D3E0" stroke-width="6.5"><path d="M441.7,175.4 A122,122 0 0 1 493.5,368.4"/><path d="M447.9,158.4 A140,140 0 0 1 507.2,380"/><path d="M454,141.5 A158,158 0 0 1 521,391.6"/></g>
+            </g>
+            <g class="hot" data-part="nucleo" data-pin="352,248">
+              <circle cx="400" cy="290" r="100" fill="#EAE2F8" stroke="#6B53B0" stroke-width="8"/>
+              <circle cx="400" cy="290" r="100" fill="none" stroke="#D3C6F1" stroke-width="2.4"/>
+              <g fill="#FDEEF2"><circle cx="494" cy="324.2" r="4.6"/><circle cx="442.3" cy="380.6" r="4.6"/><circle cx="365.8" cy="384" r="4.6"/><circle cx="309.4" cy="332.3" r="4.6"/><circle cx="306" cy="255.8" r="4.6"/><circle cx="357.7" cy="199.4" r="4.6"/><circle cx="434.2" cy="196" r="4.6"/><circle cx="490.6" cy="247.7" r="4.6"/></g>
+              <path d="M335,270 c10,-14 24,4 34,-8 s18,-16 30,-4 M345,330 c12,8 20,-10 32,2 s10,22 24,14 M440,240 c10,10 26,-2 30,12 s-6,20 8,26 M360,300 c6,-10 18,-6 20,4 M395,360 c10,-6 22,4 32,-4 s14,-4 22,4 M380,225 c8,6 16,-4 26,2" fill="none" stroke="#9783CF" stroke-width="2.4" stroke-linecap="round"/>
+              <circle cx="425" cy="305" r="28" fill="#5F48A6"/>
+              <circle cx="416" cy="298" r="4" fill="#8C78CC"/><circle cx="433" cy="312" r="3" fill="#8C78CC"/>
+            </g>
+            <g class="hot" data-part="vesiculas" data-pin="800,338">
+              <g fill="#F8DC86" stroke="#C28A12" stroke-width="2.5"><circle cx="770" cy="372" r="8"/><circle cx="800" cy="338" r="9"/><circle cx="572" cy="262" r="6"/><circle cx="570" cy="322" r="6"/><circle cx="839" cy="362" r="10"/></g>
+              <g fill="#C28A12"><circle cx="858" cy="354" r="2.5"/><circle cx="863" cy="368" r="2.5"/><circle cx="855" cy="378" r="2"/></g>
+            </g>
+            <g class="hot" data-part="golgi" data-pin="668,300">
+              <use href="#s-golgi" x="585" y="245" width="165" height="113" transform="rotate(-8 667 301)"/>
+            </g>
+            <g class="hot" data-part="rel" data-pin="352,452" fill="none" stroke-linecap="round">
+              <g stroke="#E39A5C" stroke-width="11"><path d="M280,440 C300,420 330,450 350,430 S390,415 410,440 S440,470 425,490"/><path d="M290,470 C310,490 340,470 360,488 S400,500 420,480"/><path d="M350,430 C352,450 356,470 360,488"/></g>
+              <g stroke="#FBDDBB" stroke-width="5.5"><path d="M280,440 C300,420 330,450 350,430 S390,415 410,440 S440,470 425,490"/><path d="M290,470 C310,490 340,470 360,488 S400,500 420,480"/><path d="M350,430 C352,450 356,470 360,488"/></g>
+            </g>
+            <g class="hot" data-part="mitocondria" data-pin="215,170"><use href="#s-mito" x="155" y="140" width="120" height="60" transform="rotate(-20 215 170)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="630" y="120" width="120" height="60" transform="rotate(25 690 150)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="140" y="390" width="120" height="60" transform="rotate(15 200 420)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="485" y="465" width="120" height="60" transform="rotate(-10 545 495)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="620" y="425" width="120" height="60" transform="rotate(10 680 455)"/></g>
+            <g class="hot" data-part="lisosoma" data-pin="590,212">
+              <g fill="#E4D2F3" stroke="#8A63BE" stroke-width="3"><circle cx="590" cy="212" r="16"/><circle cx="440" cy="545" r="13"/></g>
+              <g fill="#8A63BE"><circle cx="584" cy="207" r="2.3"/><circle cx="595" cy="209" r="2.3"/><circle cx="588" cy="219" r="2.3"/><circle cx="597" cy="218" r="2"/><circle cx="436" cy="541" r="2.2"/><circle cx="444" cy="548" r="2.2"/><circle cx="437" cy="550" r="2"/></g>
+            </g>
+            <g class="hot" data-part="peroxisoma" data-pin="800,215">
+              <circle cx="800" cy="215" r="14" fill="#D6EEDC" stroke="#3E8E5C" stroke-width="3"/>
+              <rect x="795" y="210" width="10" height="10" fill="#3E8E5C" opacity=".85" transform="rotate(45 800 215)"/>
+            </g>
+            <g class="hot" data-part="centrosoma" data-pin="548,105">
+              <path d="M548,105 l0,-30 M548,105 l21,-21 M548,105 l30,0 M548,105 l21,21 M548,105 l0,28 M548,105 l-21,21 M548,105 l-30,0 M548,105 l-21,-21 M548,105 l11,-27 M548,105 l27,11 M548,105 l-27,-11 M548,105 l-11,27" stroke="#E3A9BB" stroke-width="1.4" stroke-linecap="round"/>
+              <circle cx="548" cy="105" r="26" fill="transparent"/>
+              <rect x="528" y="99" width="22" height="10" rx="2" fill="#F3D6A1" stroke="#B07D2A" stroke-width="1.6"/>
+              <path d="M533,99 v10 M538,99 v10 M543,99 v10" stroke="#B07D2A" stroke-width="1"/>
+              <rect x="553" y="92" width="10" height="22" rx="2" fill="#F3D6A1" stroke="#B07D2A" stroke-width="1.6"/>
+              <path d="M553,97 h10 M553,102 h10 M553,107 h10" stroke="#B07D2A" stroke-width="1"/>
+            </g>
+            <g class="hot" data-part="ribosomas" data-pin="335,104">
+              <path d="M300,112 C315,96 330,120 345,104 S370,96 378,110" fill="none" stroke="#B07AA8" stroke-width="1.6"/>
+              <g fill="#5A3F8F"><circle cx="304" cy="104" r="4"/><circle cx="316" cy="101" r="4"/><circle cx="328" cy="110" r="4"/><circle cx="341" cy="107" r="4"/><circle cx="353" cy="99" r="4"/><circle cx="365" cy="101" r="4"/><circle cx="376" cy="106" r="4"/></g>
+            </g>
+            <g class="hot" data-part="glucogeno" data-pin="122,298">
+              <use href="#s-ros" x="98" y="272" width="20" height="20"/><use href="#s-ros" x="126" y="296" width="20" height="20"/><use href="#s-ros" x="94" y="314" width="20" height="20"/><use href="#s-ros" x="132" y="256" width="20" height="20"/><use href="#s-ros" x="118" y="330" width="20" height="20"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="scene" data-zone="vegetal" hidden>
+          <svg class="cell" id="svg-vegetal" viewBox="0 0 900 600" role="group" aria-label="Célula vegetal">
+            <defs>
+              <pattern id="cellulose" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="10" height="10" fill="#CFE6BE"/><path d="M0,5 H10" stroke="#B2D399" stroke-width="2"/></pattern>
+            </defs>
+            <g class="hot base" data-part="pared" data-pin="35,300">
+              <rect x="22" y="22" width="856" height="556" rx="40" fill="url(#cellulose)" stroke="#5C9441" stroke-width="4"/>
+              <g fill="#F3FAEE"><rect x="297" y="20" width="7" height="28"/><rect x="597" y="20" width="7" height="28"/><rect x="317" y="552" width="7" height="28"/><rect x="637" y="552" width="7" height="28"/><rect x="20" y="187" width="28" height="7"/><rect x="852" y="407" width="28" height="7"/></g>
+            </g>
+            <g class="hot base" data-part="citoplasma" data-pin="70,400"><rect x="46" y="46" width="808" height="508" rx="28" fill="#F3FAEE"/></g>
+            <g class="hot base" data-part="membrana" data-pin="854,470"><rect x="46" y="46" width="808" height="508" rx="28" fill="none" stroke="#3F7F2F" stroke-width="5"/></g>
+            <g class="hot" data-part="vacuola" data-pin="510,300">
+              <path d="M300,150 C380,120 600,115 700,140 C760,160 770,240 765,320 C760,410 740,455 660,465 C540,480 400,478 320,460 C265,445 255,380 258,300 C260,220 255,170 300,150 Z" fill="#DDF0F9" stroke="#5FA5CB" stroke-width="4"/>
+              <path d="M310,165 C390,138 590,134 688,156" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+              <g fill="#A6D0E6"><circle cx="420" cy="230" r="3"/><circle cx="600" cy="380" r="4"/><circle cx="680" cy="250" r="3"/><circle cx="380" cy="400" r="3.5"/><circle cx="560" cy="200" r="2.5"/></g>
+            </g>
+            <g class="hot" data-part="rer" data-pin="160,190" fill="none" stroke-linecap="round">
+              <g stroke="#C97A9B" stroke-width="11"><path class="rib-along" d="M86.3,248.4 A90,90 0 0 1 217.9,231.1"/><path class="rib-along" d="M74.8,240.3 A104,104 0 0 1 226.8,220.3"/><path class="rib-along" d="M63.3,232.3 A118,118 0 0 1 235.8,209.6"/></g>
+              <g stroke="#F7D3E0" stroke-width="6"><path d="M86.3,248.4 A90,90 0 0 1 217.9,231.1"/><path d="M74.8,240.3 A104,104 0 0 1 226.8,220.3"/><path d="M63.3,232.3 A118,118 0 0 1 235.8,209.6"/></g>
+            </g>
+            <g class="hot" data-part="nucleo" data-pin="128,272">
+              <circle cx="160" cy="300" r="72" fill="#EAE2F8" stroke="#6B53B0" stroke-width="7"/>
+              <circle cx="160" cy="300" r="72" fill="none" stroke="#D3C6F1" stroke-width="2"/>
+              <g fill="#F3FAEE"><circle cx="222.4" cy="336" r="4"/><circle cx="160" cy="372" r="4"/><circle cx="97.6" cy="336" r="4"/><circle cx="97.6" cy="264" r="4"/><circle cx="160" cy="228" r="4"/><circle cx="222.4" cy="264" r="4"/></g>
+              <path d="M120,280 c8,-10 18,4 26,-6 s14,-10 22,0 M118,325 c10,6 16,-8 26,2 s8,16 18,10 M190,268 c6,8 18,0 20,10 M140,350 c8,-6 16,4 24,-2" fill="none" stroke="#9783CF" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="178" cy="312" r="20" fill="#5F48A6"/>
+            </g>
+            <g class="hot" data-part="golgi" data-pin="160,426"><use href="#s-golgi" x="110" y="392" width="100" height="69"/></g>
+            <g class="hot" data-part="amiloplasto" data-pin="88,115">
+              <circle cx="88" cy="115" r="25" fill="#FFF6E3" stroke="#C9A54C" stroke-width="3"/>
+              <g fill="#F2DFA8" stroke="#C9A54C" stroke-width="1.4"><ellipse cx="80" cy="107" rx="9" ry="7"/><ellipse cx="97" cy="111" rx="7" ry="6"/><ellipse cx="85" cy="125" rx="8" ry="6"/><ellipse cx="100" cy="126" rx="5" ry="4"/></g>
+            </g>
+            <g class="hot" data-part="cloroplasto" data-pin="330,84"><use href="#s-chloro" x="280" y="59" width="100" height="50"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="130" y="59" width="100" height="50"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="420" y="55" width="100" height="50" transform="rotate(-4 470 80)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="560" y="61" width="100" height="50" transform="rotate(6 610 86)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="762" y="175" width="100" height="50" transform="rotate(82 812 200)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="762" y="325" width="100" height="50" transform="rotate(96 812 350)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="510" y="487" width="100" height="50"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="370" y="489" width="100" height="50" transform="rotate(4 420 514)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="650" y="480" width="100" height="50" transform="rotate(-8 700 505)"/></g>
+            <g class="hot" data-part="cloroplasto"><use href="#s-chloro" x="70" y="480" width="100" height="50" transform="rotate(-6 120 505)"/></g>
+            <g class="hot" data-part="mitocondria" data-pin="250,150"><use href="#s-mito" x="215" y="132.5" width="70" height="35" transform="rotate(30 250 150)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="190" y="487.5" width="70" height="35" transform="rotate(-15 225 505)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="700" y="72.5" width="70" height="35" transform="rotate(10 735 90)"/></g>
+            <g class="hot" data-part="mitocondria"><use href="#s-mito" x="280" y="497.5" width="70" height="35" transform="rotate(10 315 515)"/></g>
+          </svg>
+        </div>
+
+        <div class="scene" data-zone="procariota" hidden>
+          <svg class="cell" id="svg-procariota" viewBox="0 0 900 600" role="group" aria-label="Célula procarionte (bacteria)">
+            <g class="hot" data-part="pili" data-pin="330,150" fill="none" stroke-linecap="round">
+              <path d="M250,182 l-8,-34 M290,175 l-4,-34 M330,172 l-2,-34 M370,171 l0,-34 M410,171 l2,-34 M470,171 l2,-34 M510,171 l4,-34 M550,172 l6,-33 M590,175 l8,-32 M630,182 l10,-30 M260,418 l-8,32 M300,425 l-4,33 M340,428 l-2,34 M380,429 l0,34 M420,429 l1,34 M480,429 l2,34 M520,429 l4,33 M560,428 l6,33 M600,425 l8,31 M640,418 l10,30" stroke="#8C7BD6" stroke-width="2.6"/>
+              <path d="M250,182 l-8,-34 M290,175 l-4,-34 M330,172 l-2,-34 M370,171 l0,-34 M410,171 l2,-34 M470,171 l2,-34 M510,171 l4,-34 M550,172 l6,-33 M590,175 l8,-32 M630,182 l10,-30 M260,418 l-8,32 M300,425 l-4,33 M340,428 l-2,34 M380,429 l0,34 M420,429 l1,34 M480,429 l2,34 M520,429 l4,33 M560,428 l6,33 M600,425 l8,31 M640,418 l10,30" stroke="transparent" stroke-width="12"/>
+            </g>
+            <g class="hot" data-part="flagelo" data-pin="812,300" fill="none" stroke-linecap="round">
+              <path d="M700,300 C760,250 790,255 812,300 S862,350 888,296" stroke="#6D59BE" stroke-width="4.5"/>
+              <path d="M700,300 C760,250 790,255 812,300 S862,350 888,296" stroke="transparent" stroke-width="18"/>
+            </g>
+            <g class="hot base" data-part="capsula" data-pin="440,179"><rect x="150" y="170" width="580" height="260" rx="130" fill="#F4F0FD" stroke="#B9A8EA" stroke-width="3" stroke-dasharray="1 6" stroke-linecap="round"/></g>
+            <g class="hot base" data-part="pared-bac" data-pin="440,404">
+              <rect x="168" y="188" width="544" height="224" rx="112" fill="#DCD3F6" stroke="#7A66C9" stroke-width="3"/>
+              <rect x="176" y="196" width="528" height="208" rx="104" fill="none" stroke="#B3A5E6" stroke-width="2" stroke-dasharray="6 4"/>
+            </g>
+            <g class="hot base" data-part="citoplasma" data-pin="240,330"><rect x="184" y="204" width="512" height="192" rx="96" fill="#FCFBFF"/></g>
+            <g class="hot" data-part="nucleoide" data-pin="452,300">
+              <ellipse cx="465" cy="302" rx="112" ry="64" fill="#ECE7FB"/>
+              <path d="M375,300 C370,262 420,248 450,268 S500,320 530,300 S560,250 520,252 S470,300 500,330 S560,352 548,318 S500,262 470,290 S420,352 395,338 S380,318 412,300 S470,252 440,262 S380,330 375,300 Z" fill="none" stroke="#3B2D8C" stroke-width="2.6" stroke-linejoin="round"/>
+            </g>
+            <g class="hot" data-part="ribosomas" data-pin="345,365" id="pro-ribos">
+              <g fill="#5A3F8F"><circle cx="335" cy="358" r="3.6"/><circle cx="346" cy="352" r="3.6"/><circle cx="356" cy="360" r="3.6"/><circle cx="340" cy="370" r="3.6"/><circle cx="352" cy="372" r="3.6"/><circle cx="362" cy="366" r="3.6"/></g>
+            </g>
+            <g class="hot" data-part="plasmido" data-pin="262,238">
+              <g fill="none" stroke="#C2417A" stroke-width="2.4"><circle cx="262" cy="262" r="13"/><circle cx="640" cy="350" r="11"/><circle cx="600" cy="368" r="8"/></g>
+              <g fill="none" stroke="#C2417A" stroke-width="1.3"><circle cx="264" cy="263" r="8.5"/><circle cx="641" cy="351" r="7"/></g>
+            </g>
+            <g class="hot" data-part="granulos" data-pin="650,240">
+              <g fill="#EEC96A" stroke="#B28A26" stroke-width="2"><circle cx="612" cy="252" r="10"/><circle cx="634" cy="270" r="7"/><circle cx="592" cy="274" r="8"/><circle cx="618" cy="287" r="5"/></g>
+            </g>
+            <g class="hot base" data-part="membrana" data-pin="186,300" fill="none">
+              <rect x="184" y="204" width="512" height="192" rx="96" stroke="#5A47B0" stroke-width="5"/>
+              <rect x="184" y="204" width="512" height="192" rx="96" stroke="#E6E0FA" stroke-width="1.5"/>
+            </g>
+            <g class="hot" data-part="flagelo"><rect x="682" y="292" width="20" height="16" rx="3" fill="#4A3A9A"/><path d="M700,300 H734" stroke="#6D59BE" stroke-width="4.5"/></g>
+          </svg>
+        </div>
+
+        <div class="scene" data-zone="laboratorio" hidden>
+          <svg class="cell" id="svg-laboratorio" viewBox="0 0 900 600" role="group" aria-label="Laboratorio de ciencias">
+            <rect width="900" height="600" fill="#EEF5F8"/>
+            <path d="M0,150 H900 M0,300 H900 M150,0 V430 M450,0 V430 M750,0 V430" stroke="#E0EBEF" stroke-width="2"/>
+            <rect x="0" y="430" width="900" height="22" fill="#D8C7A8" stroke="#B39E78" stroke-width="2"/>
+            <rect x="0" y="452" width="900" height="148" fill="#EFE6D5"/>
+            <path d="M300,452 V600 M600,452 V600 M130,520 h40 M430,520 h40 M730,520 h40" stroke="#D6C7AC" stroke-width="3" stroke-linecap="round"/>
+
+            <g class="hot" data-part="metodo" data-pin="302,36">
+              <rect x="36" y="24" width="280" height="200" rx="8" fill="#FFFFFF" stroke="#BACDCA" stroke-width="2"/>
+              <text x="54" y="50" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1C3533" letter-spacing="1">MÉTODO CIENTÍFICO</text>
+              <g fill="#24739F"><circle cx="62" cy="70" r="8"/><circle cx="62" cy="92" r="8"/><circle cx="62" cy="114" r="8"/><circle cx="62" cy="136" r="8"/><circle cx="62" cy="158" r="8"/><circle cx="62" cy="180" r="8"/><circle cx="62" cy="202" r="8"/></g>
+              <g fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle"><text x="62" y="73.5">1</text><text x="62" y="95.5">2</text><text x="62" y="117.5">3</text><text x="62" y="139.5">4</text><text x="62" y="161.5">5</text><text x="62" y="183.5">6</text><text x="62" y="205.5">7</text></g>
+              <g font-family="Atkinson Hyperlegible, sans-serif" font-size="13" fill="#1C3533"><text x="78" y="75">Observar</text><text x="78" y="97">Plantear una pregunta</text><text x="78" y="119">Formular una hipótesis</text><text x="78" y="141">Planificar y experimentar</text><text x="78" y="163">Analizar resultados</text><text x="78" y="185">Concluir</text><text x="78" y="207">Comunicar</text></g>
+              <path d="M272,200 C298,168 298,102 272,74" fill="none" stroke="#24739F" stroke-width="2" stroke-dasharray="4 4"/>
+              <path d="M266,80 l6,-8 l4,9" fill="none" stroke="#24739F" stroke-width="2"/>
+            </g>
+
+            <g class="hot" data-part="plan" data-pin="842,58">
+              <rect x="640" y="34" width="220" height="246" rx="12" fill="#C9A46A" stroke="#9E7C45" stroke-width="2"/>
+              <rect x="656" y="58" width="188" height="208" rx="4" fill="#FFFFFF"/>
+              <rect x="718" y="24" width="64" height="24" rx="6" fill="#8D97A0"/>
+              <text x="672" y="86" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1C3533" letter-spacing="1">PLAN EXPERIMENTAL</text>
+              <g fill="none" stroke="#24739F" stroke-width="2"><rect x="672" y="102" width="12" height="12" rx="2"/><rect x="672" y="130" width="12" height="12" rx="2"/><rect x="672" y="158" width="12" height="12" rx="2"/><rect x="672" y="186" width="12" height="12" rx="2"/><rect x="672" y="214" width="12" height="12" rx="2"/><path d="M674,108 l3,3 l6,-7 M674,136 l3,3 l6,-7"/></g>
+              <g font-family="Atkinson Hyperlegible, sans-serif" font-size="14" fill="#1C3533"><text x="692" y="113">Materiales</text><text x="692" y="141">Pasos ordenados</text><text x="692" y="169">Variables</text><text x="692" y="197">Tiempos</text><text x="692" y="225">Repeticiones ×3</text></g>
+            </g>
+
+            <g class="hot" data-part="microscopio" data-pin="160,300">
+              <g transform="translate(0 107.5) scale(0.75)">
+              <rect x="80" y="408" width="150" height="22" rx="8" fill="#3E4B5C"/>
+              <path d="M196,408 C208,360 210,300 186,250 L166,256 C186,300 182,360 170,408 Z" fill="#566579"/>
+              <rect x="88" y="330" width="124" height="12" rx="3" fill="#3E4B5C"/>
+              <rect x="100" y="324" width="80" height="6" fill="#D4ECF3" stroke="#8FB7C6" stroke-width="1.2"/>
+              <ellipse cx="140" cy="326.5" rx="12" ry="2.6" fill="#E58FB0"/>
+              <rect x="126" y="200" width="30" height="98" rx="4" fill="#6C7C90"/>
+              <rect x="120" y="294" width="42" height="12" rx="3" fill="#3E4B5C"/>
+              <rect x="133" y="306" width="15" height="16" rx="2" fill="#9AA7B6"/>
+              <path d="M133,316 h15" stroke="#D9534F" stroke-width="2"/>
+              <rect x="131" y="170" width="20" height="32" rx="3" fill="#3E4B5C"/>
+              <circle cx="190" cy="362" r="12" fill="#3E4B5C" stroke="#9AA7B6" stroke-width="2"/>
+              <circle cx="150" cy="385" r="10" fill="#FFF2B3" stroke="#C9A54C" stroke-width="2"/>
+              <ellipse cx="268" cy="418" rx="26" ry="13" fill="#EDCCDD" stroke="#B9789B" stroke-width="2"/>
+              <path d="M248,418 q20,-12 40,0 M254,422 q14,-7 28,0" fill="none" stroke="#B9789B" stroke-width="1.5"/>
+              </g>
+              <text x="70" y="488" font-family="IBM Plex Mono, monospace" font-size="14" fill="#4F6765">ocular 10× · objetivo 40× = 400×</text>
+            </g>
+
+            <g class="hot" data-part="elodea" data-pin="468,318">
+              <rect x="330" y="415" width="62" height="15" rx="4" fill="#2F5D7C"/>
+              <path d="M361,415 L361,300 L404,264" fill="none" stroke="#2F5D7C" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+              <polygon points="440,286 560,252 560,428 440,304" fill="#FFE680" opacity=".38"/>
+              <path d="M398,248 L452,268 L434,302 Z" fill="#2F5D7C"/>
+              <circle cx="436" cy="290" r="9" fill="#FFE27A"/>
+              <rect x="483" y="300" width="134" height="127" fill="#D2EBF6"/>
+              <path d="M480,268 L480,420 Q480,430 490,430 L610,430 Q620,430 620,420 L620,268" fill="none" stroke="#7FA8BD" stroke-width="4"/>
+              <path d="M551,426 C546,400 556,380 548,350 C544,336 550,330 549,322" fill="none" stroke="#2F7A2D" stroke-width="3"/>
+              <g fill="#4FA34A"><ellipse cx="540" cy="410" rx="9" ry="3.5" transform="rotate(-25 540 410)"/><ellipse cx="560" cy="402" rx="9" ry="3.5" transform="rotate(25 560 402)"/><ellipse cx="542" cy="385" rx="9" ry="3.5" transform="rotate(-30 542 385)"/><ellipse cx="561" cy="376" rx="9" ry="3.5" transform="rotate(30 561 376)"/><ellipse cx="540" cy="360" rx="8" ry="3.2" transform="rotate(-30 540 360)"/><ellipse cx="557" cy="350" rx="8" ry="3.2" transform="rotate(30 557 350)"/></g>
+              <path d="M505,402 L595,402 L561,362 L561,334 L539,334 L539,362 Z" fill="#FFFFFF" fill-opacity=".45" stroke="#8FB4C6" stroke-width="2"/>
+              <rect x="538" y="236" width="24" height="102" rx="10" fill="#EAF7FC" fill-opacity=".85" stroke="#8FB4C6" stroke-width="2"/>
+              <rect x="541" y="240" width="18" height="22" rx="8" fill="#FFFFFF"/>
+              <g fill="#FFFFFF" stroke="#7FA8BD" stroke-width="1.2"><circle class="bub" cx="550" cy="322" r="3"/><circle class="bub b2" cx="547" cy="318" r="2.4"/><circle class="bub b3" cx="553" cy="326" r="2.6"/></g>
+              <rect x="600" y="250" width="7" height="160" rx="3" fill="#FFFFFF" stroke="#B8C5CC" stroke-width="1.5"/>
+              <rect x="602" y="330" width="3" height="80" fill="#D9534F"/>
+              <circle cx="603.5" cy="413" r="6" fill="#D9534F"/>
+              <text x="470" y="488" font-family="IBM Plex Mono, monospace" font-size="14" fill="#4F6765">burbujas de O₂ por minuto</text>
+            </g>
+
+            <g class="hot" data-part="hipotesis" data-pin="808,310">
+              <rect x="664" y="304" width="150" height="124" rx="4" fill="#FFFBEA" stroke="#C9B27A" stroke-width="2"/>
+              <g fill="#8D97A0"><circle cx="680" cy="304" r="3.5"/><circle cx="698" cy="304" r="3.5"/><circle cx="716" cy="304" r="3.5"/><circle cx="734" cy="304" r="3.5"/><circle cx="752" cy="304" r="3.5"/><circle cx="770" cy="304" r="3.5"/><circle cx="788" cy="304" r="3.5"/></g>
+              <path d="M676,356 H802 M676,380 H802 M676,404 H802" stroke="#E7DDBA" stroke-width="1.5"/>
+              <text x="678" y="332" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1C3533" letter-spacing="1">HIPÓTESIS</text>
+              <text x="678" y="352" font-family="Atkinson Hyperlegible, sans-serif" font-size="14" fill="#3C4797">Si… (mecanismo)</text>
+              <text x="678" y="376" font-family="Atkinson Hyperlegible, sans-serif" font-size="14" fill="#3C4797">entonces… (predicción)</text>
+              <rect x="700" y="414" width="96" height="8" rx="3" fill="#E9B949" transform="rotate(-12 748 418)"/>
+            </g>
+          </svg>
+        </div>
+
+      </div>
+      <div class="stage-foot"><span class="scalebar" id="z-scale"></span><div class="zone-steps" id="z-steps"></div></div>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+<style>
+.bub{animation:rise 2.8s linear infinite}
+.bub.b2{animation-delay:.9s}.bub.b3{animation-delay:1.8s}
+@keyframes rise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-62px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.bub{animation:none}}
+</style>
+<script>
+/* ===== Estaciones ===== */
+const ZONES = [
+  {id:'biomoleculas', name:'Biomoléculas', c:'var(--z-bio)', t:'var(--z-bio-t)',
+   blurb:'Carbohidratos, lípidos, proteínas y ácidos nucleicos en modelos 3D que puedes girar.',
+   hint:'Arrastra el modelo para girarlo. Toca un número para estudiar esa parte.',
+   foot:'Modelo de esferas y varillas · no se dibujan los hidrógenos unidos a carbono',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><g fill="none" stroke="#8F9A9A" stroke-width="5" stroke-linecap="round"><path d="M102,60 L91,79 L69,79 L58,60 L69,41 L91,41 Z M102,60 L124,48 L146,60 L168,48 M91,41 L98,22 M58,60 L38,52"/></g><g fill="#8F9A9A"><circle cx="91" cy="79" r="8"/><circle cx="69" cy="79" r="8"/><circle cx="58" cy="60" r="8"/><circle cx="69" cy="41" r="8"/><circle cx="124" cy="48" r="8"/><circle cx="146" cy="60" r="8"/></g><circle cx="102" cy="60" r="9" fill="#E04A3F"/><circle cx="98" cy="22" r="8" fill="#E04A3F"/><circle cx="38" cy="52" r="8" fill="#E04A3F"/><circle cx="168" cy="48" r="9" fill="#3D6FD6"/><circle cx="91" cy="41" r="8" fill="#8F9A9A"/></svg>'},
+  {id:'animal', name:'Célula animal', c:'var(--z-ani)', t:'var(--z-ani-t)',
+   blurb:'Núcleo, mitocondrias, retículos, aparato de Golgi, lisosomas y centrosoma.',
+   hint:'Toca una estructura o un punto. Usa + y − para acercarte y arrastra para moverte.',
+   scale:{um:10,u:400}, foot:'Célula eucarionte animal · tamaño típico 10 a 30 µm',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M100,12 C150,10 185,35 186,62 C188,95 150,110 100,108 C55,107 14,92 16,60 C18,30 55,13 100,12 Z" fill="#FDEEF2" stroke="#CF5A7C" stroke-width="4"/><circle cx="88" cy="60" r="24" fill="#EAE2F8" stroke="#6B53B0" stroke-width="3"/><circle cx="93" cy="64" r="8" fill="#5F48A6"/><rect x="128" y="32" width="36" height="16" rx="8" fill="#F6B26B" stroke="#B5652A" stroke-width="2" transform="rotate(15 146 40)"/><rect x="36" y="78" width="30" height="14" rx="7" fill="#F6B26B" stroke="#B5652A" stroke-width="2"/><path d="M128,74 q18,-10 36,0 M126,82 q20,-10 40,0 M130,90 q16,-8 32,0" fill="none" stroke="#C28A12" stroke-width="4" stroke-linecap="round"/></svg>'},
+  {id:'vegetal', name:'Célula vegetal', c:'var(--z-veg)', t:'var(--z-veg-t)',
+   blurb:'Pared celular, cloroplastos, vacuola central y amiloplastos con almidón.',
+   hint:'Toca una estructura o un punto. Usa + y − para acercarte y arrastra para moverte.',
+   scale:{um:20,u:283}, foot:'Célula eucarionte vegetal · tamaño típico 20 a 100 µm',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><rect x="22" y="12" width="156" height="96" rx="12" fill="#F3FAEE" stroke="#5C9441" stroke-width="7"/><rect x="72" y="28" width="92" height="64" rx="20" fill="#DDF0F9" stroke="#5FA5CB" stroke-width="2.5"/><circle cx="48" cy="62" r="14" fill="#EAE2F8" stroke="#6B53B0" stroke-width="2.5"/><g fill="#7CC36E" stroke="#2F6F2C" stroke-width="2"><ellipse cx="50" cy="28" rx="13" ry="7"/><ellipse cx="50" cy="94" rx="13" ry="7"/><ellipse cx="104" cy="22" rx="13" ry="5"/><ellipse cx="140" cy="99" rx="13" ry="5"/></g></svg>'},
+  {id:'procariota', name:'Célula procarionte', c:'var(--z-pro)', t:'var(--z-pro-t)',
+   blurb:'Una bacteria: sin núcleo, con nucleoide, plásmidos, flagelo y cápsula.',
+   hint:'Toca una estructura o un punto. Usa + y − para acercarte y arrastra para moverte.',
+   scale:{um:1,u:290}, foot:'Bacteria con forma de bacilo · tamaño típico 1 a 5 µm',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M150,60 C162,48 170,48 176,60 S188,72 196,58" fill="none" stroke="#6D59BE" stroke-width="3" stroke-linecap="round"/><rect x="26" y="34" width="128" height="52" rx="26" fill="#DCD3F6" stroke="#7A66C9" stroke-width="3"/><rect x="33" y="41" width="114" height="38" rx="19" fill="#FCFBFF" stroke="#5A47B0" stroke-width="2"/><path d="M70,60 C68,48 86,46 92,54 S104,70 112,60 S108,46 96,52 S80,74 70,60 Z" fill="none" stroke="#3B2D8C" stroke-width="2"/><circle cx="52" cy="54" r="5" fill="none" stroke="#C2417A" stroke-width="2"/><g fill="#5A3F8F"><circle cx="128" cy="52" r="2.5"/><circle cx="134" cy="66" r="2.5"/><circle cx="56" cy="70" r="2.5"/><circle cx="122" cy="70" r="2.5"/></g></svg>'},
+  {id:'laboratorio', name:'Laboratorio científico', c:'var(--z-lab)', t:'var(--z-lab-t)',
+   blurb:'Microscopio, experimento con Elodea, hipótesis y plan experimental.',
+   hint:'Toca un objeto del laboratorio para repasar las habilidades científicas.',
+   foot:'Habilidades de investigación científica',
+   ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M86,14 h28 M91,14 v30 L66,98 q-3,9 7,9 h54 q10,0 7,-9 L109,44 v-30" fill="#FFFFFF" stroke="#24739F" stroke-width="3.5" stroke-linejoin="round"/><path d="M76,76 L124,76 L134,98 q3,9 -7,9 h-54 q-10,0 -7,-9 Z" fill="#D2EBF6"/><path d="M100,104 C96,92 104,86 99,74" fill="none" stroke="#2F7A2D" stroke-width="2.5"/><g fill="#4FA34A"><ellipse cx="94" cy="94" rx="6" ry="2.5" transform="rotate(-25 94 94)"/><ellipse cx="106" cy="86" rx="6" ry="2.5" transform="rotate(25 106 86)"/></g><g fill="#fff" stroke="#24739F" stroke-width="1.5"><circle cx="102" cy="64" r="3"/><circle cx="98" cy="52" r="2.5"/><circle cx="103" cy="40" r="2"/></g><rect x="146" y="40" width="34" height="44" rx="3" fill="#FFFBEA" stroke="#C9B27A" stroke-width="2"/><path d="M152,54 h22 M152,62 h22 M152,70 h16" stroke="#3C4797" stroke-width="2"/></svg>'}
+];
+
+/* ===== Estructuras (partes) ===== */
+const PARTS = {
+  /* Compartidas */
+  membrana:{s:'Membrana',n:'Membrana plasmática', d:'Bicapa de fosfolípidos con proteínas y colesterol que rodea a toda célula. Es semipermeable: regula qué sustancias entran y salen, y por ella ingresan los nutrientes.', a:'Funciona como la portería de un edificio: decide quién entra y quién sale.', en:['animal','vegetal','procariota']},
+  citoplasma:{n:'Citoplasma', d:'Medio acuoso (citosol) donde se encuentran los organelos y ocurren muchas reacciones químicas de la célula.', a:'Es como el patio interior de una fábrica, donde todo se mueve.', en:['animal','vegetal','procariota']},
+  nucleo:{n:'Núcleo', d:'Guarda el ADN en forma de cromatina, protegido por la envoltura nuclear: una doble membrana con poros. Dentro está el nucléolo, que fabrica las piezas de los ribosomas. Dirige la actividad de la célula.', a:'Es la biblioteca y la oficina central: guarda las instrucciones y decide qué se fabrica.', en:['animal','vegetal']},
+  mitocondria:{n:'Mitocondria', d:'Organelo con doble membrana; la interna forma pliegues llamados crestas. Allí ocurre la respiración celular, que transforma la energía química de la glucosa en ATP. Tiene un poco de ADN propio.', a:'Es la central eléctrica de la célula.', en:['animal','vegetal']},
+  rer:{s:'RE rugoso',n:'Retículo endoplasmático rugoso (RER)', d:'Red de sacos aplanados cubiertos de ribosomas y conectada con la envoltura nuclear. Fabrica proteínas que se exportan fuera de la célula o que formarán parte de membranas.', a:'Es una línea de producción de proteínas.', en:['animal','vegetal']},
+  golgi:{s:'Golgi',n:'Aparato de Golgi', d:'Pila de sacos aplanados (cisternas). Recibe proteínas y lípidos desde el retículo, los modifica, los clasifica y los empaqueta en vesículas según su destino.', a:'Es la oficina de correos de la célula.', en:['animal','vegetal']},
+  ribosomas:{n:'Ribosomas', d:'Gránulos de ARN y proteínas, sin membrana. Leen el ARN mensajero y unen aminoácidos para fabricar proteínas (traducción). Están libres en el citoplasma o adheridos al RER. En las bacterias son más pequeños (70S).', a:'Son máquinas ensambladoras de proteínas.', en:['animal','vegetal','procariota']},
+  /* Animal */
+  rel:{s:'RE liso',n:'Retículo endoplasmático liso (REL)', d:'Red de tubos sin ribosomas. Fabrica lípidos como fosfolípidos, colesterol y hormonas esteroidales, y ayuda a eliminar sustancias tóxicas. Por eso abunda en las células del hígado.', a:'Es una fábrica de lípidos y una planta de limpieza.', en:['animal','vegetal']},
+  vesiculas:{n:'Vesículas', d:'Pequeñas bolsas de membrana que transportan sustancias entre organelos o hacia el exterior. Al fusionarse con la membrana plasmática liberan su contenido: eso se llama exocitosis.', a:'Son los camiones de reparto.', en:['animal','vegetal']},
+  lisosoma:{s:'Lisosomas',n:'Lisosomas', d:'Vesículas con enzimas digestivas. Degradan partículas que ingresan a la célula y organelos viejos, y reciclan sus componentes.', a:'Son el centro de reciclaje.', en:['animal']},
+  peroxisoma:{n:'Peroxisoma', d:'Vesícula con enzimas que degradan ácidos grasos y sustancias tóxicas, y que descompone el peróxido de hidrógeno (agua oxigenada) en agua y oxígeno.', en:['animal','vegetal']},
+  centrosoma:{s:'Centrosoma',n:'Centrosoma y centríolos', d:'Zona cercana al núcleo con dos centríolos perpendiculares. Organiza los microtúbulos y, durante la mitosis, forma el huso mitótico, cuyas fibras separan los cromosomas. Las células vegetales no tienen centríolos.', a:'Es el director de la «mudanza» de cromosomas cuando la célula se divide.', en:['animal']},
+  citoesqueleto:{s:'Citoesqueleto',n:'Citoesqueleto', d:'Red de filamentos de proteína (microtúbulos, microfilamentos y filamentos intermedios). Da forma a la célula, sostiene los organelos y sirve de riel para mover vesículas.', a:'Es el andamio y las vías del tren de la célula.', en:['animal','vegetal']},
+  glucogeno:{s:'Glucógeno',n:'Gránulos de glucógeno', d:'Acumulaciones de glucógeno, un polisacárido formado por muchas moléculas de glucosa. Son la reserva de energía de corto plazo de las células animales, abundantes en el hígado y los músculos.', en:['animal']},
+  /* Vegetal */
+  pared:{n:'Pared celular', d:'Capa rígida de celulosa por fuera de la membrana. Da forma, soporte y protección, y evita que la célula reviente al absorber agua. La atraviesan los plasmodesmos, canales que comunican células vecinas. Es la que se ve como «ladrillos» al observar cebolla al microscopio.', a:'Es como la caja de cartón que protege un globo inflado.', en:['vegetal']},
+  vacuola:{s:'Vacuola',n:'Vacuola central', d:'Gran saco lleno de agua, sales y otras sustancias, rodeado por una membrana llamada tonoplasto. Puede ocupar hasta el 90 % del volumen de la célula; la mantiene firme (turgencia) y almacena sustancias.', a:'Es el estanque de agua que mantiene la planta erguida.', en:['vegetal']},
+  cloroplasto:{n:'Cloroplasto', d:'Organelo con doble membrana que tiene clorofila en pilas de tilacoides llamadas grana. Allí ocurre la fotosíntesis: con la energía de la luz transforma CO₂ y agua en glucosa y libera O₂. Tiene ADN propio.', a:'Es un panel solar que además fabrica azúcar.', en:['vegetal']},
+  amiloplasto:{s:'Amiloplasto',n:'Amiloplasto (gránulos de almidón)', d:'Plastidio que almacena almidón, la reserva de glucosa de las plantas. Se observa como gránulos dentro de la célula; abunda en la papa y en las semillas.', en:['vegetal']},
+  /* Procarionte */
+  capsula:{n:'Cápsula', d:'Capa externa y viscosa de polisacáridos. Protege a la bacteria de la deshidratación y de las defensas del organismo, y la ayuda a adherirse a superficies. No todas las bacterias la tienen.', en:['procariota']},
+  'pared-bac':{s:'Pared celular',n:'Pared celular bacteriana', d:'Capa rígida de peptidoglicano (no de celulosa). Da forma y protege a la bacteria frente a cambios del medio. Muchos antibióticos, como la penicilina, actúan dañándola.', en:['procariota']},
+  nucleoide:{n:'Nucleoide', d:'Zona del citoplasma donde está el ADN bacteriano: un solo cromosoma circular, sin una membrana que lo rodee. Ahí se lee y se copia la información genética.', a:'Es una biblioteca sin paredes, en medio del patio.', en:['procariota']},
+  plasmido:{n:'Plásmidos', d:'Pequeñas moléculas circulares de ADN adicional. Pueden llevar genes útiles, como los de resistencia a antibióticos, y pasar de una bacteria a otra.', en:['procariota']},
+  granulos:{s:'Gránulos',n:'Gránulos de inclusión', d:'Depósitos de reserva en el citoplasma, por ejemplo de glucógeno, fosfatos o azufre. La bacteria los usa cuando escasean los nutrientes.', en:['procariota']},
+  flagelo:{n:'Flagelo', d:'Filamento largo de proteína que gira como una hélice, impulsado por un motor anclado en la membrana. Permite a la bacteria desplazarse hacia los nutrientes y alejarse de sustancias tóxicas.', a:'Es la hélice de un bote.', en:['procariota']},
+  pili:{s:'Pili',n:'Pili y fimbrias', d:'Filamentos cortos y numerosos en la superficie. Las fimbrias sirven para adherirse a superficies y tejidos; el pili sexual permite traspasar ADN a otra bacteria (conjugación).', en:['procariota']},
+  /* Laboratorio */
+  metodo:{s:'Método científico',n:'Etapas del método científico', d:'Observar, plantear una pregunta, formular una hipótesis, planificar y experimentar, analizar resultados, concluir y comunicar. En la práctica se vuelve atrás muchas veces: una conclusión puede generar nuevas preguntas.', en:['laboratorio']},
+  microscopio:{s:'Microscopio',n:'Microscopio óptico', d:'Amplía la imagen con lentes. El aumento total se calcula multiplicando el del ocular por el del objetivo: 10× · 40× = 400×. Permite observar células, que miden micrómetros (µm).', en:['laboratorio']},
+  elodea:{s:'Elodea',n:'Experimento con Elodea', d:'Una planta acuática bajo una lámpara libera burbujas de O₂ mientras hace fotosíntesis. Contar las burbujas por minuto es una forma sencilla de medir qué tan rápido ocurre la fotosíntesis.', en:['laboratorio']},
+  hipotesis:{s:'Hipótesis',n:'Cuaderno de hipótesis', d:'Una hipótesis es una respuesta tentativa a una pregunta de investigación. Se redacta para poder ponerla a prueba, muchas veces con la estructura «Si… (mecanismo), entonces… (predicción)».', en:['laboratorio']},
+  plan:{s:'Plan experimental',n:'Plan experimental', d:'Procedimiento escrito con materiales, pasos ordenados, variables, tiempos y número de repeticiones. Permite que cualquier persona repita el experimento y compare sus resultados.', en:['laboratorio']},
+  /* Biomoléculas: visión general */
+  carbohidratos:{n:'Carbohidratos', d:'Formados por carbono, hidrógeno y oxígeno. Su unidad básica es el monosacárido, como la glucosa. Al unirse forman disacáridos (maltosa, sacarosa) y polisacáridos (almidón, glucógeno, celulosa). Su función principal es aportar energía inmediata. El modelo muestra maltosa: dos glucosas unidas.', en:['biomoleculas']},
+  lipidos:{n:'Lípidos', d:'Formados principalmente por C, H y O; no se disuelven en agua. El modelo muestra un triglicérido: una molécula de glicerol unida a tres ácidos grasos. Funciones: reserva de energía a largo plazo, aislante térmico y componente de las membranas (fosfolípidos y colesterol).', en:['biomoleculas']},
+  proteinas:{n:'Proteínas', d:'Formadas por C, H, O y N (a veces S). Su unidad básica es el aminoácido: existen 20 tipos que se combinan en cadenas. El modelo muestra un péptido de 4 aminoácidos. Funciones: enzimas, estructura (colágeno), transporte (hemoglobina), defensa (anticuerpos) y hormonas (insulina).', en:['biomoleculas']},
+  'acidos-nucleicos':{n:'Ácidos nucleicos (ADN)', d:'Formados por C, H, O, N y P. Su unidad básica es el nucleótido. El ADN tiene dos hebras enrolladas en doble hélice, unidas por sus bases. Almacena y transmite la información genética; el ARN, de una sola hebra, ayuda a fabricar proteínas.', en:['biomoleculas']},
+  /* Biomoléculas: partes */
+  monosacarido:{s:'Glucosa',n:'Monosacárido: glucosa', d:'Anillo de seis átomos (cinco carbonos y un oxígeno). Fórmula C₆H₁₂O₆. Es el combustible principal de la respiración celular.', en:['biomoleculas']},
+  hidroxilo:{s:'Grupos –OH',n:'Grupos hidroxilo (–OH)', d:'Hacen que los azúcares se disuelvan en agua y permiten que se unan entre sí.', en:['biomoleculas']},
+  glucosidico:{s:'Enlace glucosídico',n:'Enlace glucosídico', d:'Une dos monosacáridos mediante un oxígeno y libera una molécula de agua. Miles de uniones así forman el almidón y el glucógeno.', en:['biomoleculas']},
+  glicerol:{n:'Glicerol', d:'Molécula de tres carbonos que funciona como «percha» donde se enganchan los tres ácidos grasos.', en:['biomoleculas']},
+  'acido-graso':{s:'Ácido graso',n:'Ácido graso saturado', d:'Cadena larga de carbonos con enlaces simples. Es recta y se ordena de forma compacta; por eso las grasas saturadas, como la mantequilla, son sólidas a temperatura ambiente.', en:['biomoleculas']},
+  insaturado:{s:'Doble enlace',n:'Ácido graso insaturado', d:'Tiene uno o más dobles enlaces que doblan la cadena. Por eso los aceites vegetales son líquidos a temperatura ambiente.', en:['biomoleculas']},
+  ester:{s:'Enlace éster',n:'Enlace éster', d:'Une cada ácido graso con el glicerol y libera una molécula de agua.', en:['biomoleculas']},
+  aminoacido:{n:'Aminoácido', d:'Monómero de las proteínas. Tiene un carbono central unido a un grupo amino (–NH₂), un grupo carboxilo (–COOH), un hidrógeno y una cadena lateral R distinta en cada aminoácido.', en:['biomoleculas']},
+  peptidico:{n:'Enlace peptídico', d:'Une el grupo carboxilo de un aminoácido con el grupo amino del siguiente y libera agua. Lo forman los ribosomas durante la traducción.', en:['biomoleculas']},
+  amino:{s:'Grupo amino',n:'Grupo amino (extremo N)', d:'–NH₂. Contiene nitrógeno; en la cadena queda libre solo en el primer aminoácido.', en:['biomoleculas']},
+  carboxilo:{s:'Grupo carboxilo',n:'Grupo carboxilo (extremo C)', d:'–COOH. Grupo ácido que queda libre solo en el último aminoácido de la cadena.', en:['biomoleculas']},
+  radical:{s:'Cadena R',n:'Cadena lateral (R)', d:'Es lo que diferencia a un aminoácido de otro. En el modelo hay alanina, serina, cisteína (con azufre, en amarillo) y valina.', en:['biomoleculas']},
+  nucleotido:{n:'Nucleótido', d:'Unidad básica de los ácidos nucleicos: un grupo fosfato, un azúcar de cinco carbonos y una base nitrogenada. El ATP también es un nucleótido, pero con tres fosfatos.', en:['biomoleculas']},
+  fosfato:{s:'Fosfato',n:'Grupo fosfato', d:'Une el azúcar de un nucleótido con el del siguiente y forma los «pasamanos» de la escalera de ADN.', en:['biomoleculas']},
+  azucar:{s:'Desoxirribosa',n:'Desoxirribosa', d:'Azúcar de cinco carbonos del ADN. En el ARN el azúcar es la ribosa.', en:['biomoleculas']},
+  base:{s:'Bases',n:'Bases nitrogenadas', d:'Adenina (A), timina (T), guanina (G) y citosina (C). Su orden es el mensaje genético. En el ARN, el uracilo (U) reemplaza a la timina.', en:['biomoleculas']},
+  'puente-h':{s:'Puentes de H',n:'Puentes de hidrógeno', d:'Uniones débiles que mantienen juntas las dos hebras: A se une con T mediante dos puentes y G con C mediante tres.', en:['biomoleculas']}
+};
+/* ===== Preguntas de desarrollo =====
+   partes: estructuras donde aparece la pregunta (la primera es su ubicación principal). */
+const QS = [
+{id:1, tema:'Biomoléculas', skill:'Relacionar conceptos', titulo:'Cada biomolécula y su pieza básica',
+ partes:['nucleotido','acidos-nucleicos','monosacarido','aminoacido','acido-graso','glicerol','carbohidratos','lipidos','proteinas'],
+ ctx:'Las biomoléculas orgánicas son polímeros: cadenas largas formadas por la unión repetida de piezas pequeñas llamadas monómeros, como un collar hecho de cuentas.',
+ ask:'Explica cuál es la unidad básica de los ácidos nucleicos y describe cómo está formada. Luego nombra la unidad básica de las proteínas, de los carbohidratos y de las grasas, y explica por qué es incorrecto decir que las proteínas están hechas de ácidos grasos o que los azúcares están hechos de aminoácidos.',
+ pistas:['Mira el modelo de ADN: ¿qué tres piezas se repiten a lo largo de cada hebra?','Fíjate en las palabras: los polisacáridos están hechos de monosacáridos.'],
+ claves:['Los ácidos nucleicos (ADN y ARN) están formados por nucleótidos.','Un nucleótido tiene un grupo fosfato, un azúcar de cinco carbonos y una base nitrogenada.','Las proteínas se forman con aminoácidos unidos por enlaces peptídicos.','Los carbohidratos complejos se forman con monosacáridos, como la glucosa.','Las grasas (triglicéridos) se forman con glicerol y ácidos grasos.'],
+ modelo:'La pareja correcta es ácidos nucleicos y nucleótidos. Cada nucleótido tiene tres partes: un grupo fosfato, un azúcar de cinco carbonos (desoxirribosa en el ADN y ribosa en el ARN) y una base nitrogenada (A, T, G o C; en el ARN, U en lugar de T). Los nucleótidos se unen entre sí por el fosfato y el azúcar, que forman el esqueleto de la hebra, y las bases quedan hacia el interior. Cada biomolécula tiene su propio monómero: las proteínas se forman con aminoácidos, los carbohidratos complejos (almidón, glucógeno, celulosa) con monosacáridos como la glucosa y las grasas con glicerol y ácidos grasos. Por eso las parejas «proteínas – ácidos grasos», «azúcares – aminoácidos» y «grasas – monosacáridos» mezclan piezas de biomoléculas distintas.',
+ mitos:[['Las proteínas están hechas de ácidos grasos.','Los ácidos grasos forman lípidos. Las proteínas son cadenas de aminoácidos.'],['Los azúcares están formados por aminoácidos.','Los azúcares complejos se forman con monosacáridos, por ejemplo glucosa.'],['Las grasas se forman con monosacáridos.','Un triglicérido se forma con una molécula de glicerol y tres ácidos grasos.']]},
+
+{id:2, tema:'Biomoléculas', skill:'Explicar funciones', titulo:'¿Qué función cumple cada biomolécula?',
+ partes:['carbohidratos','monosacarido','lipidos','proteinas','acidos-nucleicos'],
+ ctx:'Lípidos, proteínas, carbohidratos y ácidos nucleicos son las cuatro biomoléculas orgánicas fundamentales. Cada una cumple funciones distintas en la célula.',
+ ask:'Explica por qué se dice que los carbohidratos son la principal fuente de energía inmediata de la célula. Después describe la función principal de los lípidos, de las proteínas y de los ácidos nucleicos, y corrige estas tres ideas: que los ácidos nucleicos son la reserva de energía, que las proteínas solo transportan oxígeno y que los lípidos transmiten la información genética.',
+ pistas:['¿Qué molécula usa primero la mitocondria para obtener ATP?','Un oso que va a hibernar, ¿acumula la energía como glucosa o como grasa?'],
+ claves:['Carbohidratos: energía inmediata; se guardan como glucógeno (animales) o almidón (plantas).','Lípidos: reserva de energía a largo plazo y componentes de las membranas.','Proteínas: muchas funciones (enzimas, estructura, transporte, defensa, hormonas).','Ácidos nucleicos: guardan y transmiten la información genética.'],
+ modelo:'La glucosa es el combustible que la célula usa primero: se degrada con rapidez en la respiración celular para producir ATP. Por eso los carbohidratos son la principal fuente de energía inmediata. Los animales guardan una reserva de glucosa como glucógeno, en el hígado y los músculos, y las plantas la guardan como almidón; son reservas de corto plazo. La reserva de energía de largo plazo corresponde a los lípidos, que además forman las membranas celulares (fosfolípidos y colesterol). Las proteínas cumplen muchas funciones: aceleran reacciones (enzimas), dan estructura (colágeno, queratina), defienden (anticuerpos) y transportan sustancias. La hemoglobina transporta oxígeno, pero esa es solo una de sus muchas funciones. Los ácidos nucleicos (ADN y ARN) almacenan y transmiten la información genética; no son una reserva de energía.',
+ mitos:[['Los ácidos nucleicos almacenan energía a largo plazo.','Esa función es de los lípidos. El ADN y el ARN guardan información. El ATP es un nucleótido que transporta energía, pero no sirve como reserva.'],['Las proteínas transportan oxígeno exclusivamente.','La hemoglobina transporta oxígeno, pero las proteínas también son enzimas, anticuerpos, hormonas y estructuras.'],['Los lípidos transmiten la información genética mediante el ADN.','El ADN es un ácido nucleico, no un lípido.']]},
+
+{id:3, tema:'Células', skill:'Observar', titulo:'Mirar la cebolla al microscopio',
+ partes:['microscopio','metodo','pared'],
+ ctx:'Un estudiante pone una capa delgada de cebolla en un portaobjetos, agrega una gota de lugol o azul de metileno y la mira con un microscopio para ver las partes de sus células.',
+ ask:'¿Qué etapa del método científico está realizando el estudiante? Explica en qué consiste esa etapa, por qué el microscopio es clave en ella y qué etapas deberían venir después.',
+ pistas:['Todavía no propone ninguna explicación ni tiene resultados: solo está reuniendo información.','Piensa en el orden: observar → preguntar → …'],
+ claves:['Está observando con un instrumento.','Observar es reunir información con los sentidos o con instrumentos, sin dar explicaciones todavía.','El microscopio permite ver estructuras invisibles a simple vista, como la pared celular y el núcleo.','Después vienen la pregunta, la hipótesis, la experimentación, el análisis, la conclusión y la comunicación.'],
+ modelo:'El estudiante está en la etapa de observación, y la realiza con una herramienta: el microscopio. Observar es reunir información de forma cuidadosa y objetiva, usando los sentidos o instrumentos que los amplían. Las células de la cebolla miden entre 0,1 y 0,3 mm de largo, así que sin microscopio no se distinguen sus partes. Con 100 o 400 aumentos se ve la pared celular, que les da forma de ladrillo, y el núcleo, que se tiñe con el colorante. No se ven cloroplastos, porque la capa interna de la cebolla no recibe luz y no hace fotosíntesis. A partir de lo observado podrá plantear preguntas (¿por qué no hay cloroplastos?), formular una hipótesis, experimentar, analizar resultados, concluir y comunicar.',
+ mitos:[['Está planteando una posible explicación.','Eso es formular una hipótesis. Aquí todavía no explica nada: solo mira y registra.'],['Está comparando los resultados finales.','Comparar resultados es parte del análisis, cuando ya se hizo un experimento.'],['Está compartiendo los datos obtenidos.','Compartir datos corresponde a la comunicación, al final de la investigación.']]},
+
+{id:4, tema:'Células', skill:'Argumentar', titulo:'Una bacteria sin flagelos',
+ partes:['procariota:flagelo','procariota:membrana','procariota:pared-bac','procariota:nucleoide'],
+ ctx:'Un grupo de estudiantes debate qué le ocurriría a una bacteria si pierde por completo sus flagelos.',
+ ask:'Explica la función del flagelo y argumenta cuál sería la principal desventaja para la supervivencia de una bacteria sin flagelos. Incluye qué estructuras siguen encargándose de ingresar nutrientes, de proteger a la bacteria y de copiar su ADN.',
+ pistas:['El flagelo gira como la hélice de un bote.','Las bacterias detectan sustancias químicas y nadan hacia el alimento o lejos del peligro. ¿Qué pasa si no pueden nadar?'],
+ claves:['El flagelo sirve para desplazarse.','Le permite acercarse a los nutrientes y alejarse de sustancias tóxicas (quimiotaxis).','Sin flagelo no puede escapar de un ambiente peligroso.','Los nutrientes entran por la membrana; la pared y la cápsula protegen; el ADN se copia en el nucleoide.'],
+ modelo:'El flagelo es un filamento largo que gira como una hélice gracias a un motor anclado en la membrana, y le permite a la bacteria desplazarse. Las bacterias detectan sustancias químicas del medio y nadan hacia los nutrientes o se alejan de las sustancias tóxicas; este comportamiento se llama quimiotaxis. Si pierde sus flagelos, la bacteria sigue viva, pero ya no puede huir de un ambiente tóxico ni buscar uno mejor: esa es su principal desventaja. Las demás funciones no dependen del flagelo. Los nutrientes ingresan a través de la membrana plasmática, la protección física la dan la pared celular y la cápsula, y la lectura y copia del ADN ocurren en el nucleoide.',
+ mitos:[['Perdería la capacidad de ingresar nutrientes.','Los nutrientes entran por la membrana plasmática, no por el flagelo.'],['Quedaría sin protección frente a los cambios de temperatura.','La protección la dan la pared celular y la cápsula.'],['Se detendría la lectura y copia de su material genético.','Eso ocurre en el nucleoide, con enzimas y ribosomas, sin participación del flagelo.']]},
+
+{id:5, tema:'Organelos celulares', skill:'Formular hipótesis', titulo:'El corazón y sus mitocondrias',
+ partes:['mitocondria','hipotesis'],
+ ctx:'Un estudiante observa que el tejido del corazón tiene muchas más mitocondrias que el tejido de la piel.',
+ ask:'Formula una hipótesis del tipo «Si…, entonces…» que explique este hecho y justifícala con la función de la mitocondria. Explica también por qué no tiene sentido afirmar que un tejido forma más mitocondrias por estar en contacto con el aire, ni que un tejido que trabaja sin descanso necesita menos energía.',
+ pistas:['¿Cuántas veces late tu corazón en un día? ¿Descansa alguna vez?','La mitocondria es la central eléctrica de la célula.'],
+ claves:['Hipótesis: si un tejido requiere más energía de forma constante, entonces contendrá más mitocondrias.','La mitocondria produce ATP mediante la respiración celular.','El músculo cardíaco se contrae sin parar, cerca de 100 000 veces al día.','El número de mitocondrias depende de la demanda de energía, no del contacto con el aire.'],
+ modelo:'Una buena hipótesis es: «Si un tejido requiere más energía de forma constante, entonces sus células contendrán más mitocondrias». La mitocondria realiza la respiración celular y produce ATP, la molécula que la célula usa como energía. El corazón late cerca de 100 000 veces al día sin descansar, así que sus células necesitan ATP todo el tiempo; en ellas las mitocondrias ocupan alrededor de un tercio del volumen celular. La piel tiene una demanda de energía mucho menor. El contacto con el aire no determina cuántas mitocondrias hay, porque el oxígeno llega a todos los tejidos por la sangre. Además, un tejido que trabaja sin descanso necesita más energía, no menos.',
+ mitos:[['Si un tejido tiene más contacto con el aire, formará más mitocondrias.','El oxígeno llega a todos los tejidos por la sangre; lo que importa es la demanda de energía.'],['Si un tejido trabaja sin descanso, necesitará menos energía.','Es al revés: más trabajo significa más ATP y, por lo tanto, más mitocondrias.'],['Si un tejido se regenera rápido, acumulará menos mitocondrias vivas.','Dividirse también consume energía; esta idea no explica el dato observado.']]},
+
+{id:6, tema:'Organelos celulares', skill:'Formular hipótesis', titulo:'Una hipótesis contra el cáncer',
+ partes:['centrosoma','hipotesis','animal:nucleo'],
+ ctx:'En un proyecto sobre cáncer, un equipo plantea: «Si las células del tumor proliferan mediante mitosis descontrolada, entonces un fármaco que impida formar el huso mitótico frenará el avance de la masa tumoral».',
+ ask:'Explica por qué esta afirmación es una hipótesis con valor predictivo y no una conclusión. Identifica el mecanismo propuesto y la predicción que se puede comprobar, y explica qué papel cumple el huso mitótico, que se forma desde el centrosoma, en la división celular.',
+ pistas:['Una conclusión se escribe después de tener datos. ¿El equipo ya hizo el experimento?','Divide la frase en dos: la parte del «Si…» y la parte del «entonces…».'],
+ claves:['Propone un mecanismo (mitosis descontrolada) y deduce un efecto comprobable (el tumor dejará de crecer).','Se puede poner a prueba con un experimento.','Una conclusión se obtiene después de analizar datos; esta afirmación aún no los tiene.','El huso mitótico, formado por microtúbulos que organiza el centrosoma, separa los cromosomas durante la mitosis.'],
+ modelo:'Es una hipótesis porque propone una explicación tentativa y, a partir de ella, deduce un resultado que se puede comprobar. La parte «Si las células del tumor proliferan mediante mitosis descontrolada» es el mecanismo propuesto. La parte «entonces un fármaco que impida formar el huso mitótico frenará el avance del tumor» es la predicción. Esa predicción se puede contrastar, por ejemplo, comparando cultivos de células tumorales con y sin el fármaco y midiendo cuánto crecen. Una conclusión, en cambio, se redacta después de experimentar y analizar datos; esta frase todavía no tiene datos, no describe lo que se ve del tumor y no es un principio que ya no necesite pruebas. El huso mitótico está formado por microtúbulos que organiza el centrosoma: sus fibras se unen a los cromosomas y los separan hacia los polos de la célula. Sin huso, la célula no puede completar la mitosis. Algunos medicamentos reales contra el cáncer, como el paclitaxel y la vinblastina, actúan sobre los microtúbulos.',
+ mitos:[['Es una conclusión porque resume datos experimentales.','La afirmación no menciona ningún dato: se plantea antes del experimento.'],['Describe las características visibles del tumor.','Describir lo que se ve es una observación, no una hipótesis.'],['Es un principio general que ya no requiere comprobación.','Toda hipótesis debe ponerse a prueba; ninguna se acepta sin evidencia.']]},
+
+{id:7, tema:'Organelos celulares', skill:'Planificar y experimentar', titulo:'Diseñar el experimento',
+ partes:['plan','metodo'],
+ ctx:'Para poner a prueba una hipótesis, un equipo escribe un procedimiento paso a paso con los materiales, los tiempos de medición y el número de repeticiones.',
+ ask:'¿A qué etapa o habilidad científica corresponde este trabajo? Explica por qué un buen plan necesita materiales, pasos ordenados, tiempos y repeticiones, y en qué se diferencia de observar, de comunicar y de formular preguntas.',
+ pistas:['Antes de experimentar hay que decidir cómo se hará el experimento.','¿Por qué los científicos repiten varias veces un mismo experimento?'],
+ claves:['Corresponde a la planificación y experimentación.','El plan permite que otra persona repita el experimento y obtenga resultados comparables.','Hay que definir variables: la que se cambia, la que se mide y las que se mantienen constantes.','Las repeticiones reducen el efecto del azar y de los errores de medición.'],
+ modelo:'Corresponde a la planificación y experimentación. Planificar es decidir de antemano cómo se pondrá a prueba la hipótesis: qué variable se va a cambiar (independiente), cuál se va a medir (dependiente) y cuáles se mantendrán iguales (controladas), qué materiales se usarán, en qué orden se harán los pasos y cada cuánto se medirá. Las repeticiones son importantes porque un solo resultado puede deberse al azar o a un error; si al repetir se obtiene lo mismo, el resultado es más confiable. Un procedimiento bien escrito permite, además, que otro grupo repita el experimento. Observar es reunir información, formular preguntas ocurre al inicio de la investigación y comunicar es dar a conocer los resultados al final.',
+ mitos:[['Es una observación.','Observar es reunir información con los sentidos o instrumentos; aquí se diseña un procedimiento.'],['Es comunicación.','Comunicar ocurre al final, cuando se informan los resultados y las conclusiones.'],['Es formular preguntas.','Las preguntas surgen al comienzo, antes de la hipótesis y del diseño experimental.']]},
+
+{id:8, tema:'Organelos celulares', skill:null, titulo:'¿Dónde se encuentra el ADN?',
+ partes:['nucleo','nucleoide','acidos-nucleicos'],
+ ctx:'El ADN contiene las instrucciones para fabricar las proteínas y para heredar las características de una generación a otra.',
+ ask:'Explica en qué parte de la célula eucarionte se encuentra el ADN y cómo está protegido. Compara con la célula procarionte, que no tiene núcleo, y explica por qué el ADN no está en la membrana plasmática ni en los lisosomas.',
+ pistas:['La palabra eucarionte significa «núcleo verdadero».','En la bacteria, busca el ovillo de ADN que está suelto en el citoplasma.'],
+ claves:['En las células eucariontes el ADN está en el núcleo.','La envoltura nuclear, una doble membrana con poros, lo separa del citoplasma.','En el núcleo el ADN forma la cromatina, que se condensa en cromosomas cuando la célula se divide.','En las procariontes el ADN está en el nucleoide, en el citoplasma; también tienen plásmidos.','Las mitocondrias y los cloroplastos tienen un poco de ADN propio.'],
+ modelo:'En las células eucariontes, como las animales y las vegetales, el ADN se encuentra en el núcleo. Allí está protegido por la envoltura nuclear, una doble membrana con poros que controlan qué entra y qué sale. Dentro del núcleo el ADN se asocia a proteínas y forma la cromatina; cuando la célula se va a dividir, la cromatina se condensa en cromosomas. Las mitocondrias y los cloroplastos también tienen una pequeña cantidad de ADN propio. Las células procariontes, como las bacterias, no tienen núcleo: su ADN es una molécula circular ubicada en una zona del citoplasma llamada nucleoide, y además pueden tener plásmidos. La membrana plasmática es el límite de la célula y regula el paso de sustancias, y los lisosomas digieren materiales; ninguno de los dos guarda la información genética.',
+ mitos:[['El ADN está en el citoplasma.','Eso ocurre en las bacterias (nucleoide). En las células eucariontes el ADN está dentro del núcleo.'],['El ADN está en la membrana plasmática.','La membrana es el límite que regula el paso de sustancias; no guarda información genética.'],['El ADN está en el lisosoma.','El lisosoma contiene enzimas digestivas: degrada materiales y organelos viejos.']]},
+
+{id:9, tema:'Organelos celulares', skill:'Analizar una ruta', titulo:'Reparar membranas en el hígado',
+ partes:['rel','animal:vesiculas','animal:golgi','animal:membrana','lipidos'],
+ ctx:'Tras una lesión celular leve, las células del hígado (hepatocitos) fabrican rápidamente lípidos estructurales, como colesterol y fosfolípidos, para reponer las membranas dañadas y mantener activa la barrera celular.',
+ ask:'Describe la ruta que siguen estas moléculas dentro de la célula, desde el organelo que las fabrica hasta las membranas que deben reparar. Explica qué hace cada organelo de esa ruta y por qué no participan el núcleo, las mitocondrias ni una pared celular.',
+ pistas:['¿Qué retículo endoplasmático fabrica lípidos: el que tiene ribosomas o el que no los tiene?','Los organelos se envían materiales dentro de pequeñas bolsas de membrana.'],
+ claves:['Los lípidos se sintetizan en el retículo endoplasmático liso (REL).','Viajan en vesículas de transporte.','El aparato de Golgi los modifica, los clasifica y los distribuye a su destino.','Las células animales no tienen pared celular.'],
+ modelo:'La ruta es: síntesis en el retículo endoplasmático liso, transporte en vesículas y distribución mediante el aparato de Golgi. El REL no tiene ribosomas y es el organelo que fabrica lípidos como los fosfolípidos y el colesterol; por eso abunda en los hepatocitos. Las moléculas nuevas salen del REL en vesículas de transporte que viajan al aparato de Golgi, donde se modifican, se clasifican y se empaquetan en nuevas vesículas. Estas se fusionan con la membrana plasmática o con las membranas de otros organelos y reponen la parte dañada. El núcleo guarda el ADN, pero no fabrica lípidos ni traduce proteínas; las mitocondrias producen ATP; y la célula animal no tiene pared celular.',
+ mitos:[['Los lípidos se arman en los gránulos del RER.','Los gránulos del RER son ribosomas y fabrican proteínas. Los lípidos se fabrican en el REL.'],['La traducción ocurre en el núcleo.','En el núcleo ocurre la transcripción (de ADN a ARN). La traducción ocurre en los ribosomas.'],['Las moléculas se anclan directamente en la pared.','Los hepatocitos son células animales: no tienen pared celular.']]},
+
+{id:10, tema:'Organelos celulares', skill:'Analizar una ruta', titulo:'La fábrica de jugos digestivos',
+ partes:['animal:rer','animal:golgi','animal:vesiculas','animal:ribosomas','proteinas'],
+ ctx:'Para ayudar a digerir la comida, las células del páncreas fabrican enzimas digestivas, como amilasa, lipasa y tripsina, y las expulsan hacia el intestino.',
+ ask:'Explica el camino que siguen estas sustancias a través de los organelos para producirse, prepararse y salir de la célula. Indica qué hace cada organelo y por qué la ruta comienza en el retículo endoplasmático rugoso y no en el liso.',
+ pistas:['Las enzimas digestivas son proteínas. ¿Dónde se fabrican las proteínas?','Para salir de la célula, el «paquete» debe fusionarse con la membrana plasmática.'],
+ claves:['Las enzimas son proteínas: se fabrican en los ribosomas del RER.','El aparato de Golgi las modifica y las empaqueta.','Las vesículas de secreción las llevan a la membrana y las liberan por exocitosis.','El REL fabrica lípidos, no proteínas.'],
+ modelo:'Las enzimas digestivas son proteínas. Se fabrican en los ribosomas adheridos al retículo endoplasmático rugoso y entran a sus canales, donde comienzan a plegarse. Luego viajan en vesículas al aparato de Golgi, que las modifica, las concentra y las empaqueta en vesículas de secreción. Esas vesículas se desplazan hasta la membrana plasmática, se fusionan con ella y liberan su contenido fuera de la célula; este proceso se llama exocitosis. La ruta comienza en el RER porque tiene ribosomas, mientras que el REL fabrica lípidos. Peroxisomas, lisosomas, mitocondrias y citoesqueleto cumplen otras funciones (degradar sustancias, producir energía, dar soporte), pero no fabrican ni empaquetan estas enzimas.',
+ mitos:[['REL → peroxisomas → lisosomas.','El REL fabrica lípidos, y los peroxisomas y lisosomas degradan sustancias; no exportan enzimas.'],['Ribosomas del citoplasma → mitocondrias → citoesqueleto.','Las mitocondrias producen ATP; no empaquetan proteínas para exportarlas.'],['Membrana del núcleo → lisosomas → canales de membrana.','Los lisosomas usan sus enzimas dentro de la célula; no las secretan hacia el intestino.']]},
+
+{id:11, tema:'Organelos celulares', skill:'Identificar variables', titulo:'Las burbujas de la Elodea',
+ partes:['cloroplasto','elodea','plan'],
+ ctx:'Un estudiante quiere comprobar que las plantas liberan oxígeno (O₂) durante la fotosíntesis. Coloca una planta acuática (Elodea) bajo distintas intensidades de luz y cuenta las burbujas de gas que produce por minuto.',
+ ask:'Identifica la variable independiente, la variable dependiente y al menos dos variables que deben mantenerse constantes. Explica por qué la luz influye en la cantidad de burbujas, relacionándolo con lo que ocurre en los cloroplastos.',
+ pistas:['La variable independiente es la que el investigador decide cambiar.','¿Qué necesita el cloroplasto, además de agua y CO₂, para hacer fotosíntesis?'],
+ claves:['Variable independiente: la intensidad de la luz.','Variable dependiente: la cantidad de burbujas por minuto.','Variables controladas: tipo y tamaño de la planta, temperatura del agua, cantidad de CO₂, tiempo de conteo.','En los cloroplastos la clorofila capta la luz; con más luz hay más fotosíntesis y se libera más O₂.'],
+ modelo:'La variable independiente es la intensidad de la luz, porque es lo que el estudiante cambia a propósito, por ejemplo acercando o alejando una lámpara. La variable dependiente es la cantidad de burbujas por minuto, que es lo que mide. Para que la comparación sea justa debe mantener constantes el tipo y el tamaño de la planta, la temperatura del agua, la cantidad de CO₂ disuelto y el tiempo de conteo; si cambiaran, no sabría si las burbujas aumentaron por la luz o por otro factor. La fotosíntesis ocurre en los cloroplastos: la clorofila capta la energía de la luz y la usa para formar glucosa a partir de CO₂ y agua, y libera O₂. Con más luz, hasta cierto límite, la fotosíntesis es más rápida y salen más burbujas.',
+ mitos:[['La variable independiente es la cantidad de burbujas.','Las burbujas son lo que se mide: es la variable dependiente.'],['La variable independiente es el tipo de planta.','Siempre se usa Elodea: es una variable controlada.'],['La variable independiente es la temperatura del agua.','La temperatura debe mantenerse igual; si cambia, no se sabría qué causó el efecto.']]},
+
+{id:12, tema:'Organelos celulares', skill:null, titulo:'La moneda de energía',
+ partes:['mitocondria','nucleotido'],
+ ctx:'La mitocondria es conocida como la central energética de la célula.',
+ ask:'¿Qué molécula produce principalmente la mitocondria y por qué la célula la usa como fuente de energía? Explica también qué papel tienen la glucosa, el ADN y el NADPH, y por qué ninguno de ellos es el producto principal de la mitocondria.',
+ pistas:['Su nombre tiene tres letras, y la «T» significa «tri», por sus tres fosfatos.','En la respiración celular, ¿la glucosa entra o sale?'],
+ claves:['La mitocondria produce ATP (adenosín trifosfato).','El ATP libera energía cuando se rompe el enlace de su último fosfato.','La glucosa es el combustible que se consume, no el producto.','El ADN guarda información; el NADPH se forma en la fotosíntesis, en el cloroplasto.'],
+ modelo:'La mitocondria produce principalmente ATP (adenosín trifosfato), un nucleótido con tres grupos fosfato. Cuando la célula rompe el enlace del último fosfato (ATP → ADP + fosfato) se libera la energía que usa para contraer los músculos, transportar sustancias, fabricar moléculas o dividirse. Por eso se dice que el ATP es la «moneda de energía» de la célula. La glucosa es el combustible que la mitocondria consume en la respiración celular; el ADN guarda la información genética; y el NADPH es un transportador de energía que se forma en los cloroplastos durante la fotosíntesis.',
+ mitos:[['La mitocondria produce principalmente ADN.','La mitocondria tiene un poco de ADN propio, pero su función es producir ATP.'],['La mitocondria produce NADPH.','El NADPH se forma en la etapa luminosa de la fotosíntesis, en el cloroplasto.'],['La mitocondria produce glucosa.','La glucosa la fabrican las plantas en la fotosíntesis; la mitocondria la degrada.']]},
+
+{id:13, tema:'Organelos celulares', skill:'Argumentar', titulo:'Los productos de la respiración celular',
+ partes:['mitocondria','carbohidratos'],
+ ctx:'En una clase de ciencias, los estudiantes debaten qué sustancias resultan de la respiración celular y cuál aporta el mayor beneficio energético para que un organismo se mantenga con vida y realice sus funciones.',
+ ask:'Escribe la ecuación general de la respiración celular, identifica los reactantes y los productos, y explica cuál de los productos aporta la energía que el organismo usa para vivir. Explica también por qué la glucosa, el oxígeno, la luz y la clorofila no son productos de este proceso.',
+ pistas:['La respiración celular se parece a la ecuación de la fotosíntesis, pero al revés.','¿Qué gas eliminas al exhalar? ¿De dónde proviene?'],
+ claves:['C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + energía (ATP).','Reactantes: glucosa y oxígeno. Productos: dióxido de carbono, agua y ATP.','El ATP es el producto que aporta la energía utilizable.','La luz y la clorofila participan en la fotosíntesis, en el cloroplasto.'],
+ modelo:'La ecuación general es C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + energía (ATP). La glucosa y el oxígeno son los reactantes, es decir, lo que entra al proceso. Los productos son dióxido de carbono, agua y energía química en forma de ATP; de cada molécula de glucosa se obtienen alrededor de 30 a 38 ATP, según el texto que consultes. El ATP es el producto que aporta el beneficio energético, porque la célula lo usa en todas sus funciones; el CO₂ se elimina al exhalar y el agua se reutiliza. La glucosa y el oxígeno son productos de la fotosíntesis, no de la respiración. La luz y la clorofila participan en la fotosíntesis, dentro del cloroplasto. La respiración no acumula oxígeno ni produce nitrógeno: consume oxígeno.',
+ mitos:[['Produce glucosa y oxígeno para nutrir las células.','Esos son los productos de la fotosíntesis. En la respiración, la glucosa y el oxígeno se consumen.'],['Libera luz visible, clorofila y azúcares simples.','La clorofila es un pigmento del cloroplasto que capta la luz en la fotosíntesis.'],['Acumula únicamente oxígeno y nitrógeno.','La respiración consume oxígeno y no produce nitrógeno.']]}
+];
+/* ===== Modelos 3D de biomoléculas (esferas y varillas, sin librerías) ===== */
+const EL = {
+  C:{c:'#8F9A9A',r:.42}, O:{c:'#E04A3F',r:.40}, N:{c:'#3D6FD6',r:.40}, H:{c:'#FFFFFF',r:.25},
+  P:{c:'#F39A2B',r:.55}, S:{c:'#E8C83A',r:.50}, Sg:{c:'#D9B48A',r:.50},
+  bA:{c:'#E5534B',r:.52}, bT:{c:'#F2B134',r:.52}, bG:{c:'#4CAF50',r:.52}, bC:{c:'#3E8EDE',r:.52}
+};
+function Builder(){
+  const atoms=[], bonds=[], anchors={};
+  return {atoms, bonds, anchors,
+    a(e,x,y,z,tags){atoms.push({e,p:[x,y,z],tags:tags?tags.slice():[]});return atoms.length-1;},
+    b(i,j,o){bonds.push([i,j,o||1]);},
+    t(i,tag){if(!atoms[i].tags.includes(tag))atoms[i].tags.push(tag);}
+  };
+}
+const rad = d => d*Math.PI/180;
+
+/* Maltosa: dos glucosas unidas por enlace glucosídico */
+function buildMaltose(){
+  const B = Builder();
+  function ring(cx, skip){
+    const names=['O5','C1','C2','C3','C4','C5'], id={}, out={};
+    for(let k=0;k<6;k++){
+      const ang=rad(-60+k*60), pz=(k%2?0.28:-0.28);
+      out[names[k]]=[Math.cos(ang),Math.sin(ang),pz];
+      id[names[k]]=B.a(k===0?'O':'C', cx+1.45*Math.cos(ang), 1.45*Math.sin(ang), pz, ['monosacarido']);
+    }
+    for(let k=0;k<6;k++) B.b(id[names[k]], id[names[(k+1)%6]]);
+    ['C1','C2','C3','C4'].forEach(n=>{
+      if(n===skip) return;
+      const [ux,uy,pz]=out[n], p=B.atoms[id[n]].p;
+      const o=B.a('O', p[0]+ux*1.3, p[1]+uy*1.3, p[2]+Math.sign(pz)*0.55, ['hidroxilo']);
+      const h=B.a('H', p[0]+ux*2.0, p[1]+uy*2.0, p[2]+Math.sign(pz)*1.05, ['hidroxilo']);
+      B.b(id[n],o); B.b(o,h); id['O'+n]=o;
+    });
+    const [ux,uy,pz]=out.C5, p=B.atoms[id.C5].p;
+    const c6=B.a('C', p[0]+ux*1.35, p[1]+uy*1.35, p[2]-0.7, ['monosacarido']);
+    const o6=B.a('O', p[0]+ux*2.0+0.6, p[1]+uy*2.3, p[2]-1.5, ['hidroxilo']);
+    const h6=B.a('H', p[0]+ux*2.4+1.1, p[1]+uy*2.9, p[2]-1.7, ['hidroxilo']);
+    B.b(id.C5,c6); B.b(c6,o6); B.b(o6,h6);
+    return id;
+  }
+  const A = ring(-2.75,'C1'), Bq = ring(2.75,'C4');
+  const ob = B.a('O', 0, 0.35, 0, ['glucosidico']);
+  B.b(A.C1,ob); B.b(ob,Bq.C4); B.t(A.C1,'glucosidico'); B.t(Bq.C4,'glucosidico');
+  B.anchors.monosacarido=A.C3; B.anchors.hidroxilo=Bq.OC2; B.anchors.glucosidico=ob;
+  return B;
+}
+
+/* Triglicérido: glicerol + 2 ácidos grasos saturados + 1 insaturado */
+function buildTG(){
+  const B = Builder();
+  const gy=[1.6,0,-1.6], zc=[0.9,-0.9,0.9];
+  const g=gy.map(y=>B.a('C',-1.2,y,0,['glicerol']));
+  B.b(g[0],g[1]); B.b(g[1],g[2]);
+  for(let i=0;i<3;i++){
+    const unsat = i===2, tag = unsat?'insaturado':'acido-graso';
+    const oe=B.a('O',0,gy[i],zc[i]*0.55,['ester']); B.b(g[i],oe);
+    let dir=[1,0], base=[1.15,gy[i]], prev=oe, ids=[];
+    for(let j=0;j<12;j++){
+      if(unsat && j===7){const a=rad(-38);dir=[Math.cos(a),Math.sin(a)];}
+      if(j>0){base=[base[0]+dir[0]*1.25, base[1]+dir[1]*1.25];}
+      const perp=[-dir[1],dir[0]], off=(j%2?0.42:-0.42);
+      const c=B.a('C', base[0]+perp[0]*off, base[1]+perp[1]*off, zc[i], j===0?['ester',tag]:[tag]);
+      B.b(prev,c,(unsat&&j===6)?2:1); prev=c; ids.push(c);
+      if(j===0){const od=B.a('O',base[0]-0.1,base[1]+perp[1]*off,zc[i]+Math.sign(zc[i])*1.2,['ester']);B.b(c,od,2); if(i===1) B.anchors.ester=od;}
+    }
+    if(i===0) B.anchors['acido-graso']=ids[6];
+    if(unsat) B.anchors.insaturado=ids[6];
+  }
+  B.anchors.glicerol=g[0];
+  return B;
+}
+
+/* Péptido de 4 aminoácidos: alanina – serina – cisteína – valina */
+function buildPeptide(){
+  const B = Builder();
+  let prevC=null, N0=null, CA1=null, N2=null, SG=null, OXT=null;
+  for(let i=0;i<4;i++){
+    const s=i%2?-1:1, x=3.6*i;
+    const resTag = i===1?['aminoacido']:[];
+    const n=B.a('N',x,0,0,resTag.slice()), ca=B.a('C',x+1.2,0.9*s,0,resTag.slice()), c=B.a('C',x+2.4,0,0,resTag.slice());
+    const o=B.a('O',x+2.4,-1.2*s,0,resTag.slice());
+    B.b(n,ca); B.b(ca,c); B.b(c,o,2);
+    if(prevC!==null){B.b(prevC.c,n); [prevC.c,prevC.o,n].forEach(k=>B.t(k,'peptidico'));}
+    if(i===0){
+      N0=n; B.t(n,'amino');
+      const h1=B.a('H',x-0.7,-0.75,0.35,['amino']), h2=B.a('H',x-0.8,0.55,-0.35,['amino']); B.b(n,h1); B.b(n,h2);
+    } else {
+      const h=B.a('H',x-0.25,-1.0*s,0,resTag.slice()); B.b(n,h);
+    }
+    const cb=B.a('C',x+1.2,0.9*s+1.4*s,0.5,['radical'].concat(resTag)); B.b(ca,cb);
+    if(i===1){const og=B.a('O',x+1.8,0.9*s+2.3*s,1.1,['radical','aminoacido']);B.b(cb,og);}
+    if(i===2){SG=B.a('S',x+1.85,0.9*s+2.4*s,1.15,['radical']);B.b(cb,SG);}
+    if(i===3){const g1=B.a('C',x+2.1,0.9*s+2.3*s,1.0,['radical']), g2=B.a('C',x+0.3,0.9*s+2.3*s,1.0,['radical']);B.b(cb,g1);B.b(cb,g2);}
+    if(i===1) CA1=ca;
+    if(i===2) N2=n;
+    if(i===3){
+      [c,o].forEach(k=>B.t(k,'carboxilo'));
+      OXT=B.a('O',x+3.4,-0.7*s,0,['carboxilo']); const ho=B.a('H',x+4.2,-0.2*s,0,['carboxilo']);
+      B.b(c,OXT); B.b(OXT,ho);
+    }
+    prevC={c,o};
+  }
+  B.anchors.aminoacido=CA1; B.anchors.peptidico=N2; B.anchors.amino=N0; B.anchors.carboxilo=OXT; B.anchors.radical=SG;
+  return B;
+}
+
+/* ADN: doble hélice de 8 pares de bases (eje horizontal) */
+function buildDNA(){
+  const B = Builder();
+  const seq='ATGCGTAC', comp={A:'T',T:'A',G:'C',C:'G'};
+  const RS=3.3, RP=4.25, rise=1.7, tw=36, off=150, n=seq.length;
+  const pos=(ax,r,deg)=>[r*Math.cos(rad(deg)), ax, r*Math.sin(rad(deg))];
+  const S1=[],S2=[],P1=[],P2=[];
+  for(let i=0;i<n;i++){
+    const ax=(i-(n-1)/2)*rise, th=i*tw;
+    S1.push(B.a('Sg',...pos(ax,RS,th),['azucar']));
+    S2.push(B.a('Sg',...pos(ax,RS,th+off),['azucar']));
+  }
+  for(let i=-1;i<n;i++){
+    const ax=(i+0.5-(n-1)/2)*rise, th=i*tw+tw/2;
+    const p1=B.a('P',...pos(ax,RP,th),['fosfato']), p2=B.a('P',...pos(ax,RP,th+off),['fosfato']);
+    P1.push(p1); P2.push(p2);
+    if(i>=0){B.b(S1[i],p1);B.b(S2[i],p2);}
+    if(i+1<n){B.b(p1,S1[i+1]);B.b(p2,S2[i+1]);}
+  }
+  const lerp=(a,b,t)=>a.map((v,k)=>v+(b[k]-v)*t);
+  const H=[];
+  for(let i=0;i<n;i++){
+    const a=B.atoms[S1[i]].p, b=B.atoms[S2[i]].p, l1=seq[i], l2=comp[l1];
+    const x1=B.a('b'+l1,...lerp(a,b,.24),['base']), y1=B.a('b'+l1,...lerp(a,b,.43),['base','puente-h']);
+    const y2=B.a('b'+l2,...lerp(a,b,.57),['base','puente-h']), x2=B.a('b'+l2,...lerp(a,b,.76),['base']);
+    B.b(S1[i],x1); B.b(x1,y1); B.b(y1,y2,'h'); B.b(y2,x2); B.b(x2,S2[i]);
+    H.push({x1,y1,y2});
+  }
+  [P1[1],S1[1],H[1].x1,H[1].y1].forEach(k=>B.t(k,'nucleotido'));
+  B.anchors.nucleotido=S1[1]; B.anchors.fosfato=P1[5]; B.anchors.azucar=S2[5]; B.anchors.base=H[6].x1; B.anchors['puente-h']=H[3].y2;
+  return B;
+}
+
+const MOLS = [
+  {key:'carbohidratos', name:'Carbohidrato', ex:'Maltosa · C₁₂H₂₂O₁₁', build:buildMaltose, parts:['monosacarido','hidroxilo','glucosidico']},
+  {key:'lipidos', name:'Lípido', ex:'Triglicérido', build:buildTG, parts:['glicerol','acido-graso','insaturado','ester']},
+  {key:'proteinas', name:'Proteína', ex:'Péptido Ala–Ser–Cys–Val', build:buildPeptide, parts:['aminoacido','peptidico','amino','carboxilo','radical']},
+  {key:'acidos-nucleicos', name:'Ácido nucleico', ex:'ADN · 8 pares de bases', build:buildDNA, parts:['nucleotido','fosfato','azucar','base','puente-h']}
+];
+
+function shade(hex, f){
+  const n=parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255;
+  if(f<0){r*=1+f;g*=1+f;b*=1+f;} else {r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f;}
+  return 'rgb('+Math.round(r)+','+Math.round(g)+','+Math.round(b)+')';
+}
+
+function MolView(canvas, hooks){
+  const ctx=canvas.getContext('2d');
+  const S={mol:null, def:null, yaw:-0.5, pitch:0.35, auto:true, sel:null, labels:true, badges:[], proj:[], w:0, h:0, scale:1, running:false, visible:false, drag:null};
+  function load(def){
+    const B=def.build(); const c=[0,0,0];
+    B.atoms.forEach(a=>{c[0]+=a.p[0];c[1]+=a.p[1];c[2]+=a.p[2];});
+    c.forEach((v,k)=>c[k]=v/B.atoms.length);
+    B.atoms.forEach(a=>{a.p=a.p.map((v,k)=>v-c[k]);});
+    let R=0; B.atoms.forEach(a=>{R=Math.max(R,Math.hypot(...a.p)+EL[a.e].r);});
+    S.mol=B; S.def=def; S.R=R; S.sel=null; resize();
+  }
+  function resize(){
+    const dpr=Math.min(window.devicePixelRatio||1,2), w=canvas.clientWidth, h=canvas.clientHeight;
+    if(!w||!h) return;
+    canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+    S.w=w; S.h=h; S.scale=Math.min(w*0.9,h)/2/(S.R*1.04); draw();
+  }
+  function project(p){
+    const cy=Math.cos(S.yaw), sy=Math.sin(S.yaw), cp=Math.cos(S.pitch), sp=Math.sin(S.pitch);
+    const x1=p[0]*cy+p[2]*sy, z1=-p[0]*sy+p[2]*cy;
+    const y2=p[1]*cp-z1*sp, z2=p[1]*sp+z1*cp;
+    const d=34, k=d/(d-z2);
+    return {x:S.w/2+x1*S.scale*k, y:S.h/2-y2*S.scale*k, z:z2, k};
+  }
+  function draw(){
+    if(!S.mol||!S.w) return;
+    ctx.clearRect(0,0,S.w,S.h);
+    const A=S.mol.atoms, P=A.map(a=>project(a.p)); S.proj=P;
+    const on=i=>!S.sel||A[i].tags.includes(S.sel);
+    const items=[];
+    S.mol.bonds.forEach(b=>items.push({t:'b',b,z:(P[b[0]].z+P[b[1]].z)/2-0.01}));
+    A.forEach((a,i)=>items.push({t:'a',i,z:P[i].z}));
+    items.sort((u,v)=>u.z-v.z);
+    for(const it of items){
+      if(it.t==='b'){
+        const [i,j,o]=it.b, p=P[i], q=P[j], lit=on(i)&&on(j);
+        ctx.globalAlpha=lit?1:0.18;
+        const lw=Math.max(2,0.17*S.scale*(p.k+q.k)/2);
+        if(o==='h'){
+          ctx.setLineDash([4,4]); ctx.strokeStyle='#7A8C8A'; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); ctx.setLineDash([]);
+          continue;
+        }
+        const mx=(p.x+q.x)/2, my=(p.y+q.y)/2;
+        const lines = o===2 ? [-1,1] : [0];
+        const dx=q.x-p.x, dy=q.y-p.y, L=Math.hypot(dx,dy)||1, nx=-dy/L, ny=dx/L, sep=lw*0.75;
+        ctx.lineCap='round';
+        for(const s of lines){
+          const ox=nx*sep*s, oy=ny*sep*s, w=o===2?lw*0.6:lw;
+          ctx.lineWidth=w;
+          ctx.strokeStyle=shade(EL[A[i].e].c,-0.18); ctx.beginPath(); ctx.moveTo(p.x+ox,p.y+oy); ctx.lineTo(mx+ox,my+oy); ctx.stroke();
+          ctx.strokeStyle=shade(EL[A[j].e].c,-0.18); ctx.beginPath(); ctx.moveTo(mx+ox,my+oy); ctx.lineTo(q.x+ox,q.y+oy); ctx.stroke();
+        }
+      } else {
+        const a=A[it.i], p=P[it.i], el=EL[a.e], r=el.r*S.scale*p.k*0.95, lit=on(it.i);
+        ctx.globalAlpha=lit?1:0.2;
+        const g=ctx.createRadialGradient(p.x-r*.35,p.y-r*.4,r*.1,p.x,p.y,r);
+        g.addColorStop(0,shade(el.c,0.65)); g.addColorStop(0.45,el.c); g.addColorStop(1,shade(el.c,-0.35));
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+        if(a.e==='H'){ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;ctx.stroke();}
+        if(S.sel&&lit){ctx.strokeStyle='#BC2F67';ctx.lineWidth=2.5;ctx.stroke();}
+      }
+    }
+    ctx.globalAlpha=1;
+    S.badges=[];
+    S.def.parts.forEach((key,n)=>{
+      const idx=S.mol.anchors[key]; if(idx==null) return;
+      const p=P[idx], has=hooks.count(key)>0, done=hooks.done(key), R=11;
+      ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
+      ctx.fillStyle=has?(done?'#24734A':'#BC2F67'):'#FFFFFF'; ctx.fill();
+      ctx.lineWidth=2.5; ctx.strokeStyle=has?'#FFFFFF':'#4F6765'; ctx.stroke();
+      ctx.fillStyle=has?'#FFFFFF':'#4F6765'; ctx.font='600 12px "IBM Plex Mono", monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(String(n+1),p.x,p.y+0.5);
+      if(S.labels){
+        ctx.font='700 13px "Atkinson Hyperlegible", sans-serif'; ctx.textAlign='left';
+        ctx.lineWidth=4; ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineJoin='round';
+        const label=PARTS[key].s||PARTS[key].n; ctx.strokeText(label,p.x+16,p.y); ctx.fillStyle='#1C3533'; ctx.fillText(label,p.x+16,p.y);
+      }
+      S.badges.push({key,x:p.x,y:p.y});
+    });
+  }
+  function loop(){
+    if(!S.visible){S.running=false;return;}
+    if(S.auto&&!S.drag){S.yaw+=0.006;}
+    draw(); requestAnimationFrame(loop);
+  }
+  function start(){ if(!S.running&&S.visible&&S.auto){S.running=true;requestAnimationFrame(loop);} else draw(); }
+  function hit(x,y){
+    for(const b of S.badges){ if(Math.hypot(b.x-x,b.y-y)<16) return b.key; }
+    let best=null;
+    S.proj.forEach((p,i)=>{
+      const r=EL[S.mol.atoms[i].e].r*S.scale*p.k;
+      if(Math.hypot(p.x-x,p.y-y)<r && (!best||p.z>best.z)) best={i,z:p.z};
+    });
+    if(best){ const t=S.mol.atoms[best.i].tags.find(t=>S.def.parts.includes(t)); if(t) return t; }
+    return null;
+  }
+  canvas.addEventListener('pointerdown',e=>{S.drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};});
+  canvas.addEventListener('pointermove',e=>{
+    if(!S.drag) return;
+    const dx=e.clientX-S.drag.x, dy=e.clientY-S.drag.y;
+    if(!S.drag.moved && Math.hypot(dx,dy)>5){S.drag.moved=true; canvas.setPointerCapture(S.drag.id); canvas.classList.add('drag');}
+    if(S.drag.moved){S.yaw+=dx*0.01; S.pitch=Math.max(-1.4,Math.min(1.4,S.pitch+dy*0.01)); S.drag.x=e.clientX; S.drag.y=e.clientY; if(!S.running) draw();}
+  });
+  const end=e=>{
+    if(!S.drag) return;
+    const moved=S.drag.moved; S.drag=null; canvas.classList.remove('drag');
+    if(!moved && e.type==='pointerup'){
+      const r=canvas.getBoundingClientRect(); hooks.pick(hit(e.clientX-r.left,e.clientY-r.top));
+    }
+  };
+  canvas.addEventListener('pointerup',end); canvas.addEventListener('pointercancel',end);
+  canvas.addEventListener('pointermove',e=>{ if(S.drag) return; const r=canvas.getBoundingClientRect(); canvas.style.cursor=hit(e.clientX-r.left,e.clientY-r.top)?'pointer':'grab'; });
+  window.addEventListener('resize',()=>{ if(S.visible) resize(); });
+  return {
+    load, resize, draw, start,
+    set sel(k){S.sel=k; draw();}, get sel(){return S.sel;},
+    set auto(v){S.auto=v; start();}, get auto(){return S.auto;},
+    set labels(v){S.labels=v; draw();},
+    set visible(v){S.visible=v; if(v){resize(); start();}}
+  };
+}
+/* ===== Aplicación ===== */
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ZMAP=Object.fromEntries(ZONES.map(z=>[z.id,z]));
+const VB0={x:0,y:0,w:900,h:600};
+
+/* Progreso guardado solo en este navegador */
+const KEY='repaso-nivel-2s-v1';
+let ST={ans:{},rev:{},checks:{},hints:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&typeof s==='object') ST=Object.assign(ST,s);}catch(e){}
+let saveT=null;
+function save(){clearTimeout(saveT); saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}},250);}
+
+/* Dónde está cada estructura */
+const PART_ZONES={};
+const addPZ=(p,z)=>{(PART_ZONES[p]=PART_ZONES[p]||[]); if(!PART_ZONES[p].includes(z)) PART_ZONES[p].push(z);};
+MOLS.forEach(m=>{addPZ(m.key,'biomoleculas'); m.parts.forEach(p=>addPZ(p,'biomoleculas'));});
+$$('.scene[data-zone]').forEach(sc=>$$('.hot[data-part]',sc).forEach(h=>addPZ(h.dataset.part,sc.dataset.zone)));
+
+const loc=s=>{const i=s.indexOf(':'); return i<0?{z:null,p:s}:{z:s.slice(0,i),p:s.slice(i+1)};};
+const qsAt=(z,p)=>QS.filter(q=>q.partes.some(s=>{const L=loc(s); return L.p===p&&(!L.z||L.z===z)&&(PART_ZONES[p]||[]).includes(z);}));
+const qsForZone=z=>QS.filter(q=>q.partes.some(s=>{const L=loc(s); return L.z?L.z===z:(PART_ZONES[L.p]||[]).includes(z);}));
+const locZone=L=>L.z||PART_ZONES[L.p][0];
+const zoneOfQ=q=>locZone(loc(q.partes[0]));
+QS.forEach(q=>q.partes.forEach(s=>{const L=loc(s); if(!PARTS[L.p]||!PART_ZONES[L.p]||(L.z&&!PART_ZONES[L.p].includes(L.z))) console.warn('Parte sin ubicar:',s);}));
+const status=q=>ST.rev[q.id]?'rev':((ST.ans[q.id]||'').trim().length>=15?'resp':'pend');
+const ST_LABEL={rev:'Revisada',resp:'Respondida',pend:'Pendiente'};
+const partDone=(z,p)=>{const qs=qsAt(z,p); return qs.length>0&&qs.every(q=>ST.rev[q.id]);};
+const zoneParts=z=>{const sc=$(`.scene[data-zone="${z}"]`), out=[]; $$('.hot[data-part]',sc).forEach(h=>{if(!out.includes(h.dataset.part)) out.push(h.dataset.part);}); return out;};
+const words=t=>(t||'').trim().split(/\s+/).filter(Boolean).length;
+
+let cur={zone:null,part:null,mol:0}, pending=null, labels=window.innerWidth>=700, mvLoaded=false;
+
+/* ---------- Encabezado: progreso y navegación ---------- */
+function renderSegs(){
+  $('#segs').innerHTML=QS.map(q=>{const z=ZMAP[zoneOfQ(q)], s=status(q);
+    return `<button class="seg ${s}" style="--zc:${z.c}" data-goq="${q.id}" title="Pregunta ${q.id}: ${esc(q.titulo)} · ${ST_LABEL[s]}" aria-label="Pregunta ${q.id}, ${esc(q.titulo)}, ${ST_LABEL[s]}"></button>`;}).join('');
+  $('#prog-n').textContent=QS.filter(q=>ST.rev[q.id]).length;
+}
+function renderNav(){
+  const chip=(id,name,c,ct)=>`<button class="chip-nav" style="--zc:${c}" data-go-zone="${id}" ${(cur.zone||'mapa')===id?'aria-current="page"':''}><span class="dot"></span>${esc(name)}${ct?`<span class="ct">${ct}</span>`:''}</button>`;
+  $('#nav').innerHTML=chip('mapa','Mapa','var(--ink)','')+ZONES.map(z=>{const qs=qsForZone(z.id); return chip(z.id,z.name,z.c,`${qs.filter(q=>ST.rev[q.id]).length}/${qs.length}`);}).join('');
+}
+function renderStations(){
+  $('#stations').innerHTML=ZONES.map(z=>{const qs=qsForZone(z.id), r=qs.filter(q=>ST.rev[q.id]).length;
+    return `<button class="station" style="--zc:${z.c};--zt:${z.t}" data-go-zone="${z.id}"><span class="ill">${z.ill}</span><span class="st-name">${esc(z.name)}</span><span class="st-blurb">${esc(z.blurb)}</span><span class="meta"><span><b>${qs.length}</b> preguntas</span><span>${r} revisadas</span></span></button>`;}).join('');
+}
+function renderIndex(){
+  $('#index').innerHTML=QS.map(q=>{const s=status(q), zs=[];
+    q.partes.forEach(s=>{const L=loc(s), z=locZone(L); if(!zs.find(x=>x.z===z)) zs.push({z,p:L.p});});
+    return `<div class="irow"><span class="inum">P${q.id}</span><div style="min-width:0"><p class="ititle">${esc(q.titulo)}</p><div class="imeta"><span>${esc(q.tema)}</span>${q.skill?`<span>· Habilidad: ${esc(q.skill)}</span>`:''}<span class="st ${s}">${ST_LABEL[s]}</span></div></div><div class="ilinks">${zs.map(({z,p})=>{const Z=ZMAP[z]; return `<button class="go" style="--zc:${Z.c};--zt:${Z.t}" data-go-zone="${z}" data-go-part="${p}" data-go-q="${q.id}" title="${esc(PARTS[p].n)}"><span class="dot"></span>${esc(Z.name)}</button>`;}).join('')}</div></div>`;}).join('');
+}
+
+/* ---------- Rutas ---------- */
+function go(zone,part,qid){
+  pending={part,qid};
+  const target=ZMAP[zone]?zone:'mapa';
+  if(location.hash.slice(1)!==target){try{location.hash=target;}catch(e){}}
+  route();
+}
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1)), p=pending; pending=null;
+  if(ZMAP[h]){ if(h===cur.zone&&!p) return; openZone(h,p&&p.part,p&&p.qid); }
+  else showMap();
+}
+function showMap(){
+  $('#view-mapa').hidden=false; $('#view-zona').hidden=true; mv.visible=false; cur.zone=null; cur.part=null;
+  renderStations(); renderIndex(); renderNav();
+}
+function openZone(id,part,qid){
+  const z=ZMAP[id], V=$('#view-zona');
+  $('#view-mapa').hidden=true; V.hidden=false;
+  V.style.setProperty('--zc',z.c); V.style.setProperty('--zt',z.t);
+  if(cur.zone!==id){
+    cur.zone=id; cur.part=null;
+    $('#z-title').textContent=z.name; $('#z-hint').textContent=z.hint;
+    $$('.scene').forEach(s=>s.hidden=s.dataset.zone!==id);
+    const bio=id==='biomoleculas';
+    $('#t-spin').hidden=!bio; ['#t-zin','#t-zout','#t-fit'].forEach(s=>$(s).hidden=bio);
+    if(bio){ mv.visible=true; if(!mvLoaded){mvLoaded=true; setMol(0,true);} }
+    else { mv.visible=false; initScene(id); const svg=curSvg(); if(!svg._vb) svg._vb={...VB0}; setVB(svg,svg._vb); }
+    renderSteps(); renderNav(); updateScale();
+    if(!qid) window.scrollTo(0,0);
+  }
+  select(part||null,qid,{scroll:!!qid});
+}
+function renderSteps(){
+  const i=ZONES.findIndex(z=>z.id===cur.zone), prev=ZONES[(i+ZONES.length-1)%ZONES.length], next=ZONES[(i+1)%ZONES.length];
+  const b=(z,txt)=>`<button class="go" style="--zc:${z.c};--zt:${z.t}" data-go-zone="${z.id}">${txt}</button>`;
+  $('#z-steps').innerHTML=b(prev,'← '+esc(prev.name))+b(next,esc(next.name)+' →');
+}
+function updateScale(){
+  const z=ZMAP[cur.zone]; if(!z) return;
+  let h='';
+  if(z.scale){const svg=curSvg(), w=svg.clientWidth||0, vb=svg._vb||VB0; h=`<i style="--w:${Math.max(8,Math.round(z.scale.u*w/vb.w))}px"></i>${z.scale.um} µm · `;}
+  $('#z-scale').innerHTML=h+esc(z.foot||'');
+}
+const curSvg=()=>document.getElementById('svg-'+cur.zone);
+
+/* ---------- Escenas SVG ---------- */
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};}
+function initScene(id){
+  const svg=document.getElementById('svg-'+id);
+  if(!svg||svg.dataset.ready) return; svg.dataset.ready='1';
+  $$('path.rib-along',svg).forEach(path=>{
+    const L=path.getTotalLength(), g=path.closest('g.hot'), out=[]; let n=0;
+    for(let s=4;s<L-2;s+=9,n++){const p=path.getPointAtLength(s), q=path.getPointAtLength(Math.min(L,s+1)), dx=q.x-p.x, dy=q.y-p.y, l=Math.hypot(dx,dy)||1, side=n%2?1:-1;
+      out.push(`<circle cx="${(p.x-dy/l*7*side).toFixed(1)}" cy="${(p.y+dx/l*7*side).toFixed(1)}" r="2.5" fill="#5A3F8F"/>`);}
+    g.insertAdjacentHTML('beforeend',out.join(''));
+  });
+  if(id==='animal'){
+    const r=rng(7), out=[];
+    while(out.length<90){const x=450+(r()*2-1)*360, y=305+(r()*2-1)*225; if(((x-450)/360)**2+((y-305)/225)**2<0.85) out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.3" fill="#7A4FA0" opacity=".75"/>`);}
+    $('#animal-ribos').innerHTML=out.join('');
+  }
+  if(id==='procariota'){
+    const r=rng(11), out=[];
+    while(out.length<70){const x=200+r()*480, y=212+r()*176, dx=Math.max(0,Math.abs(x-440)-160);
+      if(Math.hypot(dx,y-300)>82) continue; if(((x-465)/124)**2+((y-302)/74)**2<1) continue;
+      if(Math.hypot(x-262,y-262)<20||Math.hypot(x-612,y-268)<34||Math.hypot(x-635,y-355)<24) continue;
+      out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#5A3F8F" opacity=".8"/>`);}
+    $('#pro-ribos').insertAdjacentHTML('afterbegin',out.join(''));
+  }
+  const pins=[];
+  $$('.hot[data-pin]',svg).forEach(h=>{
+    const p=h.dataset.part, [x,y]=h.dataset.pin.split(',').map(Number), n=qsAt(id,p).length, side=h.dataset.lab||(x>690?'left':'right');
+    const lx={left:-18,right:18,below:0,above:0}[side], ly={left:1,right:1,below:26,above:-24}[side], la={left:'end',right:'start',below:'middle',above:'middle'}[side];
+    h.setAttribute('tabindex','0'); h.setAttribute('role','button'); h.setAttribute('aria-label',PARTS[p].n+(n?`, ${n} pregunta${n>1?'s':''}`:''));
+    pins.push(`<g class="pin ${n?'':'info'}" data-part="${p}" data-x="${x}" data-y="${y}" transform="translate(${x} ${y})"><circle class="halo" r="12"/><circle class="b" r="12"/><text>${n||'i'}</text><text class="plabel" x="${lx}" y="${ly}" style="text-anchor:${la}">${esc(PARTS[p].s||PARTS[p].n)}</text></g>`);
+  });
+  svg.insertAdjacentHTML('beforeend',`<g class="pins" aria-hidden="true">${pins.join('')}</g>`);
+  svg.classList.toggle('nolabels',!labels);
+  bindPan(svg);
+  svg.addEventListener('click',e=>{ if(svg._justPanned) return; const el=e.target.closest('[data-part]'); const p=el?el.dataset.part:null; select(p,null,{scroll:!!p}); });
+  svg.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.matches('.hot[data-part]')){e.preventDefault(); select(e.target.dataset.part,null,{scroll:true});} });
+  refreshPins(svg);
+}
+function refreshPins(svg){ const z=svg.id.slice(4); $$('.pin',svg).forEach(p=>p.classList.toggle('done',partDone(z,p.dataset.part))); }
+function scalePins(svg){
+  const w=svg.clientWidth, vb=svg._vb||VB0; if(!w) return;
+  const s=Math.max(0.9,Math.min(2.4,(11/12)*vb.w/w));
+  $$('.pin',svg).forEach(g=>g.setAttribute('transform',`translate(${g.dataset.x} ${g.dataset.y}) scale(${s.toFixed(3)})`));
+}
+function clampVB(v){const w=Math.max(300,Math.min(900,v.w)), h=w*2/3; return {x:Math.max(0,Math.min(900-w,v.x)), y:Math.max(0,Math.min(600-h,v.y)), w, h};}
+function setVB(svg,v){
+  svg._vb=v; svg.setAttribute('viewBox',`${v.x.toFixed(2)} ${v.y.toFixed(2)} ${v.w.toFixed(2)} ${v.h.toFixed(2)}`);
+  svg.closest('.scene').classList.toggle('zoomed',v.w<899); scalePins(svg); updateScale();
+}
+function animVB(svg,to){
+  to=clampVB(to); const from={...(svg._vb||VB0)};
+  cancelAnimationFrame(svg._raf);
+  if(reduced){setVB(svg,to);return;}
+  const t0=performance.now(), D=380;
+  const step=t=>{let k=Math.min(1,(t-t0)/D); k=1-Math.pow(1-k,3);
+    setVB(svg,{x:from.x+(to.x-from.x)*k,y:from.y+(to.y-from.y)*k,w:from.w+(to.w-from.w)*k,h:from.h+(to.h-from.h)*k});
+    if(k<1) svg._raf=requestAnimationFrame(step);};
+  svg._raf=requestAnimationFrame(step);
+}
+function zoomBy(f){const svg=curSvg(), v=svg._vb||VB0, cx=v.x+v.w/2, cy=v.y+v.h/2, w=v.w/f; animVB(svg,{x:cx-w/2,y:cy-w/3,w,h:w*2/3});}
+function focusPart(svg,part){
+  const m=svg.getScreenCTM(); if(!m) return; const inv=m.inverse();
+  let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
+  $$(`.hot[data-part="${part}"]`,svg).forEach(el=>{const r=el.getBoundingClientRect(); if(!r.width&&!r.height) return;
+    [[r.left,r.top],[r.right,r.bottom]].forEach(([x,y])=>{const p=new DOMPoint(x,y).matrixTransform(inv); x1=Math.min(x1,p.x); y1=Math.min(y1,p.y); x2=Math.max(x2,p.x); y2=Math.max(y2,p.y);});});
+  if(x1>x2) return;
+  const bw=x2-x1, bh=y2-y1;
+  if(bw>540||bh>360){animVB(svg,{...VB0});return;}
+  const w=Math.max(380,bw*2.4,bh*3.6), cx=(x1+x2)/2, cy=(y1+y2)/2;
+  animVB(svg,{x:cx-w/2,y:cy-w/3,w,h:w*2/3});
+}
+function bindPan(svg){
+  let pan=null; const sc=svg.closest('.scene');
+  svg.addEventListener('pointerdown',e=>{ if(!svg._vb||svg._vb.w>=899) return; pan={x:e.clientX,y:e.clientY,vb:{...svg._vb},moved:false,id:e.pointerId}; });
+  svg.addEventListener('pointermove',e=>{
+    if(!pan) return; const dx=e.clientX-pan.x, dy=e.clientY-pan.y;
+    if(!pan.moved&&Math.hypot(dx,dy)>6){pan.moved=true; try{svg.setPointerCapture(pan.id);}catch(_){} sc.classList.add('panning');}
+    if(pan.moved){const k=pan.vb.w/svg.clientWidth; setVB(svg,clampVB({x:pan.vb.x-dx*k,y:pan.vb.y-dy*k,w:pan.vb.w,h:pan.vb.h}));}
+  });
+  const end=()=>{ if(pan&&pan.moved){svg._justPanned=true; setTimeout(()=>svg._justPanned=false,0);} pan=null; sc.classList.remove('panning'); };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+}
+
+/* ---------- Biomoléculas ---------- */
+const mv=MolView($('#mol-canvas'),{
+  count:k=>qsAt('biomoleculas',k).length, done:k=>partDone('biomoleculas',k),
+  pick:k=>select(k||MOLS[cur.mol].key,null,{scroll:!!k})
+});
+mv.auto=!reduced; $('#t-spin').setAttribute('aria-pressed',String(!reduced));
+function setMol(i,silent){
+  cur.mol=i; mv.load(MOLS[i]);
+  $('#mol-tabs').innerHTML=MOLS.map((m,k)=>{const n=new Set([m.key,...m.parts].flatMap(p=>qsAt('biomoleculas',p).map(q=>q.id))).size;
+    return `<button class="mol-tab" role="tab" aria-selected="${k===i}" data-mol="${k}">${esc(m.name)} <small>${n} preg.</small></button>`;}).join('');
+  $('#mol-parts').innerHTML=MOLS[i].parts.map((p,k)=>{const n=qsAt('biomoleculas',p).length;
+    return `<button class="mol-part ${n?'':'info'}" data-sel="${p}" aria-pressed="false"><b>${k+1}</b>${esc(PARTS[p].n)}</button>`;}).join('');
+  $('#mol-ov').textContent=MOLS[i].ex;
+  if(!silent) select(MOLS[i].key);
+}
+
+/* ---------- Selección y ficha ---------- */
+function select(part,qid,opt){
+  opt=opt||{};
+  if(cur.zone==='biomoleculas'){
+    if(!part) part=MOLS[cur.mol].key;
+    const mi=MOLS.findIndex(m=>m.key===part||m.parts.includes(part));
+    if(mi<0) part=MOLS[cur.mol].key; else if(mi!==cur.mol) setMol(mi,true);
+    mv.sel=MOLS.some(m=>m.key===part)?null:part;
+    $$('.mol-part').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sel===part)));
+  } else {
+    const svg=curSvg();
+    if(part&&!svg.querySelector(`.hot[data-part="${part}"]`)) part=null;
+    svg.classList.toggle('has-sel',!!part);
+    $$('.hot',svg).forEach(h=>h.classList.toggle('sel',!!part&&h.dataset.part===part));
+    if(part) focusPart(svg,part);
+  }
+  cur.part=part; renderPanel(qid,opt);
+}
+function partBtn(p){const n=qsAt(cur.zone,p).length;
+  return `<button class="part-btn" data-sel="${p}"><i></i><span>${esc(PARTS[p].n)}</span><span class="qc ${n?'':'zero'}">${n?n+(n>1?' preguntas':' pregunta'):'info'}</span></button>`;}
+function qCard(q,part){
+  const s=status(q), nh=ST.hints[q.id]||0, ch=ST.checks[q.id]||[];
+  const also=q.partes.map(loc).filter(L=>L.p!==part).map(L=>{const p=L.p, zs=PART_ZONES[p], zz=L.z||(zs.includes(cur.zone)?cur.zone:zs[0]), Z=ZMAP[zz];
+    return `<button class="go" style="--zc:${Z.c};--zt:${Z.t}" data-go-zone="${zz}" data-go-part="${p}" data-go-q="${q.id}"><span class="dot"></span>${esc(PARTS[p].n)}${zz!==cur.zone?' · '+esc(Z.name):''}</button>`;}).join('');
+  return `<article class="q" id="q-${q.id}">
+  <div class="q-top"><span class="q-num">Pregunta ${q.id}</span><span class="q-tema">${esc(q.tema)}</span>${q.skill?`<span class="q-skill">Habilidad: ${esc(q.skill)}</span>`:''}<span class="st ${s}">${ST_LABEL[s]}</span></div>
+  <div class="q-in">
+    <h4 class="q-title">${esc(q.titulo)}</h4>
+    <p class="q-ctx">${esc(q.ctx)}</p>
+    <p class="q-ask">${esc(q.ask)}</p>
+    <label class="q-lbl" for="ans-${q.id}">Tu explicación <span id="wc-${q.id}">${words(ST.ans[q.id])} palabras</span></label>
+    <textarea id="ans-${q.id}" data-q="${q.id}" placeholder="Explica con tus palabras. Usa los conceptos científicos y justifica tu respuesta con al menos un ejemplo."></textarea>
+    <div class="q-actions">
+      <button class="btn" type="button" data-act="hint" data-q="${q.id}" ${nh>=q.pistas.length?'disabled':''}>${nh>=q.pistas.length?'Pistas usadas':'Pedir una pista'} (${nh}/${q.pistas.length})</button>
+      <button class="btn primary" type="button" data-act="model" data-q="${q.id}">${ST.rev[q.id]?'Ver de nuevo la explicación':'Comparar con la explicación'}</button>
+    </div>
+    <ul class="hints" id="hints-${q.id}">${q.pistas.slice(0,nh).map((t,k)=>`<li><b>Pista ${k+1}</b>${esc(t)}</li>`).join('')}</ul>
+    <div class="model" id="model-${q.id}" hidden>
+      <h5>Explicación modelo</h5><p>${esc(q.modelo)}</p>
+      <h5>¿Tu explicación incluye estas ideas clave?</h5>
+      <ul class="checks">${q.claves.map((c,k)=>`<li><label><input type="checkbox" data-q="${q.id}" data-k="${k}" ${ch.includes(k)?'checked':''}><span>${esc(c)}</span></label></li>`).join('')}</ul>
+      <p class="score" id="score-${q.id}">${scoreText(q)}</p>
+      <h5>Ideas que debes descartar</h5>
+      <ul class="myths">${q.mitos.map(([m,c])=>`<li><span class="no">${esc(m)}</span>${esc(c)}</li>`).join('')}</ul>
+    </div>
+    ${also?`<div class="also">También aparece en: ${also}</div>`:''}
+  </div></article>`;
+}
+function scoreText(q){const n=(ST.checks[q.id]||[]).length, t=q.claves.length;
+  return n===t?`¡Muy bien! Tu explicación incluye las ${t} ideas clave.`:`Marcaste ${n} de ${t} ideas clave. Agrega a tu explicación las que faltan.`;}
+function renderPanel(qid,opt){
+  const z=ZMAP[cur.zone], part=cur.part, P=$('#panel'), bio=cur.zone==='biomoleculas';
+  const molOv=bio&&MOLS.some(m=>m.key===part);
+  const up=`<button class="p-back p-up" type="button" data-up>↑ Ver el dibujo</button>`;
+  let h='';
+  if(!part){
+    const parts=zoneParts(cur.zone), wq=parts.filter(p=>qsAt(cur.zone,p).length), nq=parts.filter(p=>!qsAt(cur.zone,p).length);
+    h=`<div class="p-head"><p class="p-kicker"><i></i>Estación</p><h3>${esc(z.name)}</h3><p class="p-desc">${esc(z.blurb)} Toca una estructura en el dibujo o elígela en esta lista.</p></div>
+    <div class="p-body"><h4 class="p-sec">Estructuras con preguntas</h4><div class="parts">${wq.map(partBtn).join('')}</div>${nq.length?`<h4 class="p-sec">Otras estructuras para conocer</h4><div class="parts">${nq.map(partBtn).join('')}</div>`:''}</div>`;
+  } else {
+    const info=PARTS[part], qs=qsAt(cur.zone,part);
+    const en=(info.en||[]).filter(zz=>zz!==cur.zone);
+    const enHtml=en.length?`<div class="p-en">También está en: ${en.map(zz=>{const Z=ZMAP[zz]; return (PART_ZONES[part]||[]).includes(zz)?`<button class="tag" style="--zc:${Z.c};--zt:${Z.t}" data-go-zone="${zz}" data-go-part="${part}">${esc(Z.name)}</button>`:`<span class="tag" style="--zc:${Z.c};--zt:${Z.t};cursor:default">${esc(Z.name)}</span>`;}).join('')}</div>`:'';
+    const kicker=bio?(molOv?'Biomolécula':'Parte de la molécula · '+esc(MOLS[cur.mol].name)):esc(z.name)+' · Estructura';
+    h=`<div class="p-head">${molOv?'':`<button class="p-back" type="button" data-back>← ${bio?'Volver a la molécula':'Ver todas las estructuras'}</button> `}
+      <p class="p-kicker"><i></i>${kicker}</p><h3>${esc(info.n)}</h3><p class="p-desc">${esc(info.d)}</p>
+      ${info.a?`<p class="p-analog"><b>Analogía:</b> ${esc(info.a)}</p>`:''}${enHtml}</div><div class="p-body">`;
+    if(qs.length) h+=`<h4 class="p-sec">Preguntas de desarrollo (${qs.length})</h4>`+qs.map(q=>qCard(q,part)).join('');
+    else { const sug=zoneParts(cur.zone).concat(bio?MOLS[cur.mol].parts:[]).filter((p,i,a)=>a.indexOf(p)===i&&p!==part&&qsAt(cur.zone,p).length).slice(0,6);
+      h+=`<p class="empty">Esta estructura no tiene una pregunta propia en la prueba, pero conocerla te ayuda a responder otras. Sigue con alguna de estas:</p><div class="parts">${sug.map(partBtn).join('')}</div>`; }
+    if(molOv) h+=`<h4 class="p-sec">Partes de esta molécula</h4><div class="parts">${MOLS[cur.mol].parts.map(partBtn).join('')}</div>`;
+    h+='</div>';
+  }
+  P.innerHTML=h.replace('<div class="p-head">','<div class="p-head">'+(window.innerWidth<=980?up+' ':''));
+  $$('textarea[data-q]',P).forEach(t=>{t.value=ST.ans[t.dataset.q]||'';});
+  P.scrollTop=0;
+  const smooth=reduced?'auto':'smooth';
+  if(qid){const c=document.getElementById('q-'+qid); if(c){c.scrollIntoView({block:'start',behavior:smooth}); c.classList.add('flash');}}
+  else if(opt&&opt.scroll&&window.innerWidth<=980) P.scrollIntoView({block:'start',behavior:smooth});
+}
+function refreshProgress(){
+  renderSegs(); renderNav();
+  if(cur.zone==='biomoleculas') mv.draw(); else if(cur.zone) refreshPins(curSvg());
+  if(!$('#view-mapa').hidden){renderStations(); renderIndex();}
+}
+function setStatusPill(id){
+  const q=QS[id-1], s=status(q), pill=$(`#q-${id} .q-top .st`);
+  if(pill){pill.className='st '+s; pill.textContent=ST_LABEL[s];}
+  renderSegs();
+}
+let toastT=null;
+function toast(msg){const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2800);}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go-zone]');
+  if(g){go(g.dataset.goZone,g.dataset.goPart||null,g.dataset.goQ?Number(g.dataset.goQ):null); return;}
+  const gq=e.target.closest('[data-goq]');
+  if(gq){const q=QS[Number(gq.dataset.goq)-1], L=loc(q.partes[0]); go(locZone(L),L.p,q.id); return;}
+  const sel=e.target.closest('[data-sel]');
+  if(sel){select(sel.dataset.sel,null,{scroll:true}); return;}
+  if(e.target.closest('[data-back]')){select(null); return;}
+  if(e.target.closest('[data-up]')){$('#stage').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'}); return;}
+  const mt=e.target.closest('[data-mol]');
+  if(mt){setMol(Number(mt.dataset.mol)); return;}
+  const a=e.target.closest('[data-act]');
+  if(a){
+    const id=Number(a.dataset.q), q=QS[id-1];
+    if(a.dataset.act==='hint'){
+      let n=ST.hints[id]||0; if(n>=q.pistas.length) return;
+      n++; ST.hints[id]=n; save();
+      $('#hints-'+id).insertAdjacentHTML('beforeend',`<li><b>Pista ${n}</b>${esc(q.pistas[n-1])}</li>`);
+      a.textContent=(n>=q.pistas.length?'Pistas usadas':'Pedir una pista')+` (${n}/${q.pistas.length})`; a.disabled=n>=q.pistas.length;
+    } else {
+      const m=$('#model-'+id), ta=$('#ans-'+id);
+      if(m.hidden){
+        if((ta.value||'').trim().length<15&&!a.dataset.warned){a.dataset.warned='1'; a.textContent='Ver la explicación de todos modos'; toast('Primero escribe tu explicación: así podrás compararla.'); ta.focus(); return;}
+        m.hidden=false; a.textContent='Ocultar la explicación';
+        if(!ST.rev[id]){ST.rev[id]=true; save(); setStatusPill(id); refreshProgress(); toast(`Pregunta ${id} revisada · ${QS.filter(x=>ST.rev[x.id]).length} de 13`);}
+        m.scrollIntoView({block:'nearest',behavior:reduced?'auto':'smooth'});
+      } else { m.hidden=true; a.textContent='Ver de nuevo la explicación'; }
+    }
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.matches('textarea[data-q]')){const id=Number(t.dataset.q), before=status(QS[id-1]);
+    ST.ans[id]=t.value; save(); const wc=$('#wc-'+id); if(wc) wc.textContent=words(t.value)+' palabras';
+    if(status(QS[id-1])!==before) setStatusPill(id);}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches('.checks input[data-q]')){const id=Number(t.dataset.q), k=Number(t.dataset.k); let a=ST.checks[id]||[];
+    a=t.checked?[...new Set([...a,k])]:a.filter(x=>x!==k); ST.checks[id]=a; save(); $('#score-'+id).textContent=scoreText(QS[id-1]);}
+});
+$('#t-labels').setAttribute('aria-pressed',String(labels));
+$('#t-labels').addEventListener('click',()=>{labels=!labels; $('#t-labels').setAttribute('aria-pressed',String(labels)); $$('svg.cell').forEach(s=>s.classList.toggle('nolabels',!labels)); mv.labels=labels;});
+mv.labels=labels;
+$('#t-spin').addEventListener('click',()=>{mv.auto=!mv.auto; $('#t-spin').setAttribute('aria-pressed',String(mv.auto));});
+$('#t-zin').addEventListener('click',()=>zoomBy(1.5));
+$('#t-zout').addEventListener('click',()=>zoomBy(1/1.5));
+$('#t-fit').addEventListener('click',()=>animVB(curSvg(),{...VB0}));
+window.addEventListener('resize',()=>{ if(cur.zone&&cur.zone!=='biomoleculas'){const s=curSvg(); scalePins(s); updateScale();} });
+window.addEventListener('hashchange',route);
+
+renderSegs(); renderNav();
+route();
+})();
+</script>
+</body>
+</html>
