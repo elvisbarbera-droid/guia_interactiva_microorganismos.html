@@ -244,6 +244,10 @@ svg.nolabels .plabel{display:none}
 .keys{margin:0;padding:0;list-style:none;display:grid;gap:6px}
 .keys li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;font-size:14.5px}
 .keys li::before{content:"✓";color:var(--ok);font-weight:700}
+details.more{border:1px solid var(--line);border-radius:10px;background:var(--card)}
+details.more summary{cursor:pointer;padding:10px 12px;font-weight:700;font-size:14px;min-height:44px;box-sizing:border-box;display:flex;align-items:center;color:var(--ink-2)}
+details.more[open] summary{border-bottom:1px solid var(--line);color:var(--ink)}
+details.more .myths{padding:10px}
 .btn.done{background:var(--ok);border-color:var(--ok);color:#fff}
 .legend i.hex{border-radius:0;border:0;clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%)}
 .legend .sw{display:inline-flex;gap:2px}
@@ -339,7 +343,7 @@ svg.nolabels .plabel{display:none}
   <div>
     <p class="eyebrow">Ciencias Naturales · Biología · Enseñanza Media</p>
     <h1>Repaso para la prueba de nivel <span>segundo semestre</span></h1>
-    <p class="sub">Explora biomoléculas, células y habilidades científicas haciendo clic en sus partes. Cada estructura tiene su explicación y los puntos de la prueba ya explicados, con las ideas clave y los errores que no debes cometer.</p>
+    <p class="sub">Toca las partes de las biomoléculas y las células para ver su explicación y los puntos de la prueba.</p>
   </div>
   <div class="progress">
     <div class="lbl"><span>Tu avance</span><span><b id="prog-n">0</b> de 13 puntos repasados</span></div>
@@ -354,19 +358,18 @@ svg.nolabels .plabel{display:none}
   <section id="view-mapa" class="wrap hub" aria-labelledby="hub-t">
     <div class="hub-intro">
       <h2 id="hub-t">Elige una estación para explorar</h2>
-      <p>Cada estación es una lámina para explorar. Los puntos con número marcan las estructuras que tienen puntos de la prueba explicados; los puntos con «i» solo tienen información. Puedes moverte libremente entre estaciones: varios puntos aparecen en más de un lugar, porque los temas están conectados.</p>
+      <p>Los números marcan estructuras con puntos de la prueba. Las «i» solo dan información.</p>
       <ul class="how">
-        <li><b>1</b>Entra a una estación</li>
+        <li><b>1</b>Elige una estación</li>
         <li><b>2</b>Toca una estructura</li>
-        <li><b>3</b>Lee la explicación y las ideas clave</li>
-        <li><b>4</b>Márcala como repasada</li>
+        <li><b>3</b>Lee y marca como repasado</li>
       </ul>
     </div>
     <div class="slide"><div class="stations" id="stations"></div></div>
     <section class="index" aria-labelledby="idx-t">
       <header>
-        <h2 id="idx-t">Los 13 puntos de la prueba y dónde encontrarlos</h2>
-        <p>Usa esta lista para repasar en orden. Cada botón te lleva directo a la estructura donde está explicado el punto.</p>
+        <h2 id="idx-t">Los 13 puntos de la prueba</h2>
+        <p>Toca un botón para ir directo a su explicación.</p>
       </header>
       <div id="index"></div>
     </section>
@@ -536,240 +539,233 @@ svg.nolabels .plabel{display:none}
 /* ===== Estaciones ===== */
 const ZONES = [
   {id:'biomoleculas', name:'Biomoléculas', c:'var(--z-bio)', t:'var(--z-bio-t)',
-   blurb:'Los bloques esenciales y las funciones de carbohidratos, lípidos, proteínas y ácidos nucleicos, en modelos 3D.',
-   hint:'Arrastra el modelo para girarlo. Toca un número para conocer cada bloque.',
-   foot:'Modelo de bloques: cada pieza representa un bloque esencial de la biomolécula',
+   blurb:'Bloques esenciales y funciones de las 4 biomoléculas, en 3D.',
+   hint:'Gira el modelo y toca un número.',
+   foot:'Cada pieza del modelo es un bloque esencial',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M54,38 H66 M94,38 H106 M134,38 H146 M40,84 L62,92 L84,82 L106,92 L128,82 L150,92 L172,82" fill="none" stroke="#A9B4B3" stroke-width="4" stroke-linecap="round"/><g fill="#F2B33D" stroke="#B37A12" stroke-width="2"><polygon points="26,38 33,25.9 47,25.9 54,38 47,50.1 33,50.1"/><polygon points="66,38 73,25.9 87,25.9 94,38 87,50.1 73,50.1"/><polygon points="106,38 113,25.9 127,25.9 134,38 127,50.1 113,50.1"/><polygon points="146,38 153,25.9 167,25.9 174,38 167,50.1 153,50.1"/></g><g stroke="#FFFFFF" stroke-width="2"><circle cx="40" cy="84" r="9" fill="#E5534B"/><circle cx="62" cy="92" r="9" fill="#4CAF50"/><circle cx="84" cy="82" r="9" fill="#3E8EDE"/><circle cx="106" cy="92" r="9" fill="#9B6BD3"/><circle cx="128" cy="82" r="9" fill="#F2A33A"/><circle cx="150" cy="92" r="9" fill="#E5534B"/><circle cx="172" cy="82" r="9" fill="#4CAF50"/></g></svg>'},
   {id:'animal', name:'Célula animal', c:'var(--z-ani)', t:'var(--z-ani-t)',
-   blurb:'Núcleo, membrana plasmática, mitocondrias, retículos, aparato de Golgi, vesículas y centrosoma.',
-   hint:'Toca un organelo o un punto. Usa + y − para acercarte y arrastra para moverte.',
-   scale:{um:10,u:400}, foot:'Célula eucarionte animal · tamaño típico 10 a 30 µm',
+   blurb:'Núcleo, mitocondria, retículos, Golgi y más.',
+   hint:'Toca un organelo. Usa + y − para acercarte.',
+   scale:{um:10,u:400}, foot:'Célula animal · 10 a 30 µm',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M100,12 C150,10 185,35 186,62 C188,95 150,110 100,108 C55,107 14,92 16,60 C18,30 55,13 100,12 Z" fill="#FDEEF2" stroke="#CF5A7C" stroke-width="4"/><circle cx="88" cy="60" r="24" fill="#EAE2F8" stroke="#6B53B0" stroke-width="3"/><circle cx="93" cy="64" r="8" fill="#5F48A6"/><rect x="128" y="32" width="36" height="16" rx="8" fill="#F6B26B" stroke="#B5652A" stroke-width="2" transform="rotate(15 146 40)"/><rect x="36" y="78" width="30" height="14" rx="7" fill="#F6B26B" stroke="#B5652A" stroke-width="2"/><path d="M128,74 q18,-10 36,0 M126,82 q20,-10 40,0 M130,90 q16,-8 32,0" fill="none" stroke="#C28A12" stroke-width="4" stroke-linecap="round"/></svg>'},
   {id:'vegetal', name:'Célula vegetal', c:'var(--z-veg)', t:'var(--z-veg-t)',
-   blurb:'Pared celular, membrana, núcleo, cloroplastos, vacuola, mitocondrias y aparato de Golgi.',
-   hint:'Toca un organelo o un punto. Usa + y − para acercarte y arrastra para moverte.',
-   scale:{um:20,u:283}, foot:'Célula eucarionte vegetal · tamaño típico 20 a 100 µm',
+   blurb:'Pared, núcleo, cloroplastos, vacuola y más.',
+   hint:'Toca un organelo. Usa + y − para acercarte.',
+   scale:{um:20,u:283}, foot:'Célula vegetal · 20 a 100 µm',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><rect x="22" y="12" width="156" height="96" rx="12" fill="#F3FAEE" stroke="#5C9441" stroke-width="7"/><rect x="72" y="28" width="92" height="64" rx="20" fill="#DDF0F9" stroke="#5FA5CB" stroke-width="2.5"/><circle cx="48" cy="62" r="14" fill="#EAE2F8" stroke="#6B53B0" stroke-width="2.5"/><g fill="#7CC36E" stroke="#2F6F2C" stroke-width="2"><ellipse cx="50" cy="28" rx="13" ry="7"/><ellipse cx="50" cy="94" rx="13" ry="7"/><ellipse cx="104" cy="22" rx="13" ry="5"/><ellipse cx="140" cy="99" rx="13" ry="5"/></g></svg>'},
   {id:'procariota', name:'Célula procarionte', c:'var(--z-pro)', t:'var(--z-pro-t)',
-   blurb:'Una bacteria: sin núcleo, con nucleoide, plásmidos, flagelo y cápsula.',
-   hint:'Toca una estructura o un punto. Usa + y − para acercarte y arrastra para moverte.',
-   scale:{um:1,u:290}, foot:'Bacteria con forma de bacilo · tamaño típico 1 a 5 µm',
+   blurb:'Una bacteria: sin núcleo, con flagelo y cápsula.',
+   hint:'Toca una estructura. Usa + y − para acercarte.',
+   scale:{um:1,u:290}, foot:'Bacteria · 1 a 5 µm',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><path d="M150,60 C162,48 170,48 176,60 S188,72 196,58" fill="none" stroke="#6D59BE" stroke-width="3" stroke-linecap="round"/><rect x="26" y="34" width="128" height="52" rx="26" fill="#DCD3F6" stroke="#7A66C9" stroke-width="3"/><rect x="33" y="41" width="114" height="38" rx="19" fill="#FCFBFF" stroke="#5A47B0" stroke-width="2"/><path d="M70,60 C68,48 86,46 92,54 S104,70 112,60 S108,46 96,52 S80,74 70,60 Z" fill="none" stroke="#3B2D8C" stroke-width="2"/><circle cx="52" cy="54" r="5" fill="none" stroke="#C2417A" stroke-width="2"/><g fill="#5A3F8F"><circle cx="128" cy="52" r="2.5"/><circle cx="134" cy="66" r="2.5"/><circle cx="56" cy="70" r="2.5"/><circle cx="122" cy="70" r="2.5"/></g></svg>'},
   {id:'laboratorio', name:'Habilidades científicas', c:'var(--z-lab)', t:'var(--z-lab-t)',
-   blurb:'Las habilidades de investigación explicadas una a una, incluidas las variables independiente, dependiente y controladas.',
-   hint:'Recorre las habilidades en orden. Toca una para ver su explicación.',
-   foot:'Habilidades de investigación científica',
+   blurb:'Las habilidades de investigación, una a una.',
+   hint:'Toca una habilidad.',
+   foot:'Habilidades científicas',
    ill:'<svg viewBox="0 0 200 120" aria-hidden="true"><rect x="58" y="14" width="84" height="98" rx="8" fill="#FFFFFF" stroke="#24739F" stroke-width="3"/><rect x="82" y="7" width="36" height="14" rx="4" fill="#24739F"/><g fill="#24739F"><circle cx="74" cy="38" r="6"/><circle cx="74" cy="58" r="6"/><circle cx="74" cy="78" r="6"/><circle cx="74" cy="98" r="6"/></g><path d="M86,38 h42 M86,58 h36 M86,78 h44 M86,98 h30" stroke="#9FB9C6" stroke-width="5" stroke-linecap="round"/></svg>'}
 ];
 
 /* Orden de las habilidades científicas */
 const SKILLS = ['observar','pregunta','hipotesis','planificar','var-indep','var-dep','var-control','analizar','concluir','comunicar'];
 
-/* ===== Estructuras ===== */
+/* ===== Estructuras (explicaciones breves) ===== */
 const PARTS = {
   /* Células */
-  membrana:{s:'Membrana', n:'Membrana plasmática', d:'Capa delgada y flexible que rodea a toda célula. Es semipermeable: regula qué sustancias entran y salen. Por ella ingresan los nutrientes y salen los desechos y los productos que la célula fabrica.', a:'Funciona como la portería de un edificio: decide quién entra y quién sale.', en:['animal','vegetal','procariota']},
-  citoplasma:{n:'Citoplasma', d:'Medio acuoso que llena la célula. En las bacterias, el ADN, los ribosomas y las reservas se encuentran directamente en el citoplasma.', en:['procariota']},
-  nucleo:{n:'Núcleo', d:'Guarda el ADN, protegido por la envoltura nuclear: una doble membrana con poros que controlan lo que entra y sale. Dentro del núcleo, el ADN forma la cromatina, que se ordena en cromosomas cuando la célula se divide. El núcleo dirige toda la actividad de la célula.', a:'Es la biblioteca y la oficina central: guarda las instrucciones y decide qué se fabrica.', en:['animal','vegetal']},
-  mitocondria:{n:'Mitocondria', d:'Organelo con doble membrana; la interna forma pliegues llamados crestas. En ella ocurre la respiración celular: usa glucosa y oxígeno para producir ATP, la energía que la célula gasta en todas sus funciones. Los tejidos que trabajan más, como el músculo del corazón, tienen más mitocondrias.', a:'Es la central eléctrica de la célula.', en:['animal','vegetal']},
-  rer:{s:'RE rugoso', n:'Retículo endoplasmático rugoso (RER)', d:'Red de sacos aplanados cubiertos de ribosomas, unida al núcleo. Los ribosomas fabrican proteínas, como las enzimas digestivas, que luego viajan al aparato de Golgi.', a:'Es la línea de producción de proteínas.', en:['animal']},
-  rel:{s:'RE liso', n:'Retículo endoplasmático liso (REL)', d:'Red de tubos sin ribosomas. Fabrica lípidos, como el colesterol y los fosfolípidos de las membranas, y ayuda a eliminar sustancias tóxicas. Por eso abunda en las células del hígado.', a:'Es la fábrica de lípidos de la célula.', en:['animal']},
-  golgi:{s:'Golgi', n:'Aparato de Golgi', d:'Pila de sacos aplanados. Recibe las proteínas y los lípidos que llegan desde los retículos, los prepara, los clasifica y los empaqueta en vesículas para enviarlos a su destino, dentro o fuera de la célula.', a:'Es la oficina de correos de la célula.', en:['animal','vegetal']},
-  vesiculas:{n:'Vesículas', d:'Pequeñas bolsas de membrana que transportan sustancias entre organelos o hacia el exterior. Cuando se unen a la membrana plasmática liberan su contenido fuera de la célula: ese proceso se llama exocitosis.', a:'Son los camiones de reparto.', en:['animal']},
-  centrosoma:{s:'Centrosoma', n:'Centrosoma y centríolos', d:'Zona cercana al núcleo con dos centríolos. Cuando la célula se divide (mitosis), el centrosoma forma el huso mitótico, unas fibras que separan los cromosomas hacia cada célula hija. Las células vegetales no tienen centríolos.', en:['animal']},
-  pared:{n:'Pared celular', d:'Capa rígida de celulosa por fuera de la membrana. Da forma, soporte y protección a la célula vegetal y evita que reviente al absorber agua. Al observar cebolla al microscopio, es la que hace que las células parezcan ladrillos.', a:'Es como la caja de cartón que protege un globo inflado.', en:['vegetal']},
-  vacuola:{n:'Vacuola central', d:'Gran saco lleno de agua y sustancias disueltas. Puede ocupar casi todo el volumen de la célula vegetal: almacena agua y sustancias, y mantiene la célula firme. Cuando una planta pierde agua, sus vacuolas se encogen y la planta se marchita.', a:'Es el estanque de agua que mantiene la planta erguida.', en:['vegetal']},
-  cloroplasto:{n:'Cloroplasto', d:'Organelo verde, con doble membrana, que contiene clorofila. En él ocurre la fotosíntesis: con la energía de la luz, la planta fabrica glucosa a partir de agua y dióxido de carbono, y libera oxígeno. Solo lo tienen las plantas y las algas.', a:'Es un panel solar que además fabrica alimento.', en:['vegetal']},
-  /* Procarionte */
-  capsula:{n:'Cápsula', d:'Capa externa y viscosa. Protege a la bacteria de la deshidratación y de las defensas del organismo, y la ayuda a adherirse a superficies. No todas las bacterias la tienen.', en:['procariota']},
-  'pared-bac':{s:'Pared celular', n:'Pared celular bacteriana', d:'Capa rígida que da forma y protege a la bacteria. Es distinta de la pared vegetal: no está hecha de celulosa. Muchos antibióticos actúan dañándola.', en:['procariota']},
-  nucleoide:{n:'Nucleoide', d:'Zona del citoplasma donde está el ADN de la bacteria: un solo cromosoma circular, sin una membrana que lo rodee, porque las bacterias no tienen núcleo. Ahí se lee y se copia la información genética.', a:'Es una biblioteca sin paredes.', en:['procariota']},
-  plasmido:{n:'Plásmidos', d:'Pequeños anillos de ADN adicional. Pueden llevar genes útiles, como los de resistencia a antibióticos, y pasar de una bacteria a otra.', en:['procariota']},
-  ribosomas:{n:'Ribosomas', d:'Pequeñas estructuras sin membrana que fabrican proteínas. En las bacterias están en el citoplasma; en las células animales y vegetales también cubren el retículo endoplasmático rugoso.', en:['procariota']},
-  granulos:{s:'Gránulos', n:'Gránulos de reserva', d:'Depósitos de sustancias de reserva en el citoplasma. La bacteria los usa cuando escasean los nutrientes.', en:['procariota']},
-  flagelo:{n:'Flagelo', d:'Filamento largo que gira como una hélice. Permite a la bacteria desplazarse hacia los nutrientes y alejarse de las sustancias tóxicas.', a:'Es la hélice de un bote.', en:['procariota']},
-  pili:{n:'Pili y fimbrias', d:'Filamentos cortos y numerosos en la superficie. Sirven para adherirse a superficies y para traspasar ADN a otra bacteria.', en:['procariota']},
+  membrana:{s:'Membrana', n:'Membrana plasmática', d:'Rodea la célula y controla lo que entra y sale. Por ella entran los nutrientes.', a:'Es la puerta de la célula.', en:['animal','vegetal','procariota']},
+  citoplasma:{n:'Citoplasma', d:'Líquido que llena la célula. En las bacterias, aquí está el ADN.', en:['procariota']},
+  nucleo:{n:'Núcleo', d:'Guarda el ADN y dirige la célula. Una cubierta con poros lo protege.', a:'Es el centro de mando.', en:['animal','vegetal']},
+  mitocondria:{n:'Mitocondria', d:'Produce ATP, la energía de la célula, en la respiración celular. Los tejidos que gastan más energía, como el corazón, tienen más mitocondrias.', a:'Es la central de energía.', en:['animal','vegetal']},
+  rer:{s:'RE rugoso', n:'Retículo endoplasmático rugoso (RER)', d:'Tiene ribosomas y fabrica proteínas, como las enzimas digestivas.', a:'Es una fábrica de proteínas.', en:['animal']},
+  rel:{s:'RE liso', n:'Retículo endoplasmático liso (REL)', d:'No tiene ribosomas. Fabrica lípidos, como los de las membranas. Abunda en el hígado.', a:'Es una fábrica de lípidos.', en:['animal']},
+  golgi:{s:'Golgi', n:'Aparato de Golgi', d:'Recibe lo que fabrican los retículos, lo prepara y lo empaqueta en vesículas para enviarlo.', a:'Es la oficina de correos.', en:['animal','vegetal']},
+  vesiculas:{n:'Vesículas', d:'Bolsitas que transportan sustancias dentro de la célula o hacia afuera.', a:'Son los camiones de reparto.', en:['animal']},
+  centrosoma:{s:'Centrosoma', n:'Centrosoma', d:'Forma el huso mitótico, que separa los cromosomas cuando la célula se divide (mitosis).', en:['animal']},
+  pared:{n:'Pared celular', d:'Capa rígida de celulosa que rodea la célula vegetal. Le da forma y protección. En la cebolla se ve como «ladrillos».', a:'Es la armadura de la célula vegetal.', en:['vegetal']},
+  vacuola:{n:'Vacuola central', d:'Gran bolsa de agua. Guarda agua y sustancias y mantiene firme la célula vegetal.', a:'Es el estanque de la célula.', en:['vegetal']},
+  cloroplasto:{n:'Cloroplasto', d:'Tiene clorofila y hace la fotosíntesis: con luz, agua y CO₂ fabrica glucosa y libera oxígeno. Solo está en plantas y algas.', a:'Es el panel solar.', en:['vegetal']},
+  capsula:{n:'Cápsula', d:'Capa externa que protege a la bacteria. No todas la tienen.', en:['procariota']},
+  'pared-bac':{s:'Pared celular', n:'Pared celular bacteriana', d:'Capa rígida que da forma y protege a la bacteria. No es de celulosa.', en:['procariota']},
+  nucleoide:{n:'Nucleoide', d:'Zona donde está el ADN de la bacteria. No hay núcleo que lo rodee.', en:['procariota']},
+  plasmido:{n:'Plásmidos', d:'Pequeños anillos de ADN extra. Pueden dar resistencia a los antibióticos.', en:['procariota']},
+  ribosomas:{n:'Ribosomas', d:'Fabrican proteínas. Están en todas las células.', en:['procariota']},
+  granulos:{s:'Gránulos', n:'Gránulos de reserva', d:'Reservas que usa la bacteria cuando falta alimento.', en:['procariota']},
+  flagelo:{n:'Flagelo', d:'Filamento que gira como hélice. Permite a la bacteria moverse hacia el alimento y alejarse de lo tóxico.', a:'Es la hélice de un bote.', en:['procariota']},
+  pili:{n:'Pili y fimbrias', d:'Filamentos cortos que sirven para pegarse a las superficies.', en:['procariota']},
 
   /* Habilidades científicas */
-  observar:{step:'1', n:'Observar', corto:'Reunir información con los sentidos o con instrumentos.',
-    d:'Observar es reunir información sobre un fenómeno de forma cuidadosa, usando los sentidos o instrumentos que los amplían, como el microscopio, la lupa o el termómetro. Al observar todavía no se explica nada: solo se registra lo que se ve o se mide.',
-    como:['Mirar, medir o contar con atención.','Usar instrumentos cuando el objeto es muy pequeño o lejano.','Anotar los datos tal como son, sin dar opiniones.'],
-    ej:'Mirar una capa de cebolla con el microscopio y ver la pared celular y el núcleo de sus células.',
-    no:'Observar no es explicar. Proponer una explicación corresponde a formular una hipótesis.', en:['laboratorio']},
-  pregunta:{step:'2', s:'Pregunta', n:'Plantear una pregunta de investigación', corto:'Formular una pregunta que se pueda responder investigando.',
-    d:'A partir de lo observado, se plantea una pregunta clara que se pueda responder con datos, investigando o experimentando. Muchas veces relaciona dos factores: cómo influye uno en el otro.',
-    como:['Debe ser clara y precisa.','Se debe poder responder con datos.','Suele relacionar dos factores: cómo cambia uno cuando cambia el otro.'],
-    ej:'¿Cómo influye la intensidad de la luz en la cantidad de oxígeno que libera una planta acuática?',
-    no:'La pregunta abre la investigación; todavía no propone una respuesta.', en:['laboratorio']},
-  hipotesis:{step:'3', s:'Hipótesis', n:'Formular una hipótesis', corto:'Proponer una respuesta tentativa que se pueda poner a prueba.',
-    d:'Una hipótesis es una respuesta tentativa a la pregunta de investigación, basada en lo que ya se sabe. Debe poder ponerse a prueba con un experimento. Tiene valor predictivo: a partir de una explicación, anticipa un resultado que se puede comprobar.',
-    como:['Se escribe con la forma «Si…, entonces…».','La parte «Si…» propone una explicación (mecanismo).','La parte «entonces…» anticipa un resultado que se puede comprobar (predicción).'],
-    ej:'Si un tejido requiere más energía de forma constante, entonces sus células tendrán más mitocondrias.',
-    no:'Una hipótesis no es una conclusión: se plantea antes de tener los datos.', en:['laboratorio']},
-  planificar:{step:'4', s:'Planificar', n:'Planificar y experimentar', corto:'Diseñar el procedimiento paso a paso y realizarlo.',
-    d:'Planificar es diseñar, antes de empezar, cómo se pondrá a prueba la hipótesis: materiales, pasos en orden, tiempos de medición, número de repeticiones y variables. Experimentar es realizar ese procedimiento y registrar los datos.',
-    como:['Elegir los materiales.','Escribir los pasos en orden.','Definir las variables: independiente, dependiente y controladas.','Fijar los tiempos de medición y el número de repeticiones.'],
-    ej:'Medir las burbujas de una planta acuática con luz baja, media y alta, durante 5 minutos cada vez, y repetir todo 3 veces.',
-    no:'Repetir el experimento hace más confiable el resultado: un solo dato puede deberse al azar.', en:['laboratorio']},
-  'var-indep':{step:'4a', s:'Variable independiente', n:'Variable independiente', corto:'Lo que el investigador cambia a propósito (la causa).',
-    d:'Es el factor que el investigador cambia a propósito para ver qué efecto produce. Es la posible causa que se pone a prueba. En un experimento justo se cambia solo una variable independiente a la vez.',
-    como:['Se decide antes del experimento.','Se cambia de forma ordenada, por ejemplo luz baja, media y alta.','En un gráfico se ubica en el eje horizontal (X).'],
-    ej:'En el experimento con la planta Elodea, la variable independiente es la intensidad de la luz.',
-    no:'La variable independiente no es lo que se mide. Lo que se mide es la variable dependiente.', en:['laboratorio']},
-  'var-dep':{step:'4b', s:'Variable dependiente', n:'Variable dependiente', corto:'Lo que se mide como resultado (el efecto).',
-    d:'Es lo que se mide u observa como resultado del experimento. Se llama dependiente porque su valor depende de los cambios en la variable independiente. Es el efecto.',
-    como:['Se mide con un instrumento o se cuenta.','Se registra en una tabla de datos.','En un gráfico se ubica en el eje vertical (Y).'],
-    ej:'En el experimento con Elodea, la variable dependiente es la cantidad de burbujas de oxígeno por minuto.',
-    no:'La variable dependiente no se elige ni se cambia: se mide.', en:['laboratorio']},
-  'var-control':{step:'4c', s:'Variables controladas', n:'Variables controladas (de control)', corto:'Lo que se mantiene igual para que la comparación sea justa.',
-    d:'Son los demás factores que podrían influir en el resultado y que se mantienen iguales durante todo el experimento. Así se sabe que el efecto se debe solo a la variable independiente. Si una de ellas cambiara, no se podría saber qué causó el resultado.',
-    como:['Se identifican antes de experimentar.','Se mantienen constantes en todas las pruebas y repeticiones.','Algunos experimentos usan además un grupo control: un grupo al que no se le aplica el cambio, para comparar.'],
-    ej:'En el experimento con Elodea: el tipo y tamaño de la planta, la temperatura del agua, la cantidad de agua y el tiempo de conteo.',
-    no:'Una variable controlada no se cambia ni es el resultado: se mantiene igual.', en:['laboratorio']},
-  analizar:{step:'5', s:'Analizar', n:'Analizar resultados', corto:'Ordenar los datos en tablas y gráficos y buscar tendencias.',
-    d:'Analizar es organizar los datos obtenidos, compararlos y buscar patrones o tendencias. Para eso se usan tablas y gráficos.',
-    como:['Ordenar los datos en una tabla.','Construir un gráfico.','Comparar los resultados entre grupos y repeticiones.','Describir la tendencia, por ejemplo: «a mayor luz, más burbujas».'],
-    ej:'Graficar las burbujas por minuto según la intensidad de la luz y notar que aumentan cuando aumenta la luz.',
-    no:'Comparar resultados es parte del análisis, no de la observación inicial.', en:['laboratorio']},
-  concluir:{step:'6', s:'Concluir', n:'Concluir', corto:'Responder la pregunta y aceptar o rechazar la hipótesis.',
-    d:'Concluir es responder la pregunta de investigación usando los resultados, e indicar si la hipótesis se acepta o se rechaza. La conclusión se basa solo en los datos obtenidos.',
-    como:['Responder la pregunta de investigación.','Indicar si la hipótesis se acepta o se rechaza.','Proponer nuevas preguntas si aparecen.'],
-    ej:'Con más luz, la planta liberó más oxígeno; por lo tanto, la hipótesis se acepta.',
-    no:'La conclusión siempre viene después de los datos; la hipótesis, antes.', en:['laboratorio']},
-  comunicar:{step:'7', s:'Comunicar', n:'Comunicar', corto:'Dar a conocer el proceso, los resultados y las conclusiones.',
-    d:'Comunicar es dar a conocer a otras personas cómo se hizo la investigación, qué resultados se obtuvieron y cuáles fueron las conclusiones. Permite que otros revisen o repitan el trabajo.',
-    como:['Informe escrito, póster, presentación oral o artículo.','Incluir los datos, los gráficos y las conclusiones.'],
-    ej:'Presentar al curso un póster con el gráfico de burbujas según la intensidad de la luz.',
-    no:'Compartir los datos es comunicar, y ocurre al final de la investigación.', en:['laboratorio']},
+  observar:{step:'1', n:'Observar', corto:'Mirar y medir con atención.',
+    d:'Reunir información con los sentidos o con instrumentos, como el microscopio. Todavía no se explica nada.',
+    como:['Mirar, medir o contar.','Anotar lo que se ve, sin opinar.'],
+    ej:'Mirar cebolla al microscopio y ver la pared celular y el núcleo.',
+    no:'Observar no es explicar: explicar es la hipótesis.', en:['laboratorio']},
+  pregunta:{step:'2', s:'Pregunta', n:'Plantear una pregunta', corto:'Preguntar algo que se pueda investigar.',
+    d:'Después de observar, se plantea una pregunta que se pueda responder con datos.',
+    como:['Debe ser clara.','Suele relacionar dos cosas.'],
+    ej:'¿Cómo influye la luz en el oxígeno que libera una planta?', en:['laboratorio']},
+  hipotesis:{step:'3', s:'Hipótesis', n:'Formular una hipótesis', corto:'Una respuesta posible que se puede probar.',
+    d:'Es una respuesta posible a la pregunta. Se puede probar con un experimento y anticipa un resultado.',
+    como:['Se escribe «Si…, entonces…».','«Si…» es la explicación; «entonces…» es lo que se espera.'],
+    ej:'Si un tejido necesita más energía, entonces tendrá más mitocondrias.',
+    no:'No es una conclusión: se escribe antes de tener datos.', en:['laboratorio']},
+  planificar:{step:'4', s:'Planificar', n:'Planificar y experimentar', corto:'Diseñar el experimento y hacerlo.',
+    d:'Decidir cómo se probará la hipótesis y realizarlo, anotando los datos.',
+    como:['Materiales y pasos en orden.','Variables: independiente, dependiente y controladas.','Tiempos y repeticiones.'],
+    ej:'Contar burbujas con luz baja, media y alta, 3 veces cada una.',
+    no:'Repetir el experimento lo hace más confiable.', en:['laboratorio']},
+  'var-indep':{step:'4a', s:'Independiente', n:'Variable independiente', corto:'Lo que tú cambias (la causa).',
+    d:'Es lo que el investigador cambia a propósito para ver qué efecto tiene.',
+    como:['Se cambia una sola a la vez.','Va en el eje horizontal (X) del gráfico.'],
+    ej:'En el experimento con Elodea: la intensidad de la luz.',
+    no:'No es lo que se mide: eso es la variable dependiente.', en:['laboratorio']},
+  'var-dep':{step:'4b', s:'Dependiente', n:'Variable dependiente', corto:'Lo que mides (el efecto).',
+    d:'Es lo que se mide como resultado. Depende de la variable independiente.',
+    como:['Se mide o se cuenta.','Va en el eje vertical (Y) del gráfico.'],
+    ej:'Las burbujas de oxígeno por minuto.',
+    no:'No se cambia: se mide.', en:['laboratorio']},
+  'var-control':{step:'4c', s:'Controladas', n:'Variables controladas', corto:'Lo que se mantiene igual.',
+    d:'Son los demás factores, que se mantienen iguales para que la comparación sea justa.',
+    como:['Son iguales en todas las pruebas.','Si una cambiara, no sabríamos qué causó el resultado.'],
+    ej:'El tipo de planta, la temperatura del agua y el tiempo de conteo.',
+    no:'No se cambian ni se miden: se mantienen iguales.', en:['laboratorio']},
+  analizar:{step:'5', s:'Analizar', n:'Analizar resultados', corto:'Ordenar los datos y buscar patrones.',
+    d:'Organizar los datos en tablas y gráficos y ver qué patrón muestran.',
+    como:['Hacer una tabla o un gráfico.','Describir la tendencia.'],
+    ej:'A más luz, más burbujas.', en:['laboratorio']},
+  concluir:{step:'6', s:'Concluir', n:'Concluir', corto:'Responder la pregunta con los datos.',
+    d:'Responder la pregunta con los resultados e indicar si la hipótesis se acepta o se rechaza.',
+    como:['Usar solo los datos obtenidos.'],
+    ej:'Con más luz salieron más burbujas: se acepta la hipótesis.',
+    no:'La conclusión viene después de los datos.', en:['laboratorio']},
+  comunicar:{step:'7', s:'Comunicar', n:'Comunicar', corto:'Contar lo que se descubrió.',
+    d:'Dar a conocer cómo se hizo la investigación, los resultados y las conclusiones.',
+    como:['Informe, póster o presentación.'],
+    ej:'Presentar al curso un póster con el gráfico.',
+    no:'Compartir los datos es comunicar, y se hace al final.', en:['laboratorio']},
 
-  /* Biomoléculas: visión general */
-  carbohidratos:{n:'Carbohidratos', d:'Son los azúcares y almidones. Son la principal fuente de energía inmediata de los seres vivos.',
-    bloque:'Monosacárido. El más importante es la glucosa.',
-    union:'Los monosacáridos se unen entre sí: dos bloques forman un disacárido y muchos bloques forman un polisacárido.',
-    fun:['Energía inmediata: la glucosa es el combustible que la célula usa primero para obtener energía en la mitocondria.','Reserva de energía de corto plazo: los animales guardan glucosa como glucógeno (en el hígado y los músculos) y las plantas, como almidón.','Estructura: la celulosa forma la pared celular de las plantas.'],
-    ej:'Pan, arroz, papas, fideos, frutas y azúcar.', en:['biomoleculas']},
-  lipidos:{n:'Lípidos', d:'Son las grasas, los aceites y las ceras. No se mezclan con el agua.',
-    bloque:'Glicerol y ácidos grasos. Una grasa se forma con un glicerol y tres ácidos grasos.',
-    union:'Los tres ácidos grasos se enganchan en el glicerol, como tres cintas colgadas de una percha.',
-    fun:['Reserva de energía de largo plazo: guardan más energía que los carbohidratos y se acumulan en el tejido adiposo.','Forman las membranas de todas las células.','Aislante térmico y protección de los órganos.','Algunas hormonas son lípidos.'],
-    ej:'Aceite, mantequilla, palta y frutos secos.', en:['biomoleculas']},
-  proteinas:{n:'Proteínas', d:'Son las biomoléculas con más funciones distintas: casi todo lo que hace una célula lo hace gracias a sus proteínas.',
-    bloque:'Aminoácido. Existen 20 tipos distintos, que se combinan como las letras de un alfabeto.',
-    union:'Los aminoácidos se unen uno tras otro formando una cadena. El orden de los aminoácidos lo indica el ADN; la cadena se pliega y su forma determina su función.',
-    fun:['Enzimas: aceleran procesos de la célula, como la digestión.','Estructura: forman uñas, pelo, piel y tendones.','Transporte: la hemoglobina lleva el oxígeno en la sangre.','Defensa: los anticuerpos combaten microorganismos.','Hormonas: la insulina regula el azúcar en la sangre.','Movimiento: permiten la contracción de los músculos.'],
-    ej:'Carne, pescado, huevos, legumbres y leche.', en:['biomoleculas']},
-  'acidos-nucleicos':{n:'Ácidos nucleicos', d:'Son el ADN y el ARN. Contienen la información genética de los seres vivos.',
-    bloque:'Nucleótido, formado por tres partes: un grupo fosfato, un azúcar y una base nitrogenada (A, T, G o C).',
-    union:'Los nucleótidos se unen en hebras largas. El ADN tiene dos hebras enrolladas, la doble hélice, unidas por sus bases.',
-    fun:['Guardar la información genética: las instrucciones para fabricar todas las proteínas.','Transmitir esa información de padres a hijos y de una célula a sus células hijas.','El ARN copia la información del ADN y la lleva a los ribosomas para fabricar proteínas.'],
-    ej:'El ADN está en el núcleo de las células animales y vegetales, y en el nucleoide de las bacterias.', en:['biomoleculas']},
-  /* Biomoléculas: bloques */
-  monosacarido:{s:'Monosacárido', n:'Monosacárido: glucosa', d:'Es el bloque esencial de los carbohidratos y la unidad más pequeña. La glucosa es el combustible principal de las células: la mitocondria la usa para obtener energía. Otros monosacáridos son la fructosa de las frutas.', en:['biomoleculas']},
-  disacarido:{s:'Disacárido', n:'Disacárido', d:'Dos monosacáridos unidos. Ejemplos: la sacarosa (el azúcar de mesa) y la lactosa (el azúcar de la leche). Durante la digestión se separan en monosacáridos para que el cuerpo los pueda usar.', en:['biomoleculas']},
-  polisacarido:{s:'Polisacárido', n:'Polisacárido', d:'Cadena de cientos o miles de glucosas. El almidón es la reserva de energía de las plantas (papa, arroz); el glucógeno es la reserva de los animales (hígado y músculos); la celulosa forma la pared celular de las plantas. El modelo muestra una cadena ramificada, como el glucógeno.', en:['biomoleculas']},
-  glicerol:{n:'Glicerol', d:'Bloque que funciona como una percha: en él se enganchan los tres ácidos grasos que forman una grasa.', en:['biomoleculas']},
-  'acido-graso':{s:'Ácidos grasos', n:'Ácidos grasos', d:'Cadenas largas que forman la mayor parte de una grasa y guardan mucha energía. Algunos los fabrica el cuerpo y otros deben venir de los alimentos, como el omega 3 del pescado.', en:['biomoleculas']},
-  aminoacido:{n:'Aminoácido', d:'Bloque esencial de las proteínas. Hay 20 tipos; en el modelo, cada color es un tipo distinto. El cuerpo fabrica algunos, y otros, llamados esenciales, deben venir de los alimentos.', en:['biomoleculas']},
-  cadena:{s:'Cadena', n:'Cadena de aminoácidos', d:'Los aminoácidos se unen uno tras otro, como las cuentas de un collar. El orden lo indica el ADN, y la cadena la arman los ribosomas.', en:['biomoleculas']},
-  plegamiento:{s:'Forma plegada', n:'Forma plegada de la proteína', d:'La cadena se dobla y adopta una forma en tres dimensiones. Esa forma determina la función de la proteína: si se altera, por ejemplo con fiebre muy alta, la proteína deja de funcionar.', en:['biomoleculas']},
-  nucleotido:{n:'Nucleótido', d:'Bloque esencial de los ácidos nucleicos. Tiene tres partes: un grupo fosfato, un azúcar y una base nitrogenada. El ATP, la molécula de energía de la célula, también es un nucleótido.', en:['biomoleculas']},
-  bases:{s:'Bases', n:'Bases nitrogenadas', d:'Son las «letras» del mensaje genético: A, T, G y C. Siempre se emparejan igual: A con T y G con C. El orden de las letras forma los genes.', en:['biomoleculas']},
-  'doble-helice':{s:'Doble hélice', n:'Doble hélice', d:'El ADN tiene dos hebras de nucleótidos enrolladas como una escalera de caracol. Los lados de la escalera son fosfato y azúcar; los peldaños son los pares de bases.', en:['biomoleculas']}
+  /* Biomoléculas */
+  carbohidratos:{n:'Carbohidratos', d:'Azúcares y almidones. Son la principal fuente de energía inmediata.',
+    bloque:'Monosacárido (por ejemplo, la glucosa).',
+    fun:['Energía inmediata: la glucosa es el primer combustible de la célula.','Reserva de corto plazo: se guarda como glucógeno (animales) o almidón (plantas).'],
+    ej:'Pan, arroz, papas y frutas.', en:['biomoleculas']},
+  lipidos:{n:'Lípidos', d:'Grasas y aceites. No se mezclan con el agua.',
+    bloque:'Glicerol y ácidos grasos (1 glicerol + 3 ácidos grasos).',
+    fun:['Reserva de energía a largo plazo.','Forman las membranas de las células.','Protegen y aíslan del frío.'],
+    ej:'Aceite, mantequilla y palta.', en:['biomoleculas']},
+  proteinas:{n:'Proteínas', d:'Hacen muchas funciones distintas en el cuerpo.',
+    bloque:'Aminoácido (hay 20 tipos distintos).',
+    fun:['Enzimas: aceleran reacciones, como la digestión.','Estructura: pelo, uñas y piel.','Transporte, defensa y hormonas: hemoglobina, anticuerpos e insulina.'],
+    ej:'Carne, huevos, legumbres y leche.', en:['biomoleculas']},
+  'acidos-nucleicos':{n:'Ácidos nucleicos', d:'ADN y ARN. Guardan la información genética.',
+    bloque:'Nucleótido: fosfato + azúcar + base nitrogenada.',
+    fun:['Guardar y transmitir la información genética.','El ARN ayuda a fabricar proteínas.'],
+    ej:'En el núcleo de la célula (en las bacterias, en el nucleoide).', en:['biomoleculas']},
+  monosacarido:{s:'Monosacárido', n:'Monosacárido', d:'Bloque esencial de los carbohidratos. El más importante es la glucosa: la mitocondria la usa para obtener energía.', en:['biomoleculas']},
+  disacarido:{s:'Disacárido', n:'Disacárido', d:'Dos monosacáridos unidos. Ejemplos: el azúcar de mesa y el azúcar de la leche.', en:['biomoleculas']},
+  polisacarido:{s:'Polisacárido', n:'Polisacárido', d:'Muchos monosacáridos unidos. Ejemplos: almidón (plantas), glucógeno (animales) y celulosa (pared vegetal).', en:['biomoleculas']},
+  glicerol:{n:'Glicerol', d:'Parte de la grasa donde se enganchan los tres ácidos grasos.', en:['biomoleculas']},
+  'acido-graso':{s:'Ácidos grasos', n:'Ácidos grasos', d:'Cadenas largas que forman casi toda la grasa y guardan mucha energía.', en:['biomoleculas']},
+  aminoacido:{n:'Aminoácido', d:'Bloque esencial de las proteínas. En el modelo, cada color es un tipo distinto.', en:['biomoleculas']},
+  cadena:{s:'Cadena', n:'Cadena de aminoácidos', d:'Los aminoácidos se unen en fila, como las cuentas de un collar.', en:['biomoleculas']},
+  plegamiento:{s:'Forma plegada', n:'Forma plegada', d:'La cadena se dobla y toma una forma. Esa forma decide qué función cumple.', en:['biomoleculas']},
+  nucleotido:{n:'Nucleótido', d:'Bloque esencial de los ácidos nucleicos: fosfato + azúcar + base nitrogenada.', en:['biomoleculas']},
+  bases:{s:'Bases', n:'Bases nitrogenadas', d:'Son las «letras» del ADN: A, T, G y C. La A se une con la T, y la G con la C.', en:['biomoleculas']},
+  'doble-helice':{s:'Doble hélice', n:'Doble hélice', d:'Dos hebras de nucleótidos enrolladas, como una escalera de caracol.', en:['biomoleculas']}
 };
-/* ===== Puntos de repaso (contenidos de la prueba, ya explicados) =====
+/* ===== Puntos de repaso (los 13 contenidos de la prueba, explicados en breve) =====
    partes: estructuras donde aparece el punto (la primera es su ubicación principal).
-   «zona:parte» limita el punto a esa estación. */
+   «zona:parte» limita el punto a esa estación.
+   modelo = respuesta corta · claves = ideas para recordar · mitos = errores frecuentes */
 const QS = [
-{id:1, tema:'Biomoléculas', skill:null, titulo:'Cada biomolécula y su bloque esencial',
+{id:1, tema:'Biomoléculas', skill:null, titulo:'Cada biomolécula y su bloque',
  partes:['nucleotido','acidos-nucleicos','monosacarido','aminoacido','acido-graso','glicerol','carbohidratos','lipidos','proteinas'],
- ctx:'Las biomoléculas se construyen uniendo muchas veces una pieza pequeña, su bloque esencial, como un collar formado por cuentas.',
- modelo:'Cada biomolécula tiene su propio bloque esencial. Los ácidos nucleicos (ADN y ARN) están formados por nucleótidos, y cada nucleótido tiene tres partes: un grupo fosfato, un azúcar y una base nitrogenada (A, T, G o C). Las proteínas se forman con aminoácidos. Los carbohidratos se forman con monosacáridos, como la glucosa. Las grasas se forman con glicerol y ácidos grasos. Por eso la pareja correcta es «ácidos nucleicos – nucleótidos»; las otras parejas mezclan bloques de biomoléculas distintas.',
- claves:['Ácidos nucleicos → nucleótidos (fosfato + azúcar + base nitrogenada).','Proteínas → aminoácidos.','Carbohidratos → monosacáridos, como la glucosa.','Grasas → glicerol + ácidos grasos.'],
- mitos:[['Las proteínas están hechas de ácidos grasos.','Los ácidos grasos forman las grasas. Las proteínas son cadenas de aminoácidos.'],['Los azúcares están formados por aminoácidos.','Los azúcares se forman con monosacáridos, como la glucosa.'],['Las grasas se forman con monosacáridos.','Las grasas se forman con glicerol y tres ácidos grasos.']]},
+ ctx:'Las biomoléculas se arman uniendo piezas pequeñas, como las cuentas de un collar.',
+ modelo:'Ácidos nucleicos → nucleótidos. Cada biomolécula tiene su propio bloque.',
+ claves:['Ácidos nucleicos → nucleótidos (fosfato + azúcar + base).','Proteínas → aminoácidos.','Carbohidratos → monosacáridos.','Grasas → glicerol + ácidos grasos.'],
+ mitos:[['Proteínas – ácidos grasos.','Los ácidos grasos forman las grasas.'],['Azúcares – aminoácidos.','Los azúcares se arman con monosacáridos.'],['Grasas – monosacáridos.','Las grasas se arman con glicerol y ácidos grasos.']]},
 
 {id:2, tema:'Biomoléculas', skill:null, titulo:'La función de cada biomolécula',
  partes:['carbohidratos','lipidos','proteinas','acidos-nucleicos','polisacarido'],
- ctx:'Lípidos, proteínas, carbohidratos y ácidos nucleicos son las cuatro biomoléculas orgánicas fundamentales. Cada una cumple funciones distintas.',
- modelo:'Los carbohidratos son la principal fuente de energía inmediata de la célula: la glucosa es el combustible que la célula usa primero para obtener energía en la mitocondria. Una parte se guarda como reserva de corto plazo: glucógeno en los animales y almidón en las plantas. Los lípidos son la reserva de energía de largo plazo y forman las membranas de las células. Las proteínas cumplen muchas funciones: enzimas, estructura, transporte, defensa y hormonas. Los ácidos nucleicos guardan y transmiten la información genética.',
- claves:['Carbohidratos: energía inmediata (y reserva de corto plazo como glucógeno o almidón).','Lípidos: reserva de energía de largo plazo y membranas celulares.','Proteínas: enzimas, estructura, transporte, defensa y hormonas.','Ácidos nucleicos: guardan y transmiten la información genética.'],
- mitos:[['Los ácidos nucleicos almacenan energía a largo plazo.','Esa función es de los lípidos. El ADN y el ARN guardan información.'],['Las proteínas transportan oxígeno exclusivamente.','La hemoglobina transporta oxígeno, pero las proteínas tienen muchas otras funciones.'],['Los lípidos transmiten la información genética mediante el ADN.','El ADN es un ácido nucleico, no un lípido.']]},
+ ctx:'Cada biomolécula cumple una función distinta.',
+ modelo:'Los carbohidratos son la principal fuente de energía inmediata de la célula.',
+ claves:['Carbohidratos: energía inmediata.','Lípidos: energía de reserva y membranas.','Proteínas: enzimas, defensa, transporte y estructura.','Ácidos nucleicos: guardan la información genética.'],
+ mitos:[['Los ácidos nucleicos guardan energía a largo plazo.','Eso lo hacen los lípidos. El ADN guarda información.'],['Las proteínas solo transportan oxígeno.','Hacen muchas otras cosas: enzimas, defensa, estructura.'],['Los lípidos transmiten la información genética.','Eso lo hace el ADN, que es un ácido nucleico.']]},
 
-{id:3, tema:'Células', skill:'Observar', titulo:'Observar la cebolla al microscopio',
+{id:3, tema:'Células', skill:'Observar', titulo:'Mirar cebolla al microscopio',
  partes:['observar','pared'],
- ctx:'Un estudiante pone una capa delgada de cebolla en un portaobjetos, le agrega una gota de colorante y la mira con un microscopio para ver las partes de sus células.',
- modelo:'El estudiante está en la etapa de observación y la realiza con una herramienta: el microscopio. Observar es reunir información de forma cuidadosa, usando los sentidos o instrumentos que los amplían, sin dar explicaciones todavía. Las células de la cebolla son tan pequeñas que solo se distinguen con el microscopio: se ve la pared celular, que les da forma de ladrillo, y el núcleo, que se tiñe con el colorante. No se ven cloroplastos, porque la capa interna de la cebolla no recibe luz. Después de observar vienen las demás etapas: plantear una pregunta, formular una hipótesis, experimentar, analizar, concluir y comunicar.',
- claves:['La etapa es observar con un instrumento (microscopio).','Observar es reunir información, sin explicar todavía.','Al microscopio se ven la pared celular y el núcleo.'],
- mitos:[['Está planteando una posible explicación.','Eso es formular una hipótesis. Aquí solo mira y registra.'],['Está comparando los resultados finales.','Comparar resultados es parte del análisis, cuando ya hubo un experimento.'],['Está compartiendo los datos obtenidos.','Compartir datos es comunicar, al final de la investigación.']]},
+ ctx:'Un estudiante mira células de cebolla con un microscopio.',
+ modelo:'Está observando con una herramienta: reúne información, pero todavía no explica nada.',
+ claves:['Etapa: observar.','Herramienta: el microscopio.','Después vienen la pregunta y la hipótesis.'],
+ mitos:[['Plantea una posible explicación.','Eso es formular una hipótesis.'],['Compara los resultados finales.','Eso es parte del análisis.'],['Comparte los datos.','Eso es comunicar, al final.']]},
 
 {id:4, tema:'Células', skill:'Argumentar', titulo:'Una bacteria sin flagelos',
  partes:['procariota:flagelo','procariota:membrana','procariota:pared-bac','procariota:nucleoide'],
  ctx:'Una bacteria pierde por completo sus flagelos.',
- modelo:'El flagelo es un filamento largo que gira como una hélice y permite que la bacteria se desplace. Las bacterias detectan sustancias del medio y nadan hacia los nutrientes o se alejan de las sustancias tóxicas. Sin flagelos, la bacteria sigue viva, pero ya no puede alejarse de un ambiente tóxico: esa es su principal desventaja. Las demás funciones no dependen del flagelo. Los nutrientes ingresan a través de la membrana plasmática, la protección la dan la pared celular y la cápsula, y la lectura y copia del ADN ocurren en el nucleoide.',
- claves:['El flagelo sirve para desplazarse.','Sin flagelo, la bacteria no puede alejarse de sustancias tóxicas.','Los nutrientes entran por la membrana; la pared y la cápsula protegen; el ADN se copia en el nucleoide.'],
- mitos:[['Perdería la capacidad de ingresar nutrientes.','Los nutrientes entran por la membrana plasmática, no por el flagelo.'],['Quedaría sin protección frente a la temperatura.','La protección la dan la pared celular y la cápsula.'],['Se detendría la copia de su material genético.','Eso ocurre en el nucleoide, sin participación del flagelo.']]},
+ modelo:'No podría alejarse de las sustancias tóxicas, porque el flagelo sirve para moverse.',
+ claves:['El flagelo permite moverse.','Sin él, no puede huir de lo tóxico.','Los nutrientes entran por la membrana; el ADN está en el nucleoide.'],
+ mitos:[['No podría ingresar nutrientes.','Los nutrientes entran por la membrana.'],['Quedaría sin protección frente a la temperatura.','Protegen la pared y la cápsula.'],['Dejaría de copiar su ADN.','Eso ocurre en el nucleoide.']]},
 
 {id:5, tema:'Organelos celulares', skill:'Formular hipótesis', titulo:'El corazón y sus mitocondrias',
  partes:['mitocondria','hipotesis'],
- ctx:'El tejido del corazón tiene muchas más mitocondrias que el tejido de la piel.',
- modelo:'La hipótesis que mejor explica este hecho es: «Si un tejido requiere más energía de forma constante, entonces contendrá más mitocondrias». La mitocondria produce ATP, la energía que la célula usa. El corazón late cerca de 100 000 veces al día sin descansar, así que sus células necesitan energía todo el tiempo; la piel necesita mucha menos. El contacto con el aire no determina el número de mitocondrias, y un tejido que trabaja sin descanso necesita más energía, no menos.',
- claves:['Hipótesis: si un tejido requiere más energía constante, entonces tendrá más mitocondrias.','La mitocondria produce la energía (ATP) que usa la célula.','El corazón trabaja sin descanso; por eso necesita muchas mitocondrias.'],
- mitos:[['Más contacto con el aire forma más mitocondrias.','El número de mitocondrias depende de cuánta energía necesita el tejido.'],['Un tejido que trabaja sin descanso necesita menos energía.','Es al revés: más trabajo requiere más energía y más mitocondrias.'],['Un tejido que se regenera rápido acumula menos mitocondrias.','Esta idea no explica el dato observado.']]},
+ ctx:'El corazón tiene muchas más mitocondrias que la piel.',
+ modelo:'Si un tejido necesita más energía constante, entonces tendrá más mitocondrias.',
+ claves:['La mitocondria produce ATP, la energía de la célula.','El corazón trabaja sin descanso, así que necesita mucha energía.'],
+ mitos:[['Más contacto con el aire, más mitocondrias.','Depende de la energía que necesita el tejido.'],['Si trabaja sin descanso, necesita menos energía.','Necesita más.'],['Si se regenera rápido, tiene menos mitocondrias.','Eso no explica el dato.']]},
 
 {id:6, tema:'Organelos celulares', skill:'Formular hipótesis', titulo:'Una hipótesis contra el cáncer',
  partes:['centrosoma','hipotesis','animal:nucleo'],
- ctx:'Un equipo plantea: «Si las células del tumor proliferan mediante mitosis descontrolada, entonces un fármaco que impida formar el huso mitótico frenará el avance de la masa tumoral».',
- modelo:'Esta afirmación es una hipótesis con valor predictivo porque deduce un efecto comprobable a partir de un mecanismo biológico propuesto. La parte «Si las células del tumor proliferan mediante mitosis descontrolada» es el mecanismo propuesto. La parte «entonces un fármaco que impida formar el huso mitótico frenará el tumor» es la predicción, y se puede poner a prueba en un experimento. No es una conclusión, porque todavía no hay datos: una conclusión se escribe después de experimentar. El huso mitótico se forma desde el centrosoma; sus fibras separan los cromosomas cuando la célula se divide. Sin huso, la célula no puede completar la mitosis.',
- claves:['Es una hipótesis: propone un mecanismo y deduce un efecto que se puede comprobar.','Una conclusión se obtiene después de analizar datos.','El centrosoma forma el huso mitótico, que separa los cromosomas en la mitosis.'],
- mitos:[['Es una conclusión porque resume datos experimentales.','La afirmación no tiene datos: se plantea antes del experimento.'],['Describe lo que se ve del tumor.','Describir lo que se ve es una observación.'],['Es un principio que ya no requiere comprobación.','Toda hipótesis debe ponerse a prueba.']]},
+ ctx:'«Si las células del tumor se dividen sin control, entonces un fármaco que impida formar el huso mitótico frenará el tumor».',
+ modelo:'Es una hipótesis: a partir de una explicación, anticipa un resultado que se puede comprobar. Todavía no hay datos, así que no es una conclusión.',
+ claves:['«Si…» es la explicación; «entonces…» es la predicción.','El centrosoma forma el huso mitótico, que separa los cromosomas.','Una conclusión se escribe después de tener datos.'],
+ mitos:[['Es una conclusión: resume datos.','Todavía no hay datos.'],['Describe lo que se ve del tumor.','Eso sería una observación.'],['Es un principio que no necesita pruebas.','Toda hipótesis se debe probar.']]},
 
 {id:7, tema:'Organelos celulares', skill:'Planificar y experimentar', titulo:'Diseñar el experimento',
  partes:['planificar'],
- ctx:'Para poner a prueba una hipótesis, un equipo escribe un procedimiento paso a paso con los materiales, los tiempos de medición y el número de repeticiones.',
- modelo:'Diseñar un procedimiento paso a paso, con materiales, tiempos y repeticiones, corresponde a la planificación y experimentación. Planificar es decidir de antemano cómo se pondrá a prueba la hipótesis: qué se va a cambiar (variable independiente), qué se va a medir (variable dependiente) y qué se mantendrá igual (variables controladas). Las repeticiones hacen que el resultado sea más confiable, porque un solo dato puede deberse al azar. Observar, comunicar y formular preguntas son otras etapas del método científico.',
- claves:['Corresponde a planificar y experimentar.','El plan incluye materiales, pasos, variables, tiempos y repeticiones.','Repetir el experimento hace más confiables los resultados.'],
- mitos:[['Es observación.','Observar es reunir información; aquí se diseña un procedimiento.'],['Es comunicación.','Comunicar ocurre al final, cuando se informan los resultados.'],['Es formular preguntas.','Las preguntas se plantean al comienzo de la investigación.']]},
+ ctx:'Un equipo escribe los pasos, los materiales, los tiempos y las repeticiones para probar una hipótesis.',
+ modelo:'Es planificación y experimentación.',
+ claves:['Se definen materiales, pasos, variables, tiempos y repeticiones.','Repetir hace más confiables los resultados.'],
+ mitos:[['Observación.','Observar es reunir información.'],['Comunicación.','Comunicar se hace al final.'],['Formulación de preguntas.','Las preguntas van al comienzo.']]},
 
-{id:8, tema:'Organelos celulares', skill:null, titulo:'Dónde se encuentra el ADN',
+{id:8, tema:'Organelos celulares', skill:null, titulo:'¿Dónde está el ADN?',
  partes:['nucleo','nucleoide','acidos-nucleicos'],
- ctx:'El ADN contiene las instrucciones para fabricar las proteínas y para heredar las características.',
- modelo:'En las células animales y vegetales, el ADN se encuentra en el núcleo. Allí está protegido por la envoltura nuclear, una doble membrana con poros. Dentro del núcleo, el ADN forma la cromatina, que se ordena en cromosomas cuando la célula se divide. Las bacterias no tienen núcleo: su ADN está en una zona del citoplasma llamada nucleoide. La membrana plasmática es el límite de la célula y los lisosomas digieren materiales; ninguno guarda el ADN.',
- claves:['En las células animales y vegetales, el ADN está en el núcleo.','La envoltura nuclear lo protege.','En las bacterias, el ADN está en el nucleoide, sin núcleo.'],
- mitos:[['El ADN está en el citoplasma.','Eso ocurre solo en las bacterias. En las células animales y vegetales está en el núcleo.'],['El ADN está en la membrana plasmática.','La membrana es el límite de la célula y regula lo que entra y sale.'],['El ADN está en el lisosoma.','El lisosoma digiere materiales y organelos viejos.']]},
+ ctx:'El ADN tiene las instrucciones de la célula.',
+ modelo:'En el núcleo. Las bacterias no tienen núcleo: su ADN está en el nucleoide.',
+ claves:['Células animales y vegetales: ADN en el núcleo.','Bacterias: ADN en el nucleoide.'],
+ mitos:[['En el citoplasma.','Solo en las bacterias. En las demás células está en el núcleo.'],['En la membrana plasmática.','La membrana controla lo que entra y sale.'],['En el lisosoma.','El lisosoma digiere materiales.']]},
 
 {id:9, tema:'Organelos celulares', skill:null, titulo:'Reparar membranas en el hígado',
  partes:['rel','animal:vesiculas','animal:golgi','animal:membrana','lipidos'],
- ctx:'Tras una lesión leve, las células del hígado fabrican rápidamente lípidos, como colesterol y fosfolípidos, para reponer sus membranas dañadas.',
- modelo:'La ruta es: síntesis en el retículo endoplasmático liso (REL), transporte en vesículas y distribución mediante el aparato de Golgi. El REL es el organelo que fabrica los lípidos; por eso abunda en las células del hígado. Los lípidos nuevos viajan en vesículas hasta el aparato de Golgi, que los clasifica y los envía a la membrana dañada. El núcleo guarda el ADN, las mitocondrias producen energía y las células animales no tienen pared celular.',
- claves:['El REL fabrica los lípidos.','Las vesículas los transportan.','El aparato de Golgi los clasifica y distribuye hasta la membrana.'],
- mitos:[['Los lípidos se arman en los gránulos del RER.','Los gránulos del RER son ribosomas y fabrican proteínas, no lípidos.'],['Las moléculas se procesan en el núcleo.','El núcleo guarda el ADN; no fabrica lípidos.'],['Los lípidos se anclan en la pared celular.','Las células del hígado son animales: no tienen pared celular.']]},
+ ctx:'Las células del hígado fabrican lípidos (colesterol y fosfolípidos) para reparar sus membranas.',
+ modelo:'Retículo liso (los fabrica) → vesículas (los transportan) → aparato de Golgi (los distribuye).',
+ claves:['El REL fabrica lípidos.','Las vesículas los transportan.','El Golgi los clasifica y los envía a la membrana.'],
+ mitos:[['Se arman en los gránulos del RER.','Esos son ribosomas: fabrican proteínas.'],['Se procesan en el núcleo.','El núcleo guarda el ADN.'],['Se anclan en la pared celular.','Las células animales no tienen pared.']]},
 
 {id:10, tema:'Organelos celulares', skill:null, titulo:'La fábrica de jugos digestivos',
  partes:['animal:rer','animal:golgi','animal:vesiculas','proteinas'],
- ctx:'Las células del páncreas fabrican jugos digestivos y los expulsan hacia el intestino para ayudar a digerir la comida.',
- modelo:'El camino es: retículo endoplasmático rugoso (RER) → aparato de Golgi → vesículas. Las enzimas de los jugos digestivos son proteínas, y se fabrican en los ribosomas que cubren el RER. Luego pasan al aparato de Golgi, que las prepara y las empaqueta en vesículas. Las vesículas viajan hasta la membrana plasmática, se unen a ella y liberan su contenido fuera de la célula; este proceso se llama exocitosis. El REL fabrica lípidos, no proteínas, y las mitocondrias producen energía.',
- claves:['RER: fabrica las proteínas (enzimas digestivas).','Aparato de Golgi: las prepara y empaqueta.','Vesículas: las llevan a la membrana y las expulsan (exocitosis).'],
- mitos:[['REL → peroxisomas → lisosomas.','El REL fabrica lípidos; peroxisomas y lisosomas degradan sustancias.'],['Ribosomas → mitocondrias → citoesqueleto.','Las mitocondrias producen energía; no empaquetan proteínas.'],['Membrana del núcleo → lisosomas → canales.','Los lisosomas digieren dentro de la célula; no exportan enzimas.']]},
+ ctx:'Las células del páncreas fabrican jugos digestivos (proteínas) y los expulsan al intestino.',
+ modelo:'Retículo endoplasmático rugoso → aparato de Golgi → vesículas.',
+ claves:['RER: fabrica las proteínas.','Golgi: las prepara y las empaqueta.','Vesículas: las sacan de la célula.'],
+ mitos:[['REL → peroxisomas → lisosomas.','El REL fabrica lípidos.'],['Ribosomas → mitocondrias → citoesqueleto.','La mitocondria produce energía.'],['Núcleo → lisosomas → canales.','Los lisosomas digieren dentro de la célula.']]},
 
-{id:11, tema:'Organelos celulares', skill:'Identificar variables', titulo:'Las variables del experimento con Elodea',
+{id:11, tema:'Organelos celulares', skill:'Identificar variables', titulo:'Las burbujas de la Elodea',
  partes:['var-indep','cloroplasto'],
- ctx:'Un estudiante coloca una planta acuática (Elodea) bajo distintas intensidades de luz y cuenta las burbujas de oxígeno que libera por minuto.',
- modelo:'La variable independiente es la intensidad de la luz, porque es lo que el estudiante cambia a propósito. La variable dependiente es la cantidad de burbujas por minuto, porque es lo que mide. Las variables controladas son las que se mantienen iguales para que la comparación sea justa: el tipo de planta, su tamaño, la temperatura y la cantidad de agua. La fotosíntesis ocurre en los cloroplastos: con más luz, la planta hace más fotosíntesis y libera más oxígeno.',
- claves:['Independiente: la intensidad de la luz (lo que se cambia).','Dependiente: las burbujas por minuto (lo que se mide).','Controladas: tipo de planta, temperatura del agua (lo que se mantiene igual).'],
- mitos:[['La variable independiente es la cantidad de burbujas.','Las burbujas son lo que se mide: es la variable dependiente.'],['La variable independiente es el tipo de planta.','Siempre se usa Elodea: es una variable controlada.'],['La variable independiente es la temperatura del agua.','La temperatura se mantiene igual: es una variable controlada.']]},
+ ctx:'Se cuentan las burbujas de oxígeno que libera una planta (Elodea) con distintas intensidades de luz.',
+ modelo:'La variable independiente es la intensidad de la luz, porque es lo que el estudiante cambia.',
+ claves:['Independiente: la luz (lo que se cambia).','Dependiente: las burbujas por minuto (lo que se mide).','Controladas: tipo de planta y temperatura del agua.'],
+ mitos:[['Las burbujas son la independiente.','Las burbujas se miden: son la dependiente.'],['El tipo de planta es la independiente.','Siempre es Elodea: es controlada.'],['La temperatura es la independiente.','Se mantiene igual: es controlada.']]},
 
-{id:12, tema:'Organelos celulares', skill:null, titulo:'La molécula de energía: el ATP',
+{id:12, tema:'Organelos celulares', skill:null, titulo:'La molécula de energía',
  partes:['mitocondria','nucleotido'],
- ctx:'La mitocondria es conocida como la central energética de la célula.',
- modelo:'La mitocondria produce principalmente ATP, la molécula que guarda la energía lista para usar. La célula gasta ATP para contraer los músculos, transportar sustancias, fabricar moléculas y dividirse; por eso se le llama la «moneda de energía» de la célula. La glucosa no es un producto de la mitocondria: es el combustible que consume. El ADN guarda la información genética, y el NADPH se forma en los cloroplastos durante la fotosíntesis.',
- claves:['La mitocondria produce ATP.','El ATP es la «moneda de energía» que la célula gasta en todas sus funciones.','La glucosa es el combustible que se consume, no el producto.'],
- mitos:[['La mitocondria produce ADN.','La función de la mitocondria es producir ATP.'],['La mitocondria produce NADPH.','El NADPH se forma en el cloroplasto, durante la fotosíntesis.'],['La mitocondria produce glucosa.','La glucosa la fabrican las plantas; la mitocondria la consume.']]},
+ ctx:'La mitocondria es la central de energía de la célula.',
+ modelo:'Produce principalmente ATP, la molécula de energía que usa la célula.',
+ claves:['ATP: energía lista para usar.','La glucosa es el combustible, no el producto.'],
+ mitos:[['Produce ADN.','El ADN guarda información.'],['Produce NADPH.','Se forma en el cloroplasto.'],['Produce glucosa.','La hacen las plantas; la mitocondria la usa.']]},
 
 {id:13, tema:'Organelos celulares', skill:null, titulo:'Lo que produce la respiración celular',
  partes:['mitocondria','carbohidratos'],
- ctx:'La respiración celular ocurre en la mitocondria y entrega la energía que un organismo necesita para mantenerse con vida.',
- modelo:'La respiración celular se resume así: glucosa + oxígeno → dióxido de carbono + agua + energía (ATP). La glucosa y el oxígeno son lo que entra al proceso; lo que sale es energía química en forma de ATP, agua y dióxido de carbono (CO₂). El ATP es el producto que aporta el beneficio energético, porque la célula lo usa en todas sus funciones; el dióxido de carbono se elimina al exhalar. La glucosa y el oxígeno son productos de la fotosíntesis, y la luz y la clorofila participan en la fotosíntesis, no en la respiración.',
- claves:['Glucosa + oxígeno → dióxido de carbono + agua + energía (ATP).','Productos: ATP, agua y CO₂.','El ATP es el que aporta la energía que usa el organismo.'],
- mitos:[['Produce glucosa y oxígeno.','Esos son productos de la fotosíntesis; en la respiración se consumen.'],['Libera luz, clorofila y azúcares.','La luz y la clorofila participan en la fotosíntesis.'],['Acumula oxígeno y nitrógeno.','La respiración consume oxígeno y no produce nitrógeno.']]}
+ ctx:'La respiración celular da la energía para mantenerse con vida.',
+ modelo:'Glucosa + oxígeno → dióxido de carbono + agua + energía (ATP).',
+ claves:['Produce ATP, agua y dióxido de carbono.','La glucosa y el oxígeno se consumen.'],
+ mitos:[['Produce glucosa y oxígeno.','Eso lo hace la fotosíntesis.'],['Libera luz, clorofila y azúcares.','La clorofila es de la fotosíntesis.'],['Acumula oxígeno y nitrógeno.','La respiración consume oxígeno.']]}
 ];
 /* ===== Modelos 3D de biomoléculas (esferas y varillas, sin librerías) ===== */
 const EL = {
@@ -1260,9 +1256,9 @@ function pCard(q,part){
   <div class="q-in">
     <h4 class="q-title">${esc(q.titulo)}</h4>
     <p class="q-ctx">${esc(q.ctx)}</p>
-    <div class="ans"><h5>Explicación</h5><p>${esc(q.modelo)}</p></div>
-    <div class="sec"><h5>Ideas clave</h5><ul class="keys">${q.claves.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
-    <div class="sec"><h5>No confundir</h5><ul class="myths">${q.mitos.map(([m,c])=>`<li><span class="no">${esc(m)}</span>${esc(c)}</li>`).join('')}</ul></div>
+    <div class="ans"><h5>Respuesta</h5><p>${esc(q.modelo)}</p></div>
+    <div class="sec"><h5>Para recordar</h5><ul class="keys">${q.claves.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
+    <details class="more"><summary>Errores frecuentes</summary><ul class="myths">${q.mitos.map(([m,c])=>`<li><span class="no">${esc(m)}</span>${esc(c)}</li>`).join('')}</ul></details>
     <div class="q-actions"><button class="btn ${done?'done':'primary'}" type="button" data-act="rev" data-q="${q.id}" aria-pressed="${done}">${done?'✓ Repasado':'Marcar como repasado'}</button></div>
     ${also?`<div class="also">También aparece en: ${also}</div>`:''}
   </div></article>`;
@@ -1270,7 +1266,6 @@ function pCard(q,part){
 function sections(key,info){
   let h='';
   if(info.bloque) h+=`<div class="sec"><h5>Bloque esencial</h5><p class="box"><b>${esc(info.bloque)}</b></p></div>`;
-  if(info.union) h+=`<div class="sec"><h5>Cómo se forma</h5><p style="margin:0">${esc(info.union)}</p></div>`;
   if(info.fun) h+=`<div class="sec"><h5>Funciones</h5><ul class="blist">${info.fun.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`;
   if(info.ej&&info.bloque) h+=`<div class="sec"><h5>${key==='acidos-nucleicos'?'Dónde se encuentra':'En los alimentos'}</h5><p style="margin:0">${esc(info.ej)}</p></div>`;
   if(info.como) h+=`<div class="sec"><h5>Cómo se hace</h5><ul class="blist">${info.como.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`;
@@ -1284,8 +1279,8 @@ function renderPanel(qid,opt){
   let h='';
   if(!part){
     const parts=zoneParts(cur.zone), wq=parts.filter(p=>qsAt(cur.zone,p).length), nq=parts.filter(p=>!qsAt(cur.zone,p).length);
-    h=`<div class="p-head"><p class="p-kicker"><i></i>Estación</p><h3>${esc(z.name)}</h3><p class="p-desc">${esc(z.blurb)} Toca una estructura en el dibujo o elígela en esta lista.</p></div>
-    <div class="p-body"><h4 class="p-sec">Estructuras con puntos de la prueba</h4><div class="parts">${wq.map(partBtn).join('')}</div>${nq.length?`<h4 class="p-sec">Otras estructuras para conocer</h4><div class="parts">${nq.map(partBtn).join('')}</div>`:''}</div>`;
+    h=`<div class="p-head"><p class="p-kicker"><i></i>Estación</p><h3>${esc(z.name)}</h3><p class="p-desc">${esc(z.blurb)} Toca una estructura del dibujo o de la lista.</p></div>
+    <div class="p-body"><h4 class="p-sec">Con puntos de la prueba</h4><div class="parts">${wq.map(partBtn).join('')}</div>${nq.length?`<h4 class="p-sec">Otras estructuras</h4><div class="parts">${nq.map(partBtn).join('')}</div>`:''}</div>`;
   } else {
     const info=PARTS[part], qs=qsAt(cur.zone,part);
     const en=(info.en||[]).filter(zz=>zz!==cur.zone);
@@ -1304,10 +1299,10 @@ function renderPanel(qid,opt){
       h+=`<div class="step-nav">${pv?`<button class="btn" type="button" data-sel="${pv}">← ${esc(PARTS[pv].s||PARTS[pv].n)}</button>`:'<span></span>'}${nx?`<button class="btn primary" type="button" data-sel="${nx}">Siguiente: ${esc(PARTS[nx].s||PARTS[nx].n)} →</button>`:''}</div>`;
     }
     if(molOv) h+=`<h4 class="p-sec">Bloques de esta biomolécula</h4><div class="parts">${MOLS[cur.mol].parts.map(partBtn).join('')}</div>`;
-    if(qs.length) h+=`<h4 class="p-sec">${kind==='list'?'Punto de la prueba relacionado':'Puntos de la prueba explicados'} (${qs.length})</h4>`+qs.map(q=>pCard(q,part)).join('');
+    if(qs.length) h+=`<h4 class="p-sec">${qs.length>1?'Puntos de la prueba':'Punto de la prueba'}</h4>`+qs.map(q=>pCard(q,part)).join('');
     else if(kind==='svg'||(kind==='mol'&&!molOv)){
       const sug=zoneParts(cur.zone).filter(p=>p!==part&&qsAt(cur.zone,p).length).slice(0,6);
-      if(sug.length) h+=`<p class="empty">Esta estructura no tiene un punto propio en la prueba, pero conocerla te ayuda con los demás. Sigue con alguna de estas:</p><div class="parts">${sug.map(partBtn).join('')}</div>`;
+      if(sug.length) h+=`<p class="empty">No tiene un punto propio en la prueba. Sigue con:</p><div class="parts">${sug.map(partBtn).join('')}</div>`;
     }
     h+='</div>';
   }
